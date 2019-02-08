@@ -17,7 +17,7 @@ class IBMQEJobMgr:
 	def get_id(self):
 		return self.jobdict['executionId']
 
-	def get_status(self):a
+	def get_status(self):
 		return self.jobdict['status']
 
 class IBMQEJobsMgr:
