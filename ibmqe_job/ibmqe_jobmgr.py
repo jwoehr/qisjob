@@ -27,7 +27,7 @@ class IBMQEJobsMgr:
 	def __init__(self, ibmqe, jobs):
 		self.ibmqe = ibmqe
 		self.jobs = jobs
-		self.job_mgr_list = parse_jobs()
+		self.job_mgr_list = self.parse_jobs()
 
 	def parse_jobs(self):
 		l = []
