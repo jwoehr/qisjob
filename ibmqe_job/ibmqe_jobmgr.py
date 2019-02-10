@@ -88,9 +88,9 @@ class IBMQEJobMgr:
         """
         d = self.get_job()
         if 'status' in d:
-        	return d['status']
+            return d['status']
         else:
-        	return None
+            return None
 
     def get_job_qasms(self):
         """
@@ -111,49 +111,77 @@ class IBMQEJobMgr:
         Get the job qasms data for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms()[index]['data']
+        d = self.get_job_qasms()[index]
+        if d and 'data' in d:
+            return self.get_job_qasms()[index]['data']
+        else:
+            return None
 
     def get_job_qasms_data_creg_labels(self, index):
         """
         Get job qasms data creg_labels for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['creg_labels']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['creg_labels']
+        else:
+            return None
 
     def get_job_qasms_data_additionalData(self, index):
         """
         Get job qasms data additionalData for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['additionalData']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['additionalData']
+        else:
+            return None
 
     def get_job_qasms_data_versionSimulationRun(self, index):
         """
         Get job qasms data versionSimulationRun for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['versionSimulationRun']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['versionSimulationRun']
+        else:
+            return None
 
     def get_job_qasms_data_time(self, index):
         """
         Get job qasms data time for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['time']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['time']
+        else:
+            return None
 
     def get_job_qasms_data_counts(self, index):
         """
         Get job qasms data counts for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['counts']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['counts']
+        else:
+            return None
 
     def get_job_qasms_data_date(self, index):
         """
         Get the job qasms data date for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        return self.get_job_qasms_data(index)['date']
+        d = self.get_job_qasms_data(index)
+        if d:
+            return self.get_job_qasms_data(index)['date']
+        else:
+            return None
 
     def get_job_shots(self):
         """
@@ -306,9 +334,10 @@ class IBMQEJobMgr:
         jx.run_job()
         print(jx.get_job_id())
         print(jx.get_job())
+        # time.sleep(4)
         while jx.get_job_status() != 'COMPLETED':
-        	print(jx.get_job_status())
-        	time.sleep(4)
+            print(jx.get_job_status())
+            time.sleep(4)
         print(jx.get_job_qasms())
         print(jx.get_job_qasms_qasm(0))
         print(jx.get_job_qasms_qasm(1))
@@ -326,7 +355,6 @@ class IBMQEJobMgr:
         print(jx.get_job_qasms_data_versionSimulationRun(1))
         print(jx.get_job_qasms_data_versionSimulationRun(2))
         print(jx.get_job_qasms_data_time(0))
-        print(jx.get_job_qasms_data_time(1))
         print(jx.get_job_qasms_data_time(2))
         print(jx.get_job_qasms_data_counts(0))
         print(jx.get_job_qasms_data_counts(1))
@@ -399,7 +427,6 @@ class IBMQEJobMgr:
 
 
 if __name__ == "__main__":
-    print("this is main")
     explanation = """ibmqe_jobmgr.py :
 Class to manage jobs loading qasm source and run jobs with reporting in CSV
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
@@ -410,7 +437,8 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
     import argparse
     parser = argparse.ArgumentParser(description=explanation)
     parser.add_argument(
-        "token", help="IBM Q Experience API token https://quantumexperience.ng.bluemix.net/qx/account/advanced")
+        "token", help="""IBM Q Experience API token
+        https://quantumexperience.ng.bluemix.net/qx/account/advanced""")
     parser.add_argument("filepath", help="Filepath to .qasm file")
     args = parser.parse_args()
     IBMQEJobMgr.test(args.token, args.filepath)
