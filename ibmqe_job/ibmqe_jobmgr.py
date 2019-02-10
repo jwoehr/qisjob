@@ -71,17 +71,145 @@ class IBMQEJobMgr:
             self.exec_list, self.backend, self.counts, self.credits)
         self.parse_execs()
 
-    def get_job_num(self):
-        "Get job number of the job"
+    def get_job_id(self):
+        """Get job number of the job"""
         return self.job_dict['id']
 
     def get_job(self):
-        "Get the job dict from the Q server"
-        return self.ibmqe.get_job(self.get_job_num())
+        """Get the job dict from the Q server and refresh local copy"""
+        self.job_dict = self.ibmqe.get_job(self.get_job_id())
+        self.parse_execs()
+        return self.job_dict
 
     def get_job_status(self):
-        "Get the job status from the dict returned by the Q server"
-        return self.get_job()['status']
+        """
+        Get the job status from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        d = self.get_job()
+        if 'status' in d:
+        	return d['status']
+        else:
+        	return None
+
+    def get_job_qasms(self):
+        """
+        Get the job qasms from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['qasms']
+
+    def get_job_qasms_qasm(self, index):
+        """
+        Get job qasms qasm text for indexed job  from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms()[index]['qasm']
+
+    def get_job_qasms_data(self, index):
+        """
+        Get the job qasms data for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms()[index]['data']
+
+    def get_job_qasms_data_creg_labels(self, index):
+        """
+        Get job qasms data creg_labels for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['creg_labels']
+
+    def get_job_qasms_data_additionalData(self, index):
+        """
+        Get job qasms data additionalData for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['additionalData']
+
+    def get_job_qasms_data_versionSimulationRun(self, index):
+        """
+        Get job qasms data versionSimulationRun for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['versionSimulationRun']
+
+    def get_job_qasms_data_time(self, index):
+        """
+        Get job qasms data time for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['time']
+
+    def get_job_qasms_data_counts(self, index):
+        """
+        Get job qasms data counts for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['counts']
+
+    def get_job_qasms_data_date(self, index):
+        """
+        Get the job qasms data date for indexed job from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms_data(index)['date']
+
+    def get_job_shots(self):
+        """
+        Get the job shots from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['shots']
+
+    def get_job_backend(self):
+        """
+        Get the job backend from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['backend']
+
+    def get_job_maxCredits(self):
+        """
+        Get the job maxCredits from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['maxCredits']
+
+    def get_job_usedCredits(self):
+        """
+        Get the job usedCredits from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['usedCredits']
+
+    def get_job_creationDate(self):
+        """
+        Get the job creationDate from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['creationDate']
+
+    def get_job_deleted(self):
+        """
+        Get the job deleted from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['deleted']
+
+    def get_job_userId(self):
+        """
+        Get the job userId from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['userId']
+
+    def get_job_calibration(self):
+        """
+        Get the job calibration from the dict returned by the Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job()['calibration']
 
     def get_execution_id(self, index):
         """Get execution id for exec found at index in execs[]"""
@@ -164,3 +292,125 @@ class IBMQEJobMgr:
             values += str(i) + ';'
         csv.append(values)
         return csv
+
+    @staticmethod
+    def test(ibmqe_token, qasmfile):
+        """Run a comprehensive test give a server token and a qasm filepath"""
+        import time
+        api = IBMQuantumExperience(ibmqe_token)
+        jx = IBMQEJobMgr(api)
+        js = IBMQEJobSpec(filepath=qasmfile)
+        jx.add_exec(js)
+        jx.add_exec(js)
+        jx.add_exec(js)
+        jx.run_job()
+        print(jx.get_job_id())
+        print(jx.get_job())
+        while jx.get_job_status() != 'COMPLETED':
+        	print(jx.get_job_status())
+        	time.sleep(4)
+        print(jx.get_job_qasms())
+        print(jx.get_job_qasms_qasm(0))
+        print(jx.get_job_qasms_qasm(1))
+        print(jx.get_job_qasms_qasm(2))
+        print(jx.get_job_qasms_data(0))
+        print(jx.get_job_qasms_data(1))
+        print(jx.get_job_qasms_data(2))
+        print(jx.get_job_qasms_data_creg_labels(0))
+        print(jx.get_job_qasms_data_creg_labels(1))
+        print(jx.get_job_qasms_data_creg_labels(2))
+        print(jx.get_job_qasms_data_additionalData(0))
+        print(jx.get_job_qasms_data_additionalData(1))
+        print(jx.get_job_qasms_data_additionalData(2))
+        print(jx.get_job_qasms_data_versionSimulationRun(0))
+        print(jx.get_job_qasms_data_versionSimulationRun(1))
+        print(jx.get_job_qasms_data_versionSimulationRun(2))
+        print(jx.get_job_qasms_data_time(0))
+        print(jx.get_job_qasms_data_time(1))
+        print(jx.get_job_qasms_data_time(2))
+        print(jx.get_job_qasms_data_counts(0))
+        print(jx.get_job_qasms_data_counts(1))
+        print(jx.get_job_qasms_data_counts(2))
+        print(jx.get_job_qasms_data_date(0))
+        print(jx.get_job_qasms_data_date(1))
+        print(jx.get_job_qasms_data_date(2))
+        print(jx.get_job_shots())
+        print(jx.get_job_backend())
+        print(jx.get_job_maxCredits())
+        print(jx.get_job_usedCredits())
+        print(jx.get_job_creationDate())
+        print(jx.get_job_deleted())
+        print(jx.get_job_userId())
+        print(jx.get_job_calibration())
+        print(jx.get_execution_id(0))
+        print(jx.get_execution_id(1))
+        print(jx.get_execution_id(2))
+        print(jx.get_execution(0))
+        print(jx.get_execution(1))
+        print(jx.get_execution(2))
+        print(jx.get_execution_status(0))
+        print(jx.get_execution_status(1))
+        print(jx.get_execution_status(2))
+        print(jx.get_execution_result(0))
+        print(jx.get_execution_result(1))
+        print(jx.get_execution_result(2))
+        print(jx.get_execution_result_date(0))
+        print(jx.get_execution_result_date(1))
+        print(jx.get_execution_result_date(2))
+        print(jx.get_execution_result_data(0))
+        print(jx.get_execution_result_data(1))
+        print(jx.get_execution_result_data(2))
+        print(jx.get_execution_result_creg_labels(0))
+        print(jx.get_execution_result_creg_labels(1))
+        print(jx.get_execution_result_creg_labels(2))
+        print(jx.get_execution_result_p(0))
+        print(jx.get_execution_result_p(1))
+        print(jx.get_execution_result_p(2))
+        print(jx.get_execution_result_qubits(0))
+        print(jx.get_execution_result_qubits(1))
+        print(jx.get_execution_result_qubits(2))
+        print(jx.get_execution_result_labels(0))
+        print(jx.get_execution_result_labels(1))
+        print(jx.get_execution_result_labels(2))
+        print(jx.get_execution_result_values(0))
+        print(jx.get_execution_result_values(1))
+        print(jx.get_execution_result_values(2))
+        print(jx.get_execution_result_additionalData(0))
+        print(jx.get_execution_result_additionalData(1))
+        print(jx.get_execution_result_additionalData(2))
+        print(jx.get_execution_result_seed(0))
+        print(jx.get_execution_result_seed(1))
+        print(jx.get_execution_result_seed(2))
+        print(jx.get_execution_result_qasm(0))
+        print(jx.get_execution_result_qasm(1))
+        print(jx.get_execution_result_qasm(2))
+        print(jx.get_execution_result_serialNumberDevice(0))
+        print(jx.get_execution_result_serialNumberDevice(1))
+        print(jx.get_execution_result_serialNumberDevice(2))
+        print(jx.get_execution_result_versionSimulationRun(0))
+        print(jx.get_execution_result_versionSimulationRun(1))
+        print(jx.get_execution_result_versionSimulationRun(2))
+        print(jx.get_execution_result_time(0))
+        print(jx.get_execution_result_time(1))
+        print(jx.get_execution_result_time(2))
+        jx.csv_execution("test 0", 0)
+        jx.csv_execution("test 1", 1)
+        jx.csv_execution("test 2", 2)
+
+
+if __name__ == "__main__":
+    print("this is main")
+    explanation = """ibmqe_jobmgr.py :
+Class to manage jobs loading qasm source and run jobs with reporting in CSV
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+BSD-3 license -- See LICENSE which you should have received with this code.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+"""
+    import argparse
+    parser = argparse.ArgumentParser(description=explanation)
+    parser.add_argument(
+        "token", help="IBM Q Experience API token https://quantumexperience.ng.bluemix.net/qx/account/advanced")
+    parser.add_argument("filepath", help="Filepath to .qasm file")
+    args = parser.parse_args()
+    IBMQEJobMgr.test(args.token, args.filepath)
