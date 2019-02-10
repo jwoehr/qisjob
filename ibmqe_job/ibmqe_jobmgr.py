@@ -77,6 +77,10 @@ class IBMQEJobMgr:
         "Get the job dict from the Q server"
         return self.ibmqe.get_job(self.get_job_num())
 
+    def get_job_status(self):
+        "Get the job status from the dict returned by the Q server"
+        return self.get_job()['status']
+
     def get_execution_id(self, index):
         """Get execution id for exec found at index in execs[]"""
         return self.execs[index]['executionId']
