@@ -6,6 +6,7 @@
 # WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 
 # https://github.com/Qiskit/qiskit-api-py
+# pip install qiskit-api-py
 from IBMQuantumExperience import IBMQuantumExperience
 
 
@@ -32,17 +33,17 @@ class IBMQEJobMgr:
     """
     Manage job executed by IBMQuantumExperience.IBMQuantumExperience instance
     Using as closely as possible the terminology of qiskit-api-py
-    job ...	the overall job which owns the backend/counts/credits etc. attribs
+    job ...    the overall job which owns the backend/counts/credits etc. attribs
     execution (exec) ... one body of qasm code (out of many) run in job
     """
 
     def __init__(self, ibmqe, backend='ibmq_qasm_simulator',
                  counts=1024, credits=3):
         """
-        ibmqe	...	the IBMQuantumExperience instance
-        backend	...	name of backend
-        counts	...	times to run
-        credits	...	max credits to expend
+        ibmqe    ...    the IBMQuantumExperience instance
+        backend    ...    name of backend
+        counts    ...    times to run
+        credits    ...    max credits to expend
         """
         self.ibmqe = ibmqe
         self.backend = backend
@@ -51,7 +52,11 @@ class IBMQEJobMgr:
         self.job_dict = {}  # dict returned by run_job()
         self.exec_dict = {}  # exec dict from job_dict
         self.exec_list = []  # list of execs to run
-        self.execs = []		# list of jobs from exec_dict
+        self.execs = []        # list of jobs from exec_dict
+
+    def add_exec(self, jobspec):
+        """Add an exec to run in job"""
+        self.exec_list.append(jobspec.job_spec())
 
     def parse_execs(self):
         """Extract list of executions from execution dictionary"""
@@ -60,14 +65,11 @@ class IBMQEJobMgr:
         for i in self.exec_dict:
             self.execs.append(i)
 
-    def add_exec(self, jobspec):
-        """Add an exec to run in job"""
-        self.exec_list.append(jobspec.job_spec())
-
     def run_job(self):
         """Pass exec list and other parameters to the backend to run job"""
         self.job_dict = self.ibmqe.run_job(
             self.exec_list, self.backend, self.counts, self.credits)
+        self.parse_execs()
 
     def get_job_num(self):
         "Get job number of the job"
@@ -90,9 +92,75 @@ class IBMQEJobMgr:
         return self.ibmqe.get_execution(self.get_execution_id(index))
 
     def get_execution_status(self, index):
-        """Get execution status  for exec found at index in execs[]"""
+        """Get execution status for exec found at index in execs[]"""
         return self.get_execution(index)['status']
 
     def get_execution_result(self, index):
-        """Get execution result  for exec found at index in execs[]"""
+        """Get execution result for exec found at index in execs[]"""
         return self.get_execution(index)['result']
+
+    def get_execution_result_date(self, index):
+        """Get execution result entry date for indexed execution"""
+        return self.get_execution_result(index)['date']
+
+    def get_execution_result_data(self, index):
+        """Get execution result entry data for indexed execution"""
+        return self.get_execution_result(index)['data']
+
+    def get_execution_result_creg_labels(self, index):
+        """Get execution result entry creg_labels for indexed execution"""
+        return self.get_execution_result_data(index)['creg_labels']
+
+    def get_execution_result_p(self, index):
+        """Get execution result entry p for indexed execution"""
+        return self.get_execution_result_data(index)['p']
+
+    def get_execution_result_qubits(self, index):
+        """Get execution result entry qubits for indexed execution"""
+        return self.get_execution_result_p(index)['qubits']
+
+    def get_execution_result_labels(self, index):
+        """Get execution result entry labels for indexed execution"""
+        return self.get_execution_result_p(index)['labels']
+
+    def get_execution_result_values(self, index):
+        """Get execution result entry values for indexed execution"""
+        return self.get_execution_result_p(index)['values']
+
+    def get_execution_result_additionalData(self, index):
+        """Get execution result entry additionalData for indexed execution"""
+        return self.get_execution_result_data(index)['additionalData']
+
+    def get_execution_result_seed(self, index):
+        """Get execution result entry seed for indexed execution"""
+        return self.get_execution_result_additionalData(index)['seed']
+
+    def get_execution_result_qasm(self, index):
+        """Get execution result entry qasm for indexed execution"""
+        return self.get_execution_result_data(index)['qasm']
+
+    def get_execution_result_serialNumberDevice(self, index):
+        """Get execution result entry serialNumberDevice for indexed execution"""
+        return self.get_execution_result_data(index)['serialNumberDevice']
+
+    def get_execution_result_versionSimulationRun(self, index):
+        """Get execution result entry versionSimulationRun for indexed execution"""
+        return self.get_execution_result_data(index)['versionSimulationRun']
+
+    def get_execution_result_time(self, index):
+        """Get execution result entry time for indexed execution"""
+        return self.get_execution_result_data(index)['time']
+
+    def csv_execution(self, description, index):
+        """Express one execution as CSV with description, labels and values."""
+        csv = []
+        csv.append(description)
+        labels = ""
+        for i in self.get_execution_result_labels(index):
+            labels += str(i) + ';'
+        csv.append(labels)
+        values = ""
+        for i in self.get_execution_result_values(index):
+            values += str(i) + ';'
+        csv.append(values)
+        return csv
