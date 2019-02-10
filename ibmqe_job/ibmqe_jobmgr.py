@@ -13,7 +13,7 @@ class IBMQEJobSpec:
     Job specification for IBMQEJobManager to run and manage
     """
 
-    def __init__(self, qasm=None filepath=None):
+    def __init__(self, qasm=None, filepath=None):
         self.qasm = qasm
         if filepath is not None:
             self.load_qasm(filepath)
@@ -53,7 +53,7 @@ class IBMQEJobMgr:
         """Extract list of jobs from dictionary hierarchy"""
         self.jobs = []
         self.jobs_dict = self.run_dict['qasms']
-        for i in jobs_dict:
+        for i in self.jobs_dict:
             self.jobs.append(i)
 
     def add_job(self, jobspec):
@@ -63,11 +63,11 @@ class IBMQEJobMgr:
     def run_jobs(self):
         """Pass job list and other parameters to the backend"""
         self.run_dict = self.ibmqe.run_job(
-            self.job_list, self.backend, self.counts, self, credits)
+            self.job_list, self.backend, self.counts, self.credits)
 
     def get_jobnum(self, index):
         """Get job number at server from job record at index in jobs"""
-        return jobs[index]['executionId']
+        return self.jobs[index]['executionId']
 
     def get_status(self, jobnum):
         """Get job status at server from from server job number"""
