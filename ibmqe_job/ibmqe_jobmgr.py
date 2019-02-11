@@ -422,9 +422,9 @@ class IBMQEJobMgr:
         print(jx.get_execution_result_time(0))
         print(jx.get_execution_result_time(1))
         print(jx.get_execution_result_time(2))
-        jx.csv_execution("test 0", 0)
-        jx.csv_execution("test 1", 1)
-        jx.csv_execution("test 2", 2)
+        print(jx.csv_execution("test 0", 0))
+        print(jx.csv_execution("test 1", 1))
+        print(jx.csv_execution("test 2", 2))
 
 
 if __name__ == "__main__":
