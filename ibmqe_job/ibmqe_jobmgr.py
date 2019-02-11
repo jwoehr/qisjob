@@ -516,7 +516,7 @@ Exits (300) on no filepaths given.
         time.sleep(4)
 
     print(jx.get_job())
-    
+
     for i in range(0, len(jx.execs)):
         csv = jx.csv_execution(args.filepaths[i], i)
         for c in csv:
