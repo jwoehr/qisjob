@@ -355,6 +355,7 @@ class IBMQEJobMgr:
         print(jx.get_job_qasms_data_versionSimulationRun(1))
         print(jx.get_job_qasms_data_versionSimulationRun(2))
         print(jx.get_job_qasms_data_time(0))
+        print(jx.get_job_qasms_data_time(1))
         print(jx.get_job_qasms_data_time(2))
         print(jx.get_job_qasms_data_counts(0))
         print(jx.get_job_qasms_data_counts(1))
