@@ -52,6 +52,8 @@ parser.add_argument("-u", "--url",  action="store", default='https://quantumexpe
                     help="URL, default is https://quantumexperience.ng.bluemix.net/api")
 parser.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
+parser.add_argument("-y", "--yiqing", action="store_true",
+                    help="Draw results as Yi Qing Oracle")
 parser.add_argument("-z", "--sleeptime", type=int, action="store", default=4,
                     help="""Number of seconds to sleep between checks for
                     completion, default is 4""")
@@ -87,7 +89,7 @@ else:
     outfile = args.outfile
 
 jx = IBMQEJobMgr(api, backend=backend,
-                 counts=args.shots, credits=args.credits)
+                 counts=args.shots, credits=args.credits, verbose=args.verbose)
 for filepath in args.filepaths:
     jx.add_exec(IBMQEJobSpec(filepath=filepath))
 
@@ -103,6 +105,14 @@ for i in range(0, len(jx.execs)):
     csv = jx.csv_execution(args.filepaths[i], i)
     for c in csv:
         print(c)
+
+if args.yiqing:
+	from qyqhex import QYQHexagram, QYQLine
+	h = QYQHexagram(backend)
+	for i in range(0, len(jx.execs)):
+		h.assimilate(jx.get_job_qasms_result_data_counts(i))
+		# verbosity(jx.get_job_qasms_result_data_counts(i), 1)
+	h.draw(True)
 
 verbosity('Done!', 1)
 
