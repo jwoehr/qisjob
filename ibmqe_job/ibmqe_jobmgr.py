@@ -39,8 +39,12 @@ class IBMQEJobMgr:
     execution (exec) ... one body of qasm code (out of many) run in job
     """
 
+    def verbosity(self, text, count):
+        if self.verbose >= count:
+            print(text)
+
     def __init__(self, ibmqe, backend='ibmq_qasm_simulator',
-                 counts=1024, credits=3):
+                 counts=1024, credits=3, verbose=0):
         """
         ibmqe    ...    the IBMQuantumExperience instance
         backend    ...    name of backend
@@ -51,6 +55,7 @@ class IBMQEJobMgr:
         self.backend = backend
         self.counts = counts
         self.credits = credits
+        self.verbose = verbose
         self.job_dict = {}  # dict returned by run_job()
         self.exec_dict = {}  # exec dict from job_dict
         self.exec_list = []  # list of execs to run
@@ -80,6 +85,7 @@ class IBMQEJobMgr:
     def get_job(self):
         """Get the job dict from the Q server and refresh local copy"""
         self.job_dict = self.ibmqe.get_job(self.get_job_id())
+        self.verbosity(self.job_dict, 1)
         self.parse_execs()
         return self.job_dict
 
@@ -108,80 +114,87 @@ class IBMQEJobMgr:
         """
         return self.get_job_qasms()[index]['qasm']
 
-    def get_job_qasms_data(self, index):
+    def get_job_qasms_result(self, index):
+        """
+        Get job qasms qasm text for indexed job  from dict returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        return self.get_job_qasms()[index]['result']
+
+    def get_job_qasms_result_data(self, index):
         """
         Get the job qasms data for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms()[index]
+        d = self.get_job_qasms_result(index)
         if d and 'data' in d:
-            return self.get_job_qasms()[index]['data']
+            return self.get_job_qasms_result(index)['data']
         else:
             return None
 
-    def get_job_qasms_data_creg_labels(self, index):
+    def get_job_qasms_result_data_creg_labels(self, index):
         """
         Get job qasms data creg_labels for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms_data(index)
+        d = self.get_job_qasms_result_data(index)
         if d:
-            return self.get_job_qasms_data(index)['creg_labels']
+            return self.get_job_qasms_result_data(index)['creg_labels']
         else:
             return None
 
-    def get_job_qasms_data_additionalData(self, index):
+    def get_job_qasms_result_data_additionalData(self, index):
         """
         Get job qasms data additionalData for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms_data(index)
+        d = self.get_job_qasms_result_data(index)
         if d:
-            return self.get_job_qasms_data(index)['additionalData']
+            return self.get_job_qasms_result_data(index)['additionalData']
         else:
             return None
 
-    def get_job_qasms_data_versionSimulationRun(self, index):
+    def get_job_qasms_result_data_counts(self, index):
+        """
+        Get job qasms data additional data counts for indexed job from dict
+        returned by Q server
+        Implicitly refreshes local job dict from Q server
+        """
+        d = self.get_job_qasms_result_data(index)
+        if d:
+            return self.get_job_qasms_result_data(index)['counts']
+        else:
+            return None
+    def get_job_qasms_result_data_versionSimulationRun(self, index):
         """
         Get job qasms data versionSimulationRun for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms_data(index)
+        d = self.get_job_qasms_result_data(index)
         if d:
-            return self.get_job_qasms_data(index)['versionSimulationRun']
+            return self.get_job_qasms_result_data(index)['versionSimulationRun']
         else:
             return None
 
-    def get_job_qasms_data_time(self, index):
+    def get_job_qasms_result_data_time(self, index):
         """
         Get job qasms data time for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms_data(index)
+        d = self.get_job_qasms_result_data(index)
         if d:
-            return self.get_job_qasms_data(index)['time']
+            return self.get_job_qasms_result_data(index)['time']
         else:
             return None
 
-    def get_job_qasms_data_counts(self, index):
-        """
-        Get job qasms data counts for indexed job from dict returned by Q server
-        Implicitly refreshes local job dict from Q server
-        """
-        d = self.get_job_qasms_data(index)
-        if d:
-            return self.get_job_qasms_data(index)['counts']
-        else:
-            return None
-
-    def get_job_qasms_data_date(self, index):
+    def get_job_qasms_result_date(self, index):
         """
         Get the job qasms data date for indexed job from dict returned by Q server
         Implicitly refreshes local job dict from Q server
         """
-        d = self.get_job_qasms_data(index)
+        d = self.get_job_qasms_result(index)
         if d:
-            return self.get_job_qasms_data(index)['date']
+            return self.get_job_qasms_result(index)['date']
         else:
             return None
 
@@ -334,96 +347,96 @@ class IBMQEJobMgr:
         jx.add_exec(js)
         jx.add_exec(js)
         jx.run_job()
-        print(jx.get_job_id())
+        print('jx.get_job_id() : ' + str(jx.get_job_id()))
         print(jx.get_job())
         # time.sleep(4)
         while jx.get_job_status() != 'COMPLETED':
             print(jx.get_job_status())
             time.sleep(4)
-        print(jx.get_job_qasms())
-        print(jx.get_job_qasms_qasm(0))
-        print(jx.get_job_qasms_qasm(1))
-        print(jx.get_job_qasms_qasm(2))
-        print(jx.get_job_qasms_data(0))
-        print(jx.get_job_qasms_data(1))
-        print(jx.get_job_qasms_data(2))
-        print(jx.get_job_qasms_data_creg_labels(0))
-        print(jx.get_job_qasms_data_creg_labels(1))
-        print(jx.get_job_qasms_data_creg_labels(2))
-        print(jx.get_job_qasms_data_additionalData(0))
-        print(jx.get_job_qasms_data_additionalData(1))
-        print(jx.get_job_qasms_data_additionalData(2))
-        print(jx.get_job_qasms_data_versionSimulationRun(0))
-        print(jx.get_job_qasms_data_versionSimulationRun(1))
-        print(jx.get_job_qasms_data_versionSimulationRun(2))
-        print(jx.get_job_qasms_data_time(0))
-        print(jx.get_job_qasms_data_time(1))
-        print(jx.get_job_qasms_data_time(2))
-        print(jx.get_job_qasms_data_counts(0))
-        print(jx.get_job_qasms_data_counts(1))
-        print(jx.get_job_qasms_data_counts(2))
-        print(jx.get_job_qasms_data_date(0))
-        print(jx.get_job_qasms_data_date(1))
-        print(jx.get_job_qasms_data_date(2))
-        print(jx.get_job_shots())
-        print(jx.get_job_backend())
-        print(jx.get_job_maxCredits())
-        print(jx.get_job_usedCredits())
-        print(jx.get_job_creationDate())
-        print(jx.get_job_deleted())
-        print(jx.get_job_userId())
-        print(jx.get_job_calibration())
-        print(jx.get_execution_id(0))
-        print(jx.get_execution_id(1))
-        print(jx.get_execution_id(2))
-        print(jx.get_execution(0))
-        print(jx.get_execution(1))
-        print(jx.get_execution(2))
-        print(jx.get_execution_status(0))
-        print(jx.get_execution_status(1))
-        print(jx.get_execution_status(2))
-        print(jx.get_execution_result(0))
-        print(jx.get_execution_result(1))
-        print(jx.get_execution_result(2))
-        print(jx.get_execution_result_date(0))
-        print(jx.get_execution_result_date(1))
-        print(jx.get_execution_result_date(2))
-        print(jx.get_execution_result_data(0))
-        print(jx.get_execution_result_data(1))
-        print(jx.get_execution_result_data(2))
-        print(jx.get_execution_result_creg_labels(0))
-        print(jx.get_execution_result_creg_labels(1))
-        print(jx.get_execution_result_creg_labels(2))
-        print(jx.get_execution_result_p(0))
-        print(jx.get_execution_result_p(1))
-        print(jx.get_execution_result_p(2))
-        print(jx.get_execution_result_qubits(0))
-        print(jx.get_execution_result_qubits(1))
-        print(jx.get_execution_result_qubits(2))
-        print(jx.get_execution_result_labels(0))
-        print(jx.get_execution_result_labels(1))
-        print(jx.get_execution_result_labels(2))
-        print(jx.get_execution_result_values(0))
-        print(jx.get_execution_result_values(1))
-        print(jx.get_execution_result_values(2))
-        print(jx.get_execution_result_additionalData(0))
-        print(jx.get_execution_result_additionalData(1))
-        print(jx.get_execution_result_additionalData(2))
-        print(jx.get_execution_result_seed(0))
-        print(jx.get_execution_result_seed(1))
-        print(jx.get_execution_result_seed(2))
-        print(jx.get_execution_result_qasm(0))
-        print(jx.get_execution_result_qasm(1))
-        print(jx.get_execution_result_qasm(2))
-        print(jx.get_execution_result_serialNumberDevice(0))
-        print(jx.get_execution_result_serialNumberDevice(1))
-        print(jx.get_execution_result_serialNumberDevice(2))
-        print(jx.get_execution_result_versionSimulationRun(0))
-        print(jx.get_execution_result_versionSimulationRun(1))
-        print(jx.get_execution_result_versionSimulationRun(2))
-        print(jx.get_execution_result_time(0))
-        print(jx.get_execution_result_time(1))
-        print(jx.get_execution_result_time(2))
+        print('jx.get_job_qasms() : ' + str(jx.get_job_qasms()))
+        print('jx.get_job_qasms_qasm(0) : ' + str(jx.get_job_qasms_qasm(0)))
+        print('jx.get_job_qasms_qasm(1) : ' + str(jx.get_job_qasms_qasm(1)))
+        print('jx.get_job_qasms_qasm(2) : ' + str(jx.get_job_qasms_qasm(2)))
+        print('jx.get_job_qasms_result_data(0) : ' + str(jx.get_job_qasms_result_data(0)))
+        print('jx.get_job_qasms_result_data(1) : ' + str(jx.get_job_qasms_result_data(1)))
+        print('jx.get_job_qasms_result_data(2) : ' + str(jx.get_job_qasms_result_data(2)))
+        print('jx.get_job_qasms_result_data_creg_labels(0) : ' + str(jx.get_job_qasms_result_data_creg_labels(0)))
+        print('jx.get_job_qasms_result_data_creg_labels(1) : ' + str(jx.get_job_qasms_result_data_creg_labels(1)))
+        print('jx.get_job_qasms_result_data_creg_labels(2) : ' + str(jx.get_job_qasms_result_data_creg_labels(2)))
+        print('jx.get_job_qasms_result_data_additionalData(0) : ' + str(jx.get_job_qasms_result_data_additionalData(0)))
+        print('jx.get_job_qasms_result_data_additionalData(1) : ' + str(jx.get_job_qasms_result_data_additionalData(1)))
+        print('jx.get_job_qasms_result_data_additionalData(2) : ' + str(jx.get_job_qasms_result_data_additionalData(2)))
+        print('jx.get_job_qasms_result_data_versionSimulationRun(0) : ' + str(jx.get_job_qasms_result_data_versionSimulationRun(0)))
+        print('jx.get_job_qasms_result_data_versionSimulationRun(1) : ' + str(jx.get_job_qasms_result_data_versionSimulationRun(1)))
+        print('jx.get_job_qasms_result_data_versionSimulationRun(2) : ' + str(jx.get_job_qasms_result_data_versionSimulationRun(2)))
+        print('jx.get_job_qasms_result_data_time(0) : ' + str(jx.get_job_qasms_result_data_time(0)))
+        print('jx.get_job_qasms_result_data_time(1) : ' + str(jx.get_job_qasms_result_data_time(1)))
+        print('jx.get_job_qasms_result_data_time(2) : ' + str(jx.get_job_qasms_result_data_time(2)))
+        print('jx.get_job_qasms_result_data_counts(0) : ' + str(jx.get_job_qasms_result_data_counts(0)))
+        print('jx.get_job_qasms_result_data_counts(1) : ' + str(jx.get_job_qasms_result_data_counts(1)))
+        print('jx.get_job_qasms_result_data_counts(2) : ' + str(jx.get_job_qasms_result_data_counts(2)))
+        print('jx.get_job_qasms_result_date(0) : ' + str(jx.get_job_qasms_result_date(0)))
+        print('jx.get_job_qasms_result_date(1) : ' + str(jx.get_job_qasms_result_date(1)))
+        print('jx.get_job_qasms_result_date(2) : ' + str(jx.get_job_qasms_result_date(2)))
+        print('jx.get_job_shots() : ' + str(jx.get_job_shots()))
+        print('jx.get_job_backend() : ' + str(jx.get_job_backend()))
+        print('jx.get_job_maxCredits() : ' + str(jx.get_job_maxCredits()))
+        print('jx.get_job_usedCredits() : ' + str(jx.get_job_usedCredits()))
+        print('jx.get_job_creationDate() : ' + str(jx.get_job_creationDate()))
+        print('jx.get_job_deleted() : ' + str(jx.get_job_deleted()))
+        print('jx.get_job_userId() : ' + str(jx.get_job_userId()))
+        print('jx.get_job_calibration() : ' + str(jx.get_job_calibration()))
+        print('jx.get_execution_id(0) : ' + str(jx.get_execution_id(0)))
+        print('jx.get_execution_id(1) : ' + str(jx.get_execution_id(1)))
+        print('jx.get_execution_id(2) : ' + str(jx.get_execution_id(2)))
+        print('jx.get_execution(0) : ' + str(jx.get_execution(0)))
+        print('jx.get_execution(1) : ' + str(jx.get_execution(1)))
+        print('jx.get_execution(2) : ' + str(jx.get_execution(2)))
+        print('jx.get_execution_status(0) : ' + str(jx.get_execution_status(0)))
+        print('jx.get_execution_status(1) : ' + str(jx.get_execution_status(1)))
+        print('jx.get_execution_status(2) : ' + str(jx.get_execution_status(2)))
+        print('jx.get_execution_result(0) : ' + str(jx.get_execution_result(0)))
+        print('jx.get_execution_result(1) : ' + str(jx.get_execution_result(1)))
+        print('jx.get_execution_result(2) : ' + str(jx.get_execution_result(2)))
+        print('jx.get_execution_result_date(0) : ' + str(jx.get_execution_result_date(0)))
+        print('jx.get_execution_result_date(1) : ' + str(jx.get_execution_result_date(1)))
+        print('jx.get_execution_result_date(2) : ' + str(jx.get_execution_result_date(2)))
+        print('jx.get_execution_result_data(0) : ' + str(jx.get_execution_result_data(0)))
+        print('jx.get_execution_result_data(1) : ' + str(jx.get_execution_result_data(1)))
+        print('jx.get_execution_result_data(2) : ' + str(jx.get_execution_result_data(2)))
+        print('jx.get_execution_result_creg_labels(0) : ' + str(jx.get_execution_result_creg_labels(0)))
+        print('jx.get_execution_result_creg_labels(1) : ' + str(jx.get_execution_result_creg_labels(1)))
+        print('jx.get_execution_result_creg_labels(2) : ' + str(jx.get_execution_result_creg_labels(2)))
+        print('jx.get_execution_result_p(0) : ' + str(jx.get_execution_result_p(0)))
+        print('jx.get_execution_result_p(1) : ' + str(jx.get_execution_result_p(1)))
+        print('jx.get_execution_result_p(2) : ' + str(jx.get_execution_result_p(2)))
+        print('jx.get_execution_result_qubits(0) : ' + str(jx.get_execution_result_qubits(0)))
+        print('jx.get_execution_result_qubits(1) : ' + str(jx.get_execution_result_qubits(1)))
+        print('jx.get_execution_result_qubits(2) : ' + str(jx.get_execution_result_qubits(2)))
+        print('jx.get_execution_result_labels(0) : ' + str(jx.get_execution_result_labels(0)))
+        print('jx.get_execution_result_labels(1) : ' + str(jx.get_execution_result_labels(1)))
+        print('jx.get_execution_result_labels(2) : ' + str(jx.get_execution_result_labels(2)))
+        print('jx.get_execution_result_values(0) : ' + str(jx.get_execution_result_values(0)))
+        print('jx.get_execution_result_values(1) : ' + str(jx.get_execution_result_values(1)))
+        print('jx.get_execution_result_values(2) : ' + str(jx.get_execution_result_values(2)))
+        print('jx.get_execution_result_additionalData(0) : ' + str(jx.get_execution_result_additionalData(0)))
+        print('jx.get_execution_result_additionalData(1) : ' + str(jx.get_execution_result_additionalData(1)))
+        print('jx.get_execution_result_additionalData(2) : ' + str(jx.get_execution_result_additionalData(2)))
+        print('jx.get_execution_result_seed(0) : ' + str(jx.get_execution_result_seed(0)))
+        print('jx.get_execution_result_seed(1) : ' + str(jx.get_execution_result_seed(1)))
+        print('jx.get_execution_result_seed(2) : ' + str(jx.get_execution_result_seed(2)))
+        print('jx.get_execution_result_qasm(0) : ' + str(jx.get_execution_result_qasm(0)))
+        print('jx.get_execution_result_qasm(1) : ' + str(jx.get_execution_result_qasm(1)))
+        print('jx.get_execution_result_qasm(2) : ' + str(jx.get_execution_result_qasm(2)))
+        print('jx.get_execution_result_serialNumberDevice(0) : ' + str(jx.get_execution_result_serialNumberDevice(0)))
+        print('jx.get_execution_result_serialNumberDevice(1) : ' + str(jx.get_execution_result_serialNumberDevice(1)))
+        print('jx.get_execution_result_serialNumberDevice(2) : ' + str(jx.get_execution_result_serialNumberDevice(2)))
+        print('jx.get_execution_result_versionSimulationRun(0) : ' + str(jx.get_execution_result_versionSimulationRun(0)))
+        print('jx.get_execution_result_versionSimulationRun(1) : ' + str(jx.get_execution_result_versionSimulationRun(1)))
+        print('jx.get_execution_result_versionSimulationRun(2) : ' + str(jx.get_execution_result_versionSimulationRun(2)))
+        print('jx.get_execution_result_time(0) : ' + str(jx.get_execution_result_time(0)))
+        print('jx.get_execution_result_time(1) : ' + str(jx.get_execution_result_time(1)))
+        print('jx.get_execution_result_time(2) : ' + str(jx.get_execution_result_time(2)))
         print(jx.csv_execution("test 0", 0))
         print(jx.csv_execution("test 1", 1))
         print(jx.csv_execution("test 2", 2))
@@ -472,6 +485,8 @@ Exits (300) on no filepaths given.
                         help="URL, default is https://quantumexperience.ng.bluemix.net/api")
     parser.add_argument("-v", "--verbose", action="count", default=0,
                         help="Increase verbosity each -v up to 3")
+    parser.add_argument("-x", "--test", action="store_true",
+                       help="Run class test")
     parser.add_argument("token", help="""IBM Q Experience API token
                     (See https://quantumexperience.ng.bluemix.net/qx/account/advanced)""")
     parser.add_argument("filepaths", nargs=argparse.REMAINDER,
@@ -484,6 +499,10 @@ Exits (300) on no filepaths given.
     def verbosity(text, count):
         if args.verbose >= count:
             print(text)
+
+    if args.test:
+        IBMQEJobMgr.test(args.token, args.filepaths[0])
+        exit()
 
     # Connect to IBMQE
     api = IBMQuantumExperience(args.token, config={
@@ -504,7 +523,8 @@ Exits (300) on no filepaths given.
         exit(300)
 
     jx = IBMQEJobMgr(api, backend=backend,
-                     counts=args.shots, credits=args.credits)
+                     counts=args.shots, credits=args.credits,
+                     verbose=args.verbose)
 
     for filepath in args.filepaths:
         jx.add_exec(IBMQEJobSpec(filepath=filepath))
