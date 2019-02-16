@@ -99,7 +99,7 @@ while jx.get_job_status() != 'COMPLETED':
     print(jx.get_job_status())
     time.sleep(args.sleeptime)
 
-print(jx.get_job())
+verbosity(jx.get_job(), 1)
 
 for i in range(0, len(jx.execs)):
     csv = jx.csv_execution(args.filepaths[i], i)
