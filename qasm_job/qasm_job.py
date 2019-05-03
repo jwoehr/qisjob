@@ -32,6 +32,8 @@ group.add_argument("-b", "--backend", action="store",
                    help="Use specified IBM backend")
 parser.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on run, default is 3")
+parser.add_argument("-m", "--memory", action="store_true",
+                    help="Print individual results of multishot experiment")
 parser.add_argument("-o", "--outfile", action="store",
                     help="Write CSV to outfile overwriting silently, default is stdout")
 parser.add_argument("-q", "--qubits", type=int, action="store", default=5,
@@ -96,8 +98,8 @@ else:
         backend = IBMQ.get_backend('ibmq_qasm_simulator')
     else:
         from qiskit.providers.ibmq import least_busy
-        large_enough_devices = IBMQ.backends(filters=lambda x: x.configuration().n_qubits >= args.qubits and
-                                             not x.configuration().simulator)
+        large_enough_devices = IBMQ.backends(filters=lambda x: x.configuration().n_qubits >= args.qubits
+                                             and not x.configuration().simulator)
         backend = least_busy(large_enough_devices)
         verbosity("The best backend is " + backend.name(), 2)
 
@@ -133,7 +135,8 @@ def csv_str(description, sorted_keys, sorted_counts):
 
 
 # Execute
-job_exp = execute(circ, backend=backend, shots=shots, max_credits=max_credits)
+job_exp = execute(circ, backend=backend, shots=shots,
+                  max_credits=max_credits, memory=args.memory)
 job_monitor(job_exp)
 result_exp = job_exp.result()
 counts_exp = result_exp.get_counts(circ)
@@ -142,6 +145,10 @@ sorted_keys = sorted(counts_exp.keys())
 sorted_counts = []
 for i in sorted_keys:
     sorted_counts.append(counts_exp.get(i))
+
+# Raw data if requested
+if args.memory:
+    print(result_exp.data())
 
 # Generate CSV
 output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),

@@ -107,12 +107,12 @@ for i in range(0, len(jx.execs)):
         print(c)
 
 if args.yiqing:
-	from qyqhex import QYQHexagram, QYQLine
-	h = QYQHexagram(backend)
-	for i in range(0, len(jx.execs)):
-		h.assimilate(jx.get_job_qasms_result_data_counts(i))
-		# verbosity(jx.get_job_qasms_result_data_counts(i), 1)
-	h.draw(True)
+    from qyqhex import QYQHexagram, QYQLine
+    h = QYQHexagram(backend)
+    for i in range(0, len(jx.execs)):
+        h.assimilate(jx.get_job_qasms_result_data_counts(i))
+        # verbosity(jx.get_job_qasms_result_data_counts(i), 1)
+    h.draw(True)
 
 verbosity('Done!', 1)
 
