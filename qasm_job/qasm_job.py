@@ -1,17 +1,19 @@
-# qasm_job.py
-# Load from qasm source and run job with reporting
-# Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
-# BSD-3 license -- See LICENSE which you should have received with this code.
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+"""qasm_job.py
+Load from qasm source and run job with reporting
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+BSD-3 license -- See LICENSE which you should have received with this code.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
-from qiskit import IBMQ
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import execute
-from qiskit.tools.monitor import job_monitor
 import argparse
 import sys
 import datetime
+
+from qiskit import IBMQ
+from qiskit import QuantumCircuit
+from qiskit import execute
+from qiskit.tools.monitor import job_monitor
+
 
 explanation = """qasm_job.py : Load from qasm source and run job with reporting
 in CSV form.
@@ -50,6 +52,7 @@ args = parser.parse_args()
 
 
 def verbosity(text, count):
+    """Print text if count exceeds verbose level"""
     if args.verbose >= count:
         print(text)
 
@@ -70,7 +73,7 @@ else:
 
 verbosity("File path is " + ("stdin" if filepath is sys.stdin else filepath), 2)
 
-ifh = filepath if filepath is sys.stdin else open(filepath,  "r")
+ifh = filepath if filepath is sys.stdin else open(filepath, "r")
 
 verbosity("File handle is " + str(ifh), 3)
 
@@ -98,8 +101,9 @@ else:
         backend = IBMQ.get_backend('ibmq_qasm_simulator')
     else:
         from qiskit.providers.ibmq import least_busy
-        large_enough_devices = IBMQ.backends(filters=lambda x: x.configuration().n_qubits >= args.qubits
-                                             and not x.configuration().simulator)
+        large_enough_devices = IBMQ.backends(
+            filters=lambda x: x.configuration().n_qubits >= args.qubits
+            and not x.configuration().simulator)
         backend = least_busy(large_enough_devices)
         verbosity("The best backend is " + backend.name(), 2)
 
@@ -121,6 +125,7 @@ max_credits = args.credits
 
 
 def csv_str(description, sorted_keys, sorted_counts):
+    """Generate a cvs as a string from sorted keys and sorted counts"""
     csv = []
     csv.append(description)
     keys = ""
@@ -156,7 +161,7 @@ output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
 
 # Open outfile
 verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
-ofh = outfile if outfile is sys.stdout else open(outfile,  "w")
+ofh = outfile if outfile is sys.stdout else open(outfile, "w")
 verbosity("File handle is " + str(ofh), 3)
 
 # Write CSV
