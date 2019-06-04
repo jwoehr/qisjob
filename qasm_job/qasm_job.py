@@ -12,6 +12,7 @@ import datetime
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
+from qiskit.compiler import transpile
 from qiskit.tools.monitor import job_monitor
 
 
@@ -44,6 +45,8 @@ parser.add_argument("-t", "--shots", type=int, action="store", default=1024,
                     help="Number of shots for the experiment, default is 1024")
 parser.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
+parser.add_argument("-x", "--transpile", action="store_true",
+                    help="Show circuit transpiled for chosen backend")
 parser.add_argument("filepath", nargs='?',
                     help="Filepath to .qasm file, default is stdin")
 
@@ -112,6 +115,12 @@ verbosity("Backend is " + str(backend), 1)
 if backend is None:
     print("No backend available, quitting.")
     exit(100)
+
+# Transpile if requested and show transpiled circuit
+# ##################################################
+
+if args.transpile:
+    print(transpile(circ, backend=backend))
 
 # Prepare job
 # ###########
