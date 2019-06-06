@@ -12,7 +12,10 @@ import datetime
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
-from qiskit.compiler import transpile
+try:
+    from qiskit.compiler import transpile
+except ImportError:
+    print("-x. --transpile not available this qiskit level")
 from qiskit.tools.monitor import job_monitor
 
 
@@ -116,8 +119,13 @@ if backend is None:
     print("No backend available, quitting.")
     exit(100)
 
-# Transpile if requested and show transpiled circuit
-# ##################################################
+# Transpile if requested and available and show transpiled circuit
+# ################################################################
+
+try:
+    transpile
+except NameError:
+    args.transpile = None
 
 if args.transpile:
     print(transpile(circ, backend=backend))
@@ -129,8 +137,6 @@ if args.transpile:
 shots = args.shots
 # Maximum number of credits to spend on executions.
 max_credits = args.credits
-
-# Generate CSV from result counts
 
 
 def csv_str(description, sorted_keys, sorted_counts):
