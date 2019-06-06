@@ -15,7 +15,7 @@ from qiskit import execute
 try:
     from qiskit.compiler import transpile
 except ImportError:
-    print("-x. --transpile not available this qiskit level")
+    print("qasm_job WARNING: -x,--transpile not available this qiskit level")
 from qiskit.tools.monitor import job_monitor
 
 
