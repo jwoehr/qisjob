@@ -6,12 +6,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
 import argparse
-import sys
 import datetime
+import pprint
+import sys
 
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
+from qiskit import __qiskit_version__
 try:
     from qiskit.compiler import transpile
 except ImportError:
@@ -38,12 +40,18 @@ group.add_argument("-b", "--backend", action="store",
                    help="Use specified IBM backend")
 parser.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on run, default is 3")
+parser.add_argument("-j", "--job", action="store_true",
+                    help="Print job dictionary")
 parser.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 parser.add_argument("-o", "--outfile", action="store",
                     help="Write CSV to outfile overwriting silently, default is stdout")
 parser.add_argument("-q", "--qubits", type=int, action="store", default=5,
                     help="Number of qubits for the experiment, default is 5")
+parser.add_argument("--qiskit_version", action="store_true",
+                    help="Print Qiskit version and exit")
+parser.add_argument("-r", "--result", action="store_true",
+                    help="Print job result")
 parser.add_argument("-t", "--shots", type=int, action="store", default=1024,
                     help="Number of shots for the experiment, default is 1024")
 parser.add_argument("-v", "--verbose", action="count", default=0,
@@ -55,6 +63,11 @@ parser.add_argument("filepath", nargs='?',
 
 
 args = parser.parse_args()
+
+if args.qiskit_version:
+    pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    pp.pprint(__qiskit_version__)
+    exit()
 
 
 def verbosity(text, count):
@@ -157,8 +170,15 @@ def csv_str(description, sorted_keys, sorted_counts):
 # Execute
 job_exp = execute(circ, backend=backend, shots=shots,
                   max_credits=max_credits, memory=args.memory)
+if args.job:
+    print(job_exp)
+
 job_monitor(job_exp)
 result_exp = job_exp.result()
+
+if args.result:
+    print(result_exp)
+
 counts_exp = result_exp.get_counts(circ)
 verbosity(counts_exp, 1)
 sorted_keys = sorted(counts_exp.keys())
