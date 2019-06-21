@@ -14,7 +14,7 @@ execution scripts.
   * I have found a bug which is patched in [jwoehr/qiskit-api-py forked from Qiskit/qiskit-api-py](https://github.com/jwoehr/qiskit-api-py).
     * A pull request was submitted and withdrawn, as the team has deprecated that portion of the code.
   * You will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
-  * Additionally, there are example qasm programs in this project.
+* Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
 $ python qasm_job.py -h
