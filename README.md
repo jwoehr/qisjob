@@ -17,8 +17,9 @@ QISKit Job Control
 
 ```
 $ python qasm_job.py -h
-usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-c CREDITS] [-m]
-                   [-o OUTFILE] [-q QUBITS] [-t SHOTS] [-v] [-x]
+usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-c CREDITS] [-j] [-m]
+                   [-o OUTFILE] [-p PROPERTIES] [-q QUBITS] [--qiskit_version]
+                   [-r] [-t SHOTS] [-v] [-x]
                    [filepath]
 
 qasm_job.py : Load from qasm source and run job with reporting in CSV form.
@@ -39,12 +40,18 @@ optional arguments:
                         Use specified IBM backend
   -c CREDITS, --credits CREDITS
                         Max credits to expend on run, default is 3
+  -j, --job             Print job dictionary
   -m, --memory          Print individual results of multishot experiment
   -o OUTFILE, --outfile OUTFILE
                         Write CSV to outfile overwriting silently, default is
                         stdout
+  -p PROPERTIES, --properties PROPERTIES
+                        Print properties for specified backend to stdout and
+                        exit 0
   -q QUBITS, --qubits QUBITS
                         Number of qubits for the experiment, default is 5
+  --qiskit_version      Print Qiskit version and exit 0
+  -r, --result          Print job result
   -t SHOTS, --shots SHOTS
                         Number of shots for the experiment, default is 1024
   -v, --verbose         Increase verbosity each -v up to 3

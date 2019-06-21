@@ -46,10 +46,12 @@ parser.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 parser.add_argument("-o", "--outfile", action="store",
                     help="Write CSV to outfile overwriting silently, default is stdout")
+parser.add_argument("-p", "--properties", action="store",
+                    help="Print properties for specified backend to stdout and exit 0")
 parser.add_argument("-q", "--qubits", type=int, action="store", default=5,
                     help="Number of qubits for the experiment, default is 5")
 parser.add_argument("--qiskit_version", action="store_true",
-                    help="Print Qiskit version and exit")
+                    help="Print Qiskit version and exit 0")
 parser.add_argument("-r", "--result", action="store_true",
                     help="Print job result")
 parser.add_argument("-t", "--shots", type=int, action="store", default=1024,
@@ -64,10 +66,17 @@ parser.add_argument("filepath", nargs='?',
 
 args = parser.parse_args()
 
+if args.properties:
+    IBMQ.load_accounts()
+    backend = IBMQ.get_backend(args.properties)
+    pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    pp.pprint(backend.properties())
+    exit(0)
+
 if args.qiskit_version:
     pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     pp.pprint(__qiskit_version__)
-    exit()
+    exit(0)
 
 
 def verbosity(text, count):
