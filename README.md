@@ -1,18 +1,19 @@
 # qis_job
 QISKit Job Control
 
-**`qis_job`** is an [IBM Q Experience](https://quantumexperience.ng.bluemix.net/qx) argument-parsing job and experiment execution script.
+**`qis_job`** is a pair of [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing job and experiment
+execution scripts.
 
-* `qasm_job` contains those based on later full [QISKit](https://github.com/Qiskit) setup.
+* `qasm_job` is based on the current full [QISKit](https://github.com/Qiskit) setup.
   * For this project you will need to install
     * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
     * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
-    * An [IBM Q Experience API token](https://quantumexperience.ng.bluemix.net/qx/account/advanced)
-* *DEPRECATED* `ibmqe` contains those based on QISKit's now-deprecated [`IBMQuantumExperience`](https://github.com/Qiskit/qiskit-api-py).
+    * An [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
+* *DEPRECATED* `ibmqe` is based on QISKit's now-deprecated [`IBMQuantumExperience`](https://github.com/Qiskit/qiskit-api-py).
   * You will need to install the latest version of [Qiskit/qiskit-api-py](https://github.com/Qiskit/qiskit-api-py) to use this.
   * I have found a bug which is patched in [jwoehr/qiskit-api-py forked from Qiskit/qiskit-api-py](https://github.com/jwoehr/qiskit-api-py).
     * A pull request was submitted and withdrawn, as the team has deprecated that portion of the code.
-  * You will need an [IBM Q Experience API token](https://quantumexperience.ng.bluemix.net/qx/account/advanced)
+  * You will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
   * Additionally, there are example qasm programs in this project.
 
 ```
