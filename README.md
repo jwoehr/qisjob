@@ -58,4 +58,4 @@ optional arguments:
   -x, --transpile       Show circuit transpiled for chosen backend
 ```
 
-Jack Woehr 2019-06-04
+Jack Woehr 2019-06-21
