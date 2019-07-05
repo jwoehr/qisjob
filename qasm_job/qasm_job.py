@@ -13,7 +13,10 @@ import sys
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
-from qiskit import __qiskit_version__
+try:
+    from qiskit import __qiskit_version__
+except ImportError:
+    print("qasm_job WARNING: --qiskit_version not available this qiskit level")
 try:
     from qiskit.compiler import transpile
 except ImportError:
@@ -74,6 +77,10 @@ if args.properties:
     exit(0)
 
 if args.qiskit_version:
+    try: __qiskit_version__
+    except NameError:
+        print("__qiskit_version__ not present in this Qiskit level.")
+        exit(1)
     pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     pp.pprint(__qiskit_version__)
     exit(0)
