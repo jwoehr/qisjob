@@ -77,7 +77,8 @@ if args.properties:
     exit(0)
 
 if args.qiskit_version:
-    try: __qiskit_version__
+    try:
+        __qiskit_version__
     except NameError:
         print("__qiskit_version__ not present in this Qiskit level.")
         exit(1)
