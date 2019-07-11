@@ -68,7 +68,7 @@ parser.add_argument("--token", action="store",
                     help="Use this token if a --url argument is also provided")
 parser.add_argument("--url", action="store",
                     help="Use this url if a --token argument is also provided")
-parser.add_argument("filepaths", nargs='*',
+parser.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
 args = parser.parse_args()
@@ -252,11 +252,11 @@ if args.qiskit_version:
 backend = choose_backend(args.aer, args.token, args.url,
     args.backend, args.sim, args.qubits)
 
-if not args.filepaths:
+if not args.filepath:
     one_job(None, backend, args.outfile, args.transpile,
         args.shots, args.memory, args.job, args.result)
 else:
-    for filepath in args.filepaths:
+    for filepath in args.filepath:
         one_job(filepath, backend, args.outfile, args.transpile,
             args.shots, args.memory, args.job, args.result)
 

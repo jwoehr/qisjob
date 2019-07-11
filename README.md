@@ -17,7 +17,7 @@ $ python qasm_job.py -h
 usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-c CREDITS] [-j] [-m]
                    [-o OUTFILE] [-p PROPERTIES] [-q QUBITS] [--qiskit_version]
                    [-r] [-t SHOTS] [-v] [-x] [--token TOKEN] [--url URL]
-                   [filepaths [filepaths ...]]
+                   [filepath [filepath ...]]
 
 qasm_job.py : Loads from one or more qasm source files and runs jobs with
 reporting in CSV form. Also can give info on backend properties, qiskit
@@ -28,7 +28,7 @@ HOLDERS AND CONTRIBUTORS "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
 WARRANTIES.
 
 positional arguments:
-  filepaths             Filepath(s) to 1 or more .qasm files, default is stdin
+  filepath              Filepath(s) to 0 or more .qasm files, default is stdin
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -57,6 +57,7 @@ optional arguments:
   -x, --transpile       Show circuit transpiled for chosen backend
   --token TOKEN         Use this token if a --url argument is also provided
   --url URL             Use this url if a --token argument is also provided
+
 ```
 
 Jack Woehr 2019-07-11
