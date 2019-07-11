@@ -48,7 +48,7 @@ parser.add_argument("-j", "--job", action="store_true",
 parser.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 parser.add_argument("-o", "--outfile", action="store",
-                    help="Write CSV to outfile overwriting silently, default is stdout")
+                    help="Write appending CSV to outfile, default is stdout")
 parser.add_argument("-p", "--properties", action="store",
                     help="Print properties for specified backend to stdout and exit 0")
 parser.add_argument("-q", "--qubits", type=int, action="store", default=5,
@@ -79,6 +79,7 @@ if (args.token and not args.url) or (args.url and not args.token):
 # Utility functions
 # #################
 
+
 def verbosity(text, count):
     """Print text if count exceeds verbose level"""
     if args.verbose >= count:
@@ -108,19 +109,53 @@ def csv_str(description, sort_keys, sort_counts):
     csv.append(counts)
     return csv
 
+# Choose backend
+# ##############
+
+
+def choose_backend(aer, token, url, b_end, sim, qubits):
+    """Return backend selected by user if account will activate and allow."""
+    backend = None
+    if aer:
+        # Import Aer
+        from qiskit import BasicAer
+        # Run the quantum circuit on a statevector simulator backend
+        backend = BasicAer.get_backend('statevector_simulator')
+    else:
+        provider = account_fu(token, url)
+        verbosity("Provider is " + str(provider), 3)
+        verbosity("provider.backends is " + str(provider.backends()), 3)
+        if b_end:
+            backend = provider.get_backend(b_end)
+            verbosity('b_end provider.get_backend() returns ' + str(backend), 3) 
+        elif sim:
+            backend = provider.get_backend('ibmq_qasm_simulator')
+            verbosity('sim provider.get_backend() returns ' + str(backend), 3)
+        else:
+            from qiskit.providers.ibmq import least_busy
+            large_enough_devices = provider.backends(
+                filters=lambda x: x.configuration().n_qubits >= qubits
+                and not x.configuration().simulator)
+            backend = least_busy(large_enough_devices)
+            verbosity("The best backend is " + backend.name(), 2)
+    verbosity("Backend is " + str(backend), 1)
+    return backend
+
+
 # Do job loop
 # ###########
 
-def one_job(filepath, outfile,
-    aer, token, url, b_end,
-    sim, qb, xpile,
-    shots, memory, j_b, res):
+def one_job(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     """Load qasm and run the job, print csv and other selected output"""
 
     if filepath is None:
         filepath = sys.stdin
     if outfile is None:
         outfile = sys.stdout
+
+    if backend is None:
+        print("No backend available, quitting.")
+        exit(100)
 
     # Get file
     verbosity("File path is " + ("stdin" if filepath is sys.stdin else filepath), 2)
@@ -135,33 +170,6 @@ def one_job(filepath, outfile,
     # Create circuit
     circ = QuantumCircuit.from_qasm_str(qasm_source)
     verbosity(circ.draw(), 2)
-
-    # Choose backend
-    backend = None
-    if args.aer:
-        # Import Aer
-        from qiskit import BasicAer
-        # Run the quantum circuit on a statevector simulator backend
-        backend = BasicAer.get_backend('statevector_simulator')
-    else:
-        provider = account_fu(token, url)
-        if b_end:
-            backend = provider.get_backend(b_end)
-        elif sim:
-            backend = provider.get_backend('ibmq_qasm_simulator')
-        else:
-            from qiskit.providers.ibmq import least_busy
-            large_enough_devices = provider.backends(
-                filters=lambda x: x.configuration().n_qubits >= args.qubits
-                and not x.configuration().simulator)
-            backend = least_busy(large_enough_devices)
-        verbosity("The best backend is " + backend.name(), 2)
-
-    verbosity("Backend is " + str(backend), 1)
-
-    if backend is None:
-        print("No backend available, quitting.")
-        exit(100)
 
     # Transpile if requested and available and show transpiled circuit
     # ################################################################
@@ -207,7 +215,7 @@ def one_job(filepath, outfile,
 
     # Open outfile
     verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
-    ofh = outfile if outfile is sys.stdout else open(outfile, "w")
+    ofh = outfile if outfile is sys.stdout else open(outfile, "a")
     verbosity("File handle is " + str(ofh), 3)
 
     # Write CSV
@@ -216,6 +224,7 @@ def one_job(filepath, outfile,
     if outfile is not sys.stdout:
         ofh.close()
 
+# ####
 # Main
 # ####
 
@@ -239,19 +248,16 @@ if args.qiskit_version:
     pp.pprint(__qiskit_version__)
     exit(0)
 
+backend = choose_backend(args.aer, args.token, args.url,
+    args.backend, args.sim, args.qubits)
+
 if not args.filepaths:
-    one_job(None, args.outfile,
-        args.aer, args.token, args.url,
-        args.backend, args.sim, args.qubits,
-        args.transpile, args.shots,
-        args.memory, args.job, args.result)
+    one_job(None, backend, args.outfile, args.transpile,
+        args.shots, args.memory, args.job, args.result)
 else:
     for filepath in args.filepaths:
-        one_job(filepath, args.outfile,
-            args.aer, args.token, args.url,
-            args.backend, args.sim, args.qubits,
-            args.transpile, args.shots,
-            args.memory, args.job, args.result)
+        one_job(filepath, backend, args.outfile, args.transpile,
+            args.shots, args.memory, args.job, args.result)
 
 verbosity('Done!', 1)
 
