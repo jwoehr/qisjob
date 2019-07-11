@@ -24,8 +24,9 @@ except ImportError:
 from qiskit.tools.monitor import job_monitor
 
 
-explanation = """qasm_job.py : Load from qasm source and run job with reporting
-in CSV form.
+explanation = """qasm_job.py : Loads from one or more qasm source files and runs
+jobs with reporting in CSV form. Also can give info on backend properties,
+qiskit version, transpilation, etc.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
 BSD-3 license -- See LICENSE which you should have received with this code.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -68,7 +69,7 @@ parser.add_argument("--token", action="store",
 parser.add_argument("--url", action="store",
                     help="Use this url if a --token argument is also provided")
 parser.add_argument("filepaths", nargs='*',
-                    help="Filepath(s) to .qasm file, default is stdin")
+                    help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
 args = parser.parse_args()
 
@@ -127,7 +128,7 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
         verbosity("provider.backends is " + str(provider.backends()), 3)
         if b_end:
             backend = provider.get_backend(b_end)
-            verbosity('b_end provider.get_backend() returns ' + str(backend), 3) 
+            verbosity('b_end provider.get_backend() returns ' + str(backend), 3)
         elif sim:
             backend = provider.get_backend('ibmq_qasm_simulator')
             verbosity('sim provider.get_backend() returns ' + str(backend), 3)
