@@ -40,7 +40,7 @@ group.add_argument("-s", "--sim", action="store_true",
 group.add_argument("-a", "--aer", action="store_true",
                    help="Use QISKit aer simulator")
 group.add_argument("-b", "--backend", action="store",
-                   help="Use specified IBM backend")
+                   help="Use specified IBMQ backend")
 parser.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on run, default is 3")
 parser.add_argument("-j", "--job", action="store_true",
@@ -63,15 +63,30 @@ parser.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
 parser.add_argument("-x", "--transpile", action="store_true",
                     help="Show circuit transpiled for chosen backend")
+parser.add_argument("--token", action="store",
+                    help="Use this token if a --url argument is also provided")
+parser.add_argument("--url", action="store",
+                    help="Use this url if a --token argument is also provided")
 parser.add_argument("filepath", nargs='?',
                     help="Filepath to .qasm file, default is stdin")
 
-
 args = parser.parse_args()
 
+if (args.token and not args.url) or (args.url and not args.token):
+	print('--token and --url must be used together or not at all', file=sys.stderr)
+	exit(1)
+
+def account_fu():
+	"""Load account appropriately and return provider"""
+	if (args.token):
+		provider = IBMQ.enable_account(args.token, url=args.url)
+	else:
+		provider = IBMQ.load_account()
+	return provider
+
 if args.properties:
-    IBMQ.load_accounts()
-    backend = IBMQ.get_backend(args.properties)
+    provider = account_fu()
+    backend = provider.get_backend(args.properties)
     pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     pp.pprint(backend.properties())
     exit(0)
@@ -130,14 +145,14 @@ if args.aer:
     # Run the quantum circuit on a statevector simulator backend
     backend = BasicAer.get_backend('statevector_simulator')
 else:
-    IBMQ.load_accounts()
+    provider = account_fu()
     if args.backend:
-        backend = IBMQ.get_backend(args.backend)
+        backend = provider.get_backend(args.backend)
     elif args.sim:
-        backend = IBMQ.get_backend('ibmq_qasm_simulator')
+        backend = provider.get_backend('ibmq_qasm_simulator')
     else:
         from qiskit.providers.ibmq import least_busy
-        large_enough_devices = IBMQ.backends(
+        large_enough_devices = provider.backends(
             filters=lambda x: x.configuration().n_qubits >= args.qubits
             and not x.configuration().simulator)
         backend = least_busy(large_enough_devices)
