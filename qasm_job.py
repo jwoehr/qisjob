@@ -73,19 +73,21 @@ parser.add_argument("filepath", nargs='?',
 args = parser.parse_args()
 
 if (args.token and not args.url) or (args.url and not args.token):
-	print('--token and --url must be used together or not at all', file=sys.stderr)
-	exit(1)
+    print('--token and --url must be used together or not at all', file=sys.stderr)
+    exit(1)
 
-def account_fu():
-	"""Load account appropriately and return provider"""
-	if (args.token):
-		provider = IBMQ.enable_account(args.token, url=args.url)
-	else:
-		provider = IBMQ.load_account()
-	return provider
+
+def account_fu(token, url):
+    """Load account appropriately and return provider"""
+    if token:
+        p = IBMQ.enable_account(token, url=url)
+    else:
+        p = IBMQ.load_account()
+    return p
+
 
 if args.properties:
-    provider = account_fu()
+    provider = account_fu(args.token, args.url)
     backend = provider.get_backend(args.properties)
     pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     pp.pprint(backend.properties())
@@ -145,7 +147,7 @@ if args.aer:
     # Run the quantum circuit on a statevector simulator backend
     backend = BasicAer.get_backend('statevector_simulator')
 else:
-    provider = account_fu()
+    provider = account_fu(args.token, args.url)
     if args.backend:
         backend = provider.get_backend(args.backend)
     elif args.sim:
@@ -184,16 +186,16 @@ shots = args.shots
 max_credits = args.credits
 
 
-def csv_str(description, sorted_keys, sorted_counts):
+def csv_str(description, sort_keys, sort_counts):
     """Generate a cvs as a string from sorted keys and sorted counts"""
     csv = []
     csv.append(description)
     keys = ""
-    for key in sorted_keys:
+    for key in sort_keys:
         keys += key + ';'
     csv.append(keys)
     counts = ""
-    for count in sorted_counts:
+    for count in sort_counts:
         counts += str(count) + ';'
     csv.append(counts)
     return csv
