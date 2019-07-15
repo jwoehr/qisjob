@@ -4,8 +4,8 @@ QISKit Job Control
 **`qis_job`** is an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing job and experiment
 execution script.
 
-* `qasm_job.py` is the script. It is based on the [QISKit](https://github.com/Qiskit) API 2.
-  * See earlier releases for API 1 support.
+* `qasm_job.py` is the script. The latest release is based on the [QISKit](https://github.com/Qiskit) API 2.
+  * See the earlier release [Qis Job v0.7](https://github.com/jwoehr/qis_job/releases/tag/v0.7) for API 1 support.
   * For this project you will need to install
     * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
     * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
@@ -60,4 +60,4 @@ optional arguments:
 
 ```
 
-Jack Woehr 2019-07-11
+Jack Woehr 2019-07-15
