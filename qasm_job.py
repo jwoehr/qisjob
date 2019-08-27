@@ -42,6 +42,10 @@ GROUP.add_argument("-a", "--aer", action="store_true",
                    help="Use QISKit aer simulator")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
+PARSER.add_argument("--api_provider", action="store",
+                    help="""Backend api provider,
+                    currently supported are IBMQ, soon QI.
+                    Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
@@ -81,6 +85,10 @@ if (ARGS.token and not ARGS.url) or (ARGS.url and not ARGS.token):
     print('--token and --url must be used together or not at all', file=sys.stderr)
     exit(1)
 
+if ARGS.api_provider != "IBMQ":
+    print('Providers other than IBMQ are not yet fully supported.')
+    exit(1)
+
 # Utility functions
 # #################
 
@@ -91,12 +99,22 @@ def verbosity(text, count):
         print(text)
 
 
-def account_fu(token, url):
-    """Load account appropriately and return provider"""
+def ibmq_account_fu(token, url):
+    """Load IBMQ account appropriately and return provider"""
     if token:
         provider = IBMQ.enable_account(token, url=url)
     else:
         provider = IBMQ.load_account()
+    return provider
+
+
+def account_fu(token, url):
+    """Load account from correct API provider"""
+    a_p = ARGS.api_provider.uppercase()
+    if a_p == "IBMQ":
+        provider = ibmq_account_fu(token, url)
+    elif a_p == "QI":
+        provider = None
     return provider
 
 
@@ -113,6 +131,7 @@ def csv_str(description, sort_keys, sort_counts):
         counts += str(count) + ';'
     csv.append(counts)
     return csv
+
 
 # Choose backend
 # ##############

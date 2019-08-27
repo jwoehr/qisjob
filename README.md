@@ -9,7 +9,10 @@ execution script.
   * For this project you will need to install
     * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
     * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
-    * An [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
+    * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
+      * If you choose the IBMQ provider, you will need an
+      [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
+      * **Note**: Currently only IBMQ is supported as a provider_      
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
