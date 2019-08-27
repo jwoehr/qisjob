@@ -79,15 +79,6 @@ PARSER.add_argument("--url", action="store",
 PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
-ARGS = PARSER.parse_args()
-
-if (ARGS.token and not ARGS.url) or (ARGS.url and not ARGS.token):
-    print('--token and --url must be used together or not at all', file=sys.stderr)
-    exit(1)
-
-if ARGS.api_provider != "IBMQ":
-    print('Providers other than IBMQ are not yet fully supported.')
-    exit(1)
 
 # Utility functions
 # #################
@@ -108,13 +99,23 @@ def ibmq_account_fu(token, url):
     return provider
 
 
+def qi_account_fu(token):
+    """Load Quantum Inspire account appropriately and return provider"""
+    from quantuminspire.qiskit import QI
+    from quantuminspire.credentials import enable_account
+    if token:
+        enable_account(token)
+    QI.set_authentication()
+    return QI
+
+
 def account_fu(token, url):
     """Load account from correct API provider"""
-    a_p = ARGS.api_provider.uppercase()
+    a_p = API_PROVIDER.upper()
     if a_p == "IBMQ":
         provider = ibmq_account_fu(token, url)
     elif a_p == "QI":
-        provider = None
+        provider = qi_account_fu(token)
     return provider
 
 
@@ -354,17 +355,41 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
 # Informational queries
 # #####################
 
-if ARGS.properties:
-    PROVIDER = account_fu(ARGS.token, ARGS.url)
-    BACKEND = PROVIDER.get_backend(ARGS.properties)
+ARGS = PARSER.parse_args()
+API_PROVIDER = ARGS.api_provider.upper()
+PROPERTIES = ARGS.properties
+TOKEN = ARGS.token
+URL = ARGS.url
+QISKIT_VERSION = ARGS.qiskit_version
+AER = ARGS.aer
+SIM = ARGS.sim
+QUBITS = ARGS.qubits
+FILEPATH = ARGS.filepath
+OUTFILE = ARGS.outfile
+TRANSPILE = ARGS.transpile
+SHOTS = ARGS.shots
+MEMORY = ARGS.memory
+JOB = ARGS.job
+RESULT = ARGS.result
+BACKEND_NAME = ARGS.backend
+
+if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
+    print('--token and --url must be used together for IBMQ provider or not at all',
+          file=sys.stderr)
+    exit(1)
+
+
+if PROPERTIES:
+    PROVIDER = account_fu(TOKEN, URL)
+    BACKEND = PROVIDER.get_backend(PROPERTIES)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties())
     exit(0)
 else:
-    BACKEND = choose_backend(ARGS.aer, ARGS.token, ARGS.url,
-                             ARGS.backend, ARGS.sim, ARGS.qubits)
+    BACKEND = choose_backend(AER, TOKEN, URL,
+                             BACKEND_NAME, SIM, QUBITS)
 
-if ARGS.qiskit_version:
+if QISKIT_VERSION:
     try:
         __qiskit_version__
     except NameError:
@@ -375,17 +400,17 @@ if ARGS.qiskit_version:
     exit(0)
 
 
-if not ARGS.filepath:
-    one_exp(None, BACKEND, ARGS.outfile, ARGS.transpile,
-            ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
+if not FILEPATH:
+    one_exp(None, BACKEND, OUTFILE, TRANSPILE,
+            SHOTS, MEMORY, JOB, RESULT)
 else:
     if ARGS.one_job:
-        multi_exps(ARGS.filepath, BACKEND, ARGS.outfile, ARGS.transpile,
-                   ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
+        multi_exps(FILEPATH, BACKEND, OUTFILE, TRANSPILE,
+                   SHOTS, MEMORY, JOB, RESULT)
     else:
-        for f_path in ARGS.filepath:
-            one_exp(f_path, BACKEND, ARGS.outfile, ARGS.transpile,
-                    ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
+        for f_path in FILEPATH:
+            one_exp(f_path, BACKEND, OUTFILE, TRANSPILE,
+                    SHOTS, MEMORY, JOB, RESULT)
 
 verbosity('Done!', 1)
 

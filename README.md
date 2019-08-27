@@ -12,7 +12,11 @@ execution script.
     * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
       * If you choose the IBMQ provider, you will need an
       [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
-      * **Note**: Currently only IBMQ is supported as a provider.      
+      * If you choose the QI provider you will need to install QuTech-Delft/quantuminspire either
+      from [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
+      or with the command `pip install quantuminspire`. You will also need a
+      [Quantum Inspire token](https://www.quantum-inspire.com/account).
+      * **Note**: Currently only IBMQ and QI are supported as providers.      
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
