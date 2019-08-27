@@ -14,18 +14,19 @@ execution script.
 
 ```
 $ python qasm_job.py -h
-usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-c CREDITS] [-j] [-m]
-                   [-o OUTFILE] [-p PROPERTIES] [-q QUBITS] [--qiskit_version]
-                   [-r] [-t SHOTS] [-v] [-x] [--token TOKEN] [--url URL]
+usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-1] [-c CREDITS] [-j]
+                   [-m] [-o OUTFILE] [-p PROPERTIES] [-q QUBITS]
+                   [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--qasm]
+                   [--token TOKEN] [--url URL]
                    [filepath [filepath ...]]
 
-qasm_job.py : Loads from one or more qasm source files and runs jobs with
-reporting in CSV form. Also can give info on backend properties, qiskit
-version, transpilation, etc. Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO
-Box 51, Golden, CO 80402-0051. BSD-3 license -- See LICENSE which you should
-have received with this code. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
-HOLDERS AND CONTRIBUTORS "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
-WARRANTIES.
+qasm_job.py : Loads from one or more qasm source files and runs experiments
+with reporting in CSV form. Also can give info on backend properties, qiskit
+version, transpilation, etc. Can run as multiple jobs or all as one job.
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO
+80402-0051. BSD-3 license -- See LICENSE which you should have received with
+this code. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 
 positional arguments:
   filepath              Filepath(s) to 0 or more .qasm files, default is stdin
@@ -37,8 +38,9 @@ optional arguments:
   -a, --aer             Use QISKit aer simulator
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
+  -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
-                        Max credits to expend on run, default is 3
+                        Max credits to expend on each job, default is 3
   -j, --job             Print job dictionary
   -m, --memory          Print individual results of multishot experiment
   -o OUTFILE, --outfile OUTFILE
@@ -55,9 +57,10 @@ optional arguments:
                         8192
   -v, --verbose         Increase verbosity each -v up to 3
   -x, --transpile       Show circuit transpiled for chosen backend
+  --qasm                Print qasm file with results
   --token TOKEN         Use this token if a --url argument is also provided
   --url URL             Use this url if a --token argument is also provided
 
 ```
 
-Jack Woehr 2019-07-15
+Jack Woehr 2019-08-28
