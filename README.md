@@ -12,7 +12,7 @@ execution script.
     * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
       * If you choose the IBMQ provider, you will need an
       [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
-      * **Note**: Currently only IBMQ is supported as a provider_      
+      * **Note**: Currently only IBMQ is supported as a provider.      
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
