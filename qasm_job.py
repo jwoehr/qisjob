@@ -24,7 +24,7 @@ except ImportError:
 from qiskit.tools.monitor import job_monitor
 
 
-explanation = """qasm_job.py : Loads from one or more qasm source files and runs
+EXPLANATION = """qasm_job.py : Loads from one or more qasm source files and runs
 jobs with reporting in CSV form. Also can give info on backend properties,
 qiskit version, transpilation, etc.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
@@ -32,48 +32,52 @@ BSD-3 license -- See LICENSE which you should have received with this code.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 """
-parser = argparse.ArgumentParser(description=explanation)
-group = parser.add_mutually_exclusive_group()
-group.add_argument("-i", "--ibmq", action="store_true",
+PARSER = argparse.ArgumentParser(description=EXPLANATION)
+GROUP = PARSER.add_mutually_exclusive_group()
+GROUP.add_argument("-i", "--ibmq", action="store_true",
                    help="Use best genuine IBMQ processor (default)")
-group.add_argument("-s", "--sim", action="store_true",
+GROUP.add_argument("-s", "--sim", action="store_true",
                    help="Use IBMQ qasm simulator")
-group.add_argument("-a", "--aer", action="store_true",
+GROUP.add_argument("-a", "--aer", action="store_true",
                    help="Use QISKit aer simulator")
-group.add_argument("-b", "--backend", action="store",
+GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
-parser.add_argument("-c", "--credits", type=int, action="store", default=3,
-                    help="Max credits to expend on run, default is 3")
-parser.add_argument("-j", "--job", action="store_true",
+PARSER.add_argument("-1", "--one_job", action="store_true",
+                    help="Run all experiments as one job")
+PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
+                    help="Max credits to expend on each job, default is 3")
+PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print job dictionary")
-parser.add_argument("-m", "--memory", action="store_true",
+PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
-parser.add_argument("-o", "--outfile", action="store",
+PARSER.add_argument("-o", "--outfile", action="store",
                     help="Write appending CSV to outfile, default is stdout")
-parser.add_argument("-p", "--properties", action="store",
+PARSER.add_argument("-p", "--properties", action="store",
                     help="Print properties for specified backend to stdout and exit 0")
-parser.add_argument("-q", "--qubits", type=int, action="store", default=5,
+PARSER.add_argument("-q", "--qubits", type=int, action="store", default=5,
                     help="Number of qubits for the experiment, default is 5")
-parser.add_argument("--qiskit_version", action="store_true",
+PARSER.add_argument("--qiskit_version", action="store_true",
                     help="Print Qiskit version and exit 0")
-parser.add_argument("-r", "--result", action="store_true",
+PARSER.add_argument("-r", "--result", action="store_true",
                     help="Print job result")
-parser.add_argument("-t", "--shots", type=int, action="store", default=1024,
+PARSER.add_argument("-t", "--shots", type=int, action="store", default=1024,
                     help="Number of shots for the experiment, default 1024, max 8192")
-parser.add_argument("-v", "--verbose", action="count", default=0,
+PARSER.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
-parser.add_argument("-x", "--transpile", action="store_true",
+PARSER.add_argument("-x", "--transpile", action="store_true",
                     help="Show circuit transpiled for chosen backend")
-parser.add_argument("--token", action="store",
+PARSER.add_argument("--qasm", action="store_true",
+                    help="Print qasm file with results")
+PARSER.add_argument("--token", action="store",
                     help="Use this token if a --url argument is also provided")
-parser.add_argument("--url", action="store",
+PARSER.add_argument("--url", action="store",
                     help="Use this url if a --token argument is also provided")
-parser.add_argument("filepath", nargs='*',
+PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
-args = parser.parse_args()
+ARGS = PARSER.parse_args()
 
-if (args.token and not args.url) or (args.url and not args.token):
+if (ARGS.token and not ARGS.url) or (ARGS.url and not ARGS.token):
     print('--token and --url must be used together or not at all', file=sys.stderr)
     exit(1)
 
@@ -83,17 +87,17 @@ if (args.token and not args.url) or (args.url and not args.token):
 
 def verbosity(text, count):
     """Print text if count exceeds verbose level"""
-    if args.verbose >= count:
+    if ARGS.verbose >= count:
         print(text)
 
 
 def account_fu(token, url):
     """Load account appropriately and return provider"""
     if token:
-        p = IBMQ.enable_account(token, url=url)
+        provider = IBMQ.enable_account(token, url=url)
     else:
-        p = IBMQ.load_account()
-    return p
+        provider = IBMQ.load_account()
+    return provider
 
 
 def csv_str(description, sort_keys, sort_counts):
@@ -146,7 +150,7 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
 # Do job loop
 # ###########
 
-def one_job(filepath, backend, outfile, xpile, shots, memory, j_b, res):
+def one_exp(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     """Load qasm and run the job, print csv and other selected output"""
 
     if filepath is None:
@@ -185,11 +189,11 @@ def one_job(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     # ###########
 
     # Maximum number of credits to spend on executions.
-    max_credits = args.credits
+    max_credits = ARGS.credits
 
     # Execute
     job_exp = execute(circ, backend=backend, shots=shots,
-                  max_credits=max_credits, memory=memory)
+                      max_credits=max_credits, memory=memory)
     if j_b:
         print(job_exp)
 
@@ -213,17 +217,116 @@ def one_job(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     # Generate CSV
     output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
                      sorted_keys, sorted_counts)
-
     # Open outfile
     verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
     ofh = outfile if outfile is sys.stdout else open(outfile, "a")
     verbosity("File handle is " + str(ofh), 3)
+
+    # Write qasm if requested
+    if ARGS.qasm:
+        ofh.write(qasm_source + '\n')
 
     # Write CSV
     for line in output:
         ofh.write(line + '\n')
     if outfile is not sys.stdout:
         ofh.close()
+
+
+# Do all as one job
+# #################
+
+
+def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
+    """Load qasms and run all as one the job,
+    print csvs and other selected output
+    """
+
+    if outfile is None:
+        outfile = sys.stdout
+
+    if backend is None:
+        print("No backend available, quitting.")
+        exit(100)
+
+    circs = []
+
+    for fpath in filepaths:
+        # Get file
+        verbosity("File path is " + ("stdin" if fpath is sys.stdin else fpath), 2)
+        ifh = fpath if fpath is sys.stdin else open(fpath, "r")
+        verbosity("File handle is " + str(ifh), 3)
+
+        # Read source
+        qasm_source = ifh.read()
+        ifh.close()
+        verbosity("qasm source:\n" + qasm_source, 1)
+
+        # Create circuit
+        circ = QuantumCircuit.from_qasm_str(qasm_source)
+        verbosity(circ.draw(), 2)
+
+        # Transpile if requested and available and show transpiled circuit
+        # ################################################################
+
+        if xpile:
+            try:
+                print(transpile(circ, backend=backend))
+            except NameError:
+                print('Transpiler not available this Qiskit level.', file=sys.stderr)
+
+        circs.append(circ)
+
+    # Prepare job
+    # ###########
+
+    # Maximum number of credits to spend on executions.
+    max_credits = ARGS.credits
+
+    # Execute
+    job_exp = execute(circs, backend=backend, shots=shots,
+                      max_credits=max_credits, memory=memory)
+    if j_b:
+        print(job_exp)
+
+    job_monitor(job_exp)
+    result_exp = job_exp.result()
+
+    if res:
+        print(result_exp)
+
+    # Open outfile
+    verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
+    ofh = outfile if outfile is sys.stdout else open(outfile, "a")
+    verbosity("File handle is " + str(ofh), 3)
+
+    for circ in circs:
+        counts_exp = result_exp.get_counts(circ)
+        verbosity(counts_exp, 1)
+        sorted_keys = sorted(counts_exp.keys())
+        sorted_counts = []
+        for i in sorted_keys:
+            sorted_counts.append(counts_exp.get(i))
+
+        # Raw data if requested
+        if memory:
+            print(result_exp.data(circ))
+
+        # Generate CSV
+        output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
+                         sorted_keys, sorted_counts)
+
+        # Write qasm if requested
+        if ARGS.qasm:
+            ofh.write(qasm_source + '\n')
+
+        # Write CSV
+        for line in output:
+            ofh.write(line + '\n')
+
+    if outfile is not sys.stdout:
+        ofh.close()
+
 
 # ####
 # Main
@@ -232,33 +335,38 @@ def one_job(filepath, backend, outfile, xpile, shots, memory, j_b, res):
 # Informational queries
 # #####################
 
-if args.properties:
-    provider = account_fu(args.token, args.url)
-    backend = provider.get_backend(args.properties)
-    pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-    pp.pprint(backend.properties())
+if ARGS.properties:
+    PROVIDER = account_fu(ARGS.token, ARGS.url)
+    BACKEND = PROVIDER.get_backend(ARGS.properties)
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(BACKEND.properties())
     exit(0)
+else:
+    BACKEND = choose_backend(ARGS.aer, ARGS.token, ARGS.url,
+                             ARGS.backend, ARGS.sim, ARGS.qubits)
 
-if args.qiskit_version:
+if ARGS.qiskit_version:
     try:
         __qiskit_version__
     except NameError:
         print("__qiskit_version__ not present in this Qiskit level.")
         exit(1)
-    pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-    pp.pprint(__qiskit_version__)
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(__qiskit_version__)
     exit(0)
 
-backend = choose_backend(args.aer, args.token, args.url,
-    args.backend, args.sim, args.qubits)
 
-if not args.filepath:
-    one_job(None, backend, args.outfile, args.transpile,
-        args.shots, args.memory, args.job, args.result)
+if not ARGS.filepath:
+    one_exp(None, BACKEND, ARGS.outfile, ARGS.transpile,
+            ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
 else:
-    for filepath in args.filepath:
-        one_job(filepath, backend, args.outfile, args.transpile,
-            args.shots, args.memory, args.job, args.result)
+    if ARGS.one_job:
+        multi_exps(ARGS.filepath, BACKEND, ARGS.outfile, ARGS.transpile,
+                   ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
+    else:
+        for f_path in ARGS.filepath:
+            one_exp(f_path, BACKEND, ARGS.outfile, ARGS.transpile,
+                    ARGS.shots, ARGS.memory, ARGS.job, ARGS.result)
 
 verbosity('Done!', 1)
 
