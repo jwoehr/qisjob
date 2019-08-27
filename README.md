@@ -21,10 +21,11 @@ execution script.
 
 ```
 $ python qasm_job.py -h
-usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND] [-1] [-c CREDITS] [-j]
-                   [-m] [-o OUTFILE] [-p PROPERTIES] [-q QUBITS]
-                   [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--qasm]
-                   [--token TOKEN] [--url URL]
+usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND]
+                   [--api_provider API_PROVIDER] [-1] [-c CREDITS] [-j] [-m]
+                   [-o OUTFILE] [-p PROPERTIES] [-q QUBITS] [--qiskit_version]
+                   [-r] [-t SHOTS] [-v] [-x] [--qasm] [--token TOKEN]
+                   [--url URL]
                    [filepath [filepath ...]]
 
 qasm_job.py : Loads from one or more qasm source files and runs experiments
@@ -45,6 +46,9 @@ optional arguments:
   -a, --aer             Use QISKit aer simulator
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
+  --api_provider API_PROVIDER
+                        Backend api provider, currently supported are [IBMQ |
+                        QI]. Default is IBMQ.
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
                         Max credits to expend on each job, default is 3
@@ -65,9 +69,8 @@ optional arguments:
   -v, --verbose         Increase verbosity each -v up to 3
   -x, --transpile       Show circuit transpiled for chosen backend
   --qasm                Print qasm file with results
-  --token TOKEN         Use this token if a --url argument is also provided
-  --url URL             Use this url if a --token argument is also provided
-
+  --token TOKEN         Use this token
+  --url URL             Use this url
 ```
 
-Jack Woehr 2019-08-28
+Jack Woehr 2019-08-27

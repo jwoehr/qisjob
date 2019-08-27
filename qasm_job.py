@@ -44,7 +44,7 @@ GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
 PARSER.add_argument("--api_provider", action="store",
                     help="""Backend api provider,
-                    currently supported are IBMQ, soon QI.
+                    currently supported are [IBMQ | QI].
                     Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
@@ -73,9 +73,9 @@ PARSER.add_argument("-x", "--transpile", action="store_true",
 PARSER.add_argument("--qasm", action="store_true",
                     help="Print qasm file with results")
 PARSER.add_argument("--token", action="store",
-                    help="Use this token if a --url argument is also provided")
+                    help="Use this token")
 PARSER.add_argument("--url", action="store",
-                    help="Use this url if a --token argument is also provided")
+                    help="Use this url")
 PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
