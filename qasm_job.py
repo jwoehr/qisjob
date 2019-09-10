@@ -39,7 +39,12 @@ GROUP.add_argument("-i", "--ibmq", action="store_true",
 GROUP.add_argument("-s", "--sim", action="store_true",
                    help="Use IBMQ qasm simulator")
 GROUP.add_argument("-a", "--aer", action="store_true",
-                   help="Use QISKit aer simulator")
+                   help="""Use QISKit Aer simulator.
+                   Default is Aer statevector simulator
+                   Use -a --qasm-simulator to get Aer qasm simulator.""")
+PARSER.add_argument("--qasm_simulator", action="store_true",
+                    help="""With -a use Aer qasm simulator
+                    instead of Aer statevector simulator""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
 PARSER.add_argument("--api_provider", action="store",
@@ -147,7 +152,7 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
         # Import Aer
         from qiskit import BasicAer
         # Run the quantum circuit on a statevector simulator backend
-        backend = BasicAer.get_backend('statevector_simulator')
+        backend = BasicAer.get_backend('qasm_simulator' if QASM_SIMULATOR else 'statevector_simulator')
     else:
         provider = account_fu(token, url)
         verbosity("Provider is " + str(provider), 3)
@@ -364,6 +369,7 @@ TOKEN = ARGS.token
 URL = ARGS.url
 QISKIT_VERSION = ARGS.qiskit_version
 AER = ARGS.aer
+QASM_SIMULATOR = ARGS.qasm_simulator
 SIM = ARGS.sim
 QUBITS = ARGS.qubits
 FILEPATH = ARGS.filepath
