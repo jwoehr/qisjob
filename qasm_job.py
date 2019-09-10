@@ -70,6 +70,8 @@ PARSER.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
 PARSER.add_argument("-x", "--transpile", action="store_true",
                     help="Show circuit transpiled for chosen backend")
+PARSER.add_argument("--plot_state_city", type=int, action="store",
+                    help="Draw state city plot of statevector to n decimal points")
 PARSER.add_argument("--qasm", action="store_true",
                     help="Print qasm file with results")
 PARSER.add_argument("--token", action="store",
@@ -166,6 +168,15 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
     verbosity("Backend is " + str(backend), 1)
     return backend
 
+# Result processing
+# #################
+
+
+def state_city_plot(result_exp, circ, decimals=3):
+    """Plot state_city style the output state"""
+    outputstate = result_exp.get_statevector(circ, decimals)
+    plot_state_city(outputstate).show()
+
 
 def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     """Process the result of one circuit circ
@@ -194,6 +205,9 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     # Write CSV
     for line in output:
         ofh.write(line + '\n')
+
+    if PLOT_STATE_CITY:
+        state_city_plot(result_exp, circ, decimals=PLOT_STATE_CITY)
 
 # Do job loop
 # ###########
@@ -360,12 +374,15 @@ MEMORY = ARGS.memory
 JOB = ARGS.job
 RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
+PLOT_STATE_CITY = ARGS.plot_state_city
+
+if PLOT_STATE_CITY:
+    from qiskit.visualization import plot_state_city
 
 if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
     print('--token and --url must be used together for IBMQ provider or not at all',
           file=sys.stderr)
     exit(1)
-
 
 if PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
@@ -386,7 +403,6 @@ if QISKIT_VERSION:
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(__qiskit_version__)
     exit(0)
-
 
 if not FILEPATH:
     one_exp(None, BACKEND, OUTFILE, TRANSPILE,
