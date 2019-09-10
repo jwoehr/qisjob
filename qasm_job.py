@@ -167,8 +167,37 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
     return backend
 
 
+def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
+    """Process the result of one circuit circ
+    from result result_exp
+    printing to output file handle ofh
+    """
+    counts_exp = result_exp.get_counts(circ)
+    verbosity(counts_exp, 1)
+    sorted_keys = sorted(counts_exp.keys())
+    sorted_counts = []
+    for i in sorted_keys:
+        sorted_counts.append(counts_exp.get(i))
+
+    # Raw data if requested
+    if memory:
+        print(result_exp.data(circ))
+
+    # Generate CSV
+    output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
+                     sorted_keys, sorted_counts)
+
+    # Write qasm if requested
+    if ARGS.qasm:
+        ofh.write(qasm_source + '\n')
+
+    # Write CSV
+    for line in output:
+        ofh.write(line + '\n')
+
 # Do job loop
 # ###########
+
 
 def one_exp(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     """Load qasm and run the job, print csv and other selected output"""
@@ -223,35 +252,15 @@ def one_exp(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     if res:
         print(result_exp)
 
-    counts_exp = result_exp.get_counts(circ)
-    verbosity(counts_exp, 1)
-    sorted_keys = sorted(counts_exp.keys())
-    sorted_counts = []
-    for i in sorted_keys:
-        sorted_counts.append(counts_exp.get(i))
-
-    # Raw data if requested
-    if memory:
-        print(result_exp.data())
-
-    # Generate CSV
-    output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
-                     sorted_keys, sorted_counts)
     # Open outfile
     verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
     ofh = outfile if outfile is sys.stdout else open(outfile, "a")
     verbosity("File handle is " + str(ofh), 3)
 
-    # Write qasm if requested
-    if ARGS.qasm:
-        ofh.write(qasm_source + '\n')
+    process_result(result_exp, circ, memory, backend, qasm_source, ofh)
 
-    # Write CSV
-    for line in output:
-        ofh.write(line + '\n')
     if outfile is not sys.stdout:
         ofh.close()
-
 
 # Do all as one job
 # #################
@@ -321,28 +330,7 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
     verbosity("File handle is " + str(ofh), 3)
 
     for circ in circs:
-        counts_exp = result_exp.get_counts(circ)
-        verbosity(counts_exp, 1)
-        sorted_keys = sorted(counts_exp.keys())
-        sorted_counts = []
-        for i in sorted_keys:
-            sorted_counts.append(counts_exp.get(i))
-
-        # Raw data if requested
-        if memory:
-            print(result_exp.data(circ))
-
-        # Generate CSV
-        output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
-                         sorted_keys, sorted_counts)
-
-        # Write qasm if requested
-        if ARGS.qasm:
-            ofh.write(qasm_source + '\n')
-
-        # Write CSV
-        for line in output:
-            ofh.write(line + '\n')
+        process_result(result_exp, circ, memory, backend, qasm_source, ofh)
 
     if outfile is not sys.stdout:
         ofh.close()
