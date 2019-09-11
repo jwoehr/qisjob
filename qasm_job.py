@@ -40,10 +40,14 @@ GROUP.add_argument("-s", "--sim", action="store_true",
                    help="Use IBMQ qasm simulator")
 GROUP.add_argument("-a", "--aer", action="store_true",
                    help="""Use QISKit Aer simulator.
-                   Default is Aer statevector simulator
-                   Use -a --qasm-simulator to get Aer qasm simulator.""")
+                   Default is Aer statevector simulator.
+                   Use -a --qasm-simulator to get Aer qasm simulator.
+                   Use -a --unitary-simulator to get Aer unitary simulator.""")
 PARSER.add_argument("--qasm_simulator", action="store_true",
                     help="""With -a use Aer qasm simulator
+                    instead of Aer statevector simulator""")
+PARSER.add_argument("--unitary_simulator", action="store_true",
+                    help="""With -a use Aer unitary simulator
                     instead of Aer statevector simulator""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
