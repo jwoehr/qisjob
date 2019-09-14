@@ -55,6 +55,8 @@ PARSER.add_argument("--api_provider", action="store",
                     help="""Backend api provider,
                     currently supported are [IBMQ | QI].
                     Default is IBMQ.""", default="IBMQ")
+PARSER.add_argument("--backends", action="store_true",
+                    help="Print list of backends to stdout and exit")
 PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
@@ -449,6 +451,7 @@ PLOT_STATE_CITY = ARGS.plot_state_city
 FIGURE_BASENAME = ARGS.figure_basename
 HISTOGRAM = ARGS.histogram
 STATUS = ARGS.status
+BACKENDS = ARGS.backends
 
 if PLOT_STATE_CITY:
     from qiskit.visualization import plot_state_city
@@ -466,6 +469,12 @@ if PROPERTIES:
     BACKEND = PROVIDER.get_backend(PROPERTIES)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties())
+    exit(0)
+
+elif BACKENDS:
+    PROVIDER = account_fu(TOKEN, URL)
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(PROVIDER.backends())
     exit(0)
 
 elif STATUS:
