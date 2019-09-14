@@ -6,3 +6,4 @@ v2.3:
 	- plotting histogram
 	- choose specific Aer simulator
 	- --status to show status
+	- --backends to list backends
