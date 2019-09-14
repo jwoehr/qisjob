@@ -83,6 +83,11 @@ PARSER.add_argument("--plot_state_city", type=int, action="store",
                     help="Draw state city plot of statevector to n decimal points")
 PARSER.add_argument("--qasm", action="store_true",
                     help="Print qasm file with results")
+PARSER.add_argument("--status", action="store_true",
+                    help="""Print status of chosen --backend
+                    (default all backends)
+                    of --api_provider (default IBMQ)
+                    and exit""")
 PARSER.add_argument("--token", action="store",
                     help="Use this token")
 PARSER.add_argument("--url", action="store",
@@ -359,6 +364,16 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
         ofh.close()
 
 
+def get_statuses(provider, backend):
+    stat = ''
+    if backend:
+        stat = backend.status()
+    else:
+        for b in provider.backends():
+            stat += str(b.status())
+    return stat
+
+
 # ####
 # Main
 # ####
@@ -385,6 +400,7 @@ JOB = ARGS.job
 RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
 PLOT_STATE_CITY = ARGS.plot_state_city
+STATUS = ARGS.status
 
 if PLOT_STATE_CITY:
     from qiskit.visualization import plot_state_city
@@ -400,6 +416,14 @@ if PROPERTIES:
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties())
     exit(0)
+
+elif STATUS:
+    PROVIDER = account_fu(TOKEN, URL)
+    BACKEND = PROVIDER.get_backend(BACKEND_NAME) if BACKEND_NAME else None
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(get_statuses(PROVIDER, BACKEND))
+    exit(0)
+
 else:
     BACKEND = choose_backend(AER, TOKEN, URL,
                              BACKEND_NAME, SIM, QUBITS)
