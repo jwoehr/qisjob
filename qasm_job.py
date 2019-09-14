@@ -81,6 +81,8 @@ PARSER.add_argument("-x", "--transpile", action="store_true",
                     help="Show circuit transpiled for chosen backend")
 PARSER.add_argument("--plot_state_city", type=int, action="store",
                     help="Draw state city plot of statevector to n decimal points")
+PARSER.add_argument("--figure_basename", type=str, action="store", default='./figout',
+                    help="basename for figure output, default='figout'")
 PARSER.add_argument("--qasm", action="store_true",
                     help="Print qasm file with results")
 PARSER.add_argument("--status", action="store_true",
@@ -186,16 +188,29 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
 # #################
 
 
-def state_city_plot(result_exp, circ, decimals=3):
-    """Plot state_city style the output state"""
+def fig_name_str(filepath, backend):
+    """Create name consisting of filepath, backend and timestamp"""
+    return filepath + '_' + str(backend) + '_' + datetime.datetime.now().isoformat()
+
+
+def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
+    """Plot state_city style the output state
+    result_exp - experiment result
+    circ - the circuit
+    figure_basename - base file name of output
+    backend - backend run on
+    decimals - how many decimal places
+    """
     outputstate = result_exp.get_statevector(circ, decimals)
-    plot_state_city(outputstate).show()
+    fig = plot_state_city(outputstate)
+    fig.savefig(fig_name_str(figure_basename, backend) + '.state_city.png')
 
 
 def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     """Process the result of one circuit circ
     from result result_exp
     printing to output file handle ofh
+    passing original qasm filepath for figure output filename generation
     """
     counts_exp = result_exp.get_counts(circ)
     verbosity(counts_exp, 1)
@@ -221,7 +236,8 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
         ofh.write(line + '\n')
 
     if PLOT_STATE_CITY:
-        state_city_plot(result_exp, circ, decimals=PLOT_STATE_CITY)
+        state_city_plot(result_exp, circ, FIGURE_BASENAME,
+                        backend, decimals=PLOT_STATE_CITY)
 
 # Do job loop
 # ###########
@@ -400,6 +416,7 @@ JOB = ARGS.job
 RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
 PLOT_STATE_CITY = ARGS.plot_state_city
+FIGURE_BASENAME = ARGS.figure_basename
 STATUS = ARGS.status
 
 if PLOT_STATE_CITY:
