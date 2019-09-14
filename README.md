@@ -1,10 +1,10 @@
 # qis_job
 QISKit Job Control
 
-**`qis_job`** is an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing job and experiment
-execution script.
+**`qis_job`** is the (historical) name of this project which provides an [IBM Q Experience](https://quantum-computing.ibm.com)
+argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429) experiment execution script.
 
-* `qasm_job.py` is the script. The latest release is based on the [QISKit](https://github.com/Qiskit) API 2.
+* `qasm_job.py` is the name of the script. The current releases are based on the [QISKit](https://github.com/Qiskit) API 2.
   * See the earlier release [Qis Job v0.7](https://github.com/jwoehr/qis_job/releases/tag/v0.7) for API 1 support.
   * For this project you will need to install
     * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
@@ -16,16 +16,19 @@ execution script.
       from [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
       or with the command `pip install quantuminspire`. You will also need a
       [Quantum Inspire token](https://www.quantum-inspire.com/account).
-      * **Note**: Currently only IBMQ and QI are supported as providers.      
+      * **Note**: Currently only IBMQ and QI are supported as providers.
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
 $ python qasm_job.py -h
-usage: qasm_job.py [-h] [-i | -s | -a | -b BACKEND]
-                   [--api_provider API_PROVIDER] [-1] [-c CREDITS] [-j] [-m]
-                   [-o OUTFILE] [-p PROPERTIES] [-q QUBITS] [--qiskit_version]
-                   [-r] [-t SHOTS] [-v] [-x] [--qasm] [--token TOKEN]
-                   [--url URL]
+usage: qasm_job.py [-h] [-i] [-s] [-a] [--qasm_simulator]
+                   [--unitary_simulator] [-b BACKEND]
+                   [--api_provider API_PROVIDER] [--backends] [-1]
+                   [-c CREDITS] [-j] [-m] [-o OUTFILE] [-p PROPERTIES]
+                   [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
+                   [--histogram] [--plot_state_city PLOT_STATE_CITY]
+                   [--figure_basename FIGURE_BASENAME] [--qasm] [--status]
+                   [--token TOKEN] [--url URL]
                    [filepath [filepath ...]]
 
 qasm_job.py : Loads from one or more qasm source files and runs experiments
@@ -43,12 +46,20 @@ optional arguments:
   -h, --help            show this help message and exit
   -i, --ibmq            Use best genuine IBMQ processor (default)
   -s, --sim             Use IBMQ qasm simulator
-  -a, --aer             Use QISKit aer simulator
+  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector
+                        simulator. Use -a --qasm-simulator to get Aer qasm
+                        simulator. Use -a --unitary-simulator to get Aer
+                        unitary simulator.
+  --qasm_simulator      With -a use Aer qasm simulator instead of Aer
+                        statevector simulator
+  --unitary_simulator   With -a use Aer unitary simulator instead of Aer
+                        statevector simulator
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
   --api_provider API_PROVIDER
                         Backend api provider, currently supported are [IBMQ |
                         QI]. Default is IBMQ.
+  --backends            Print list of backends to stdout and exit
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
                         Max credits to expend on each job, default is 3
@@ -67,10 +78,26 @@ optional arguments:
                         Number of shots for the experiment, default 1024, max
                         8192
   -v, --verbose         Increase verbosity each -v up to 3
-  -x, --transpile       Show circuit transpiled for chosen backend
-  --qasm                Print qasm file with results
+  -x, --transpile       Print circuit transpiled for chosen backend to stdout
+                        before running job
+  --histogram           Write image file of histogram of experiment results
+  --plot_state_city PLOT_STATE_CITY
+                        Write image file of state city plot of statevector to
+                        PLOT_STATE_CITY decimal points
+  --figure_basename FIGURE_BASENAME
+                        basename including path (if any) for figure output,
+                        default='figout', backend name, figure type, and
+                        timestamp will be appended
+  --qasm                Print qasm file to stdout before running job
+  --status              Print status of chosen --backend to stdout (default
+                        all backends) of --api_provider (default IBMQ) and
+                        exit
   --token TOKEN         Use this token
   --url URL             Use this url
 ```
 
-Jack Woehr 2019-08-27
+It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
+
+Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
+
+Jack Woehr 2019-09-15
