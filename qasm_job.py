@@ -78,15 +78,22 @@ PARSER.add_argument("-t", "--shots", type=int, action="store", default=1024,
 PARSER.add_argument("-v", "--verbose", action="count", default=0,
                     help="Increase verbosity each -v up to 3")
 PARSER.add_argument("-x", "--transpile", action="store_true",
-                    help="Show circuit transpiled for chosen backend")
+                    help="""Print circuit transpiled for chosen backend to stdout
+                    before running job""")
+PARSER.add_argument("--histogram", action="store_true",
+                    help="""Write image file of histogram of experiment results""")
 PARSER.add_argument("--plot_state_city", type=int, action="store",
-                    help="Draw state city plot of statevector to n decimal points")
-PARSER.add_argument("--figure_basename", type=str, action="store", default='./figout',
-                    help="basename for figure output, default='figout'")
+                    help="""Write image file of state city plot of statevector to
+                    PLOT_STATE_CITY decimal points""")
+PARSER.add_argument("--figure_basename", type=str, action="store",
+                    default='figout',
+                    help="""basename including path (if any) for figure output,
+                    default='figout', backend name, figure type, and timestamp
+                    will be appended""")
 PARSER.add_argument("--qasm", action="store_true",
-                    help="Print qasm file with results")
+                    help="Print qasm file to stdout before running job")
 PARSER.add_argument("--status", action="store_true",
-                    help="""Print status of chosen --backend
+                    help="""Print status of chosen --backend to stdout
                     (default all backends)
                     of --api_provider (default IBMQ)
                     and exit""")
@@ -163,7 +170,9 @@ def choose_backend(aer, token, url, b_end, sim, qubits):
         # Import Aer
         from qiskit import BasicAer
         # Run the quantum circuit on a statevector simulator backend
-        backend = BasicAer.get_backend('qasm_simulator' if QASM_SIMULATOR else 'statevector_simulator')
+        backend = BasicAer.get_backend('qasm_simulator'
+                                       if QASM_SIMULATOR else
+                                       'statevector_simulator')
     else:
         provider = account_fu(token, url)
         verbosity("Provider is " + str(provider), 3)
@@ -193,6 +202,11 @@ def fig_name_str(filepath, backend):
     return filepath + '_' + str(backend) + '_' + datetime.datetime.now().isoformat()
 
 
+def save_fig(figure, filepath, backend, tail):
+    """Write a figure to an algorithmically named destination file"""
+    figure.savefig(fig_name_str(filepath, backend) + '.' + tail)
+
+
 def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
     """Plot state_city style the output state
     result_exp - experiment result
@@ -203,7 +217,19 @@ def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
     """
     outputstate = result_exp.get_statevector(circ, decimals)
     fig = plot_state_city(outputstate)
-    fig.savefig(fig_name_str(figure_basename, backend) + '.state_city.png')
+    save_fig(fig, figure_basename, backend, 'state_city.png')
+
+
+def histogram(result_exp, circ, figure_basename, backend):
+    """Plot histogram style the counts of
+    result_exp - experiment result
+    circ - the circuit
+    figure_basename - base file name of output
+    backend - backend run on
+    """
+    outputstate = result_exp.get_counts(circ)
+    fig = plot_histogram(outputstate)
+    save_fig(fig, figure_basename, backend, 'histogram.png')
 
 
 def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
@@ -238,6 +264,9 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     if PLOT_STATE_CITY:
         state_city_plot(result_exp, circ, FIGURE_BASENAME,
                         backend, decimals=PLOT_STATE_CITY)
+    if HISTOGRAM:
+        histogram(result_exp, circ, FIGURE_BASENAME, backend)
+
 
 # Do job loop
 # ###########
@@ -381,12 +410,13 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
 
 
 def get_statuses(provider, backend):
+    """Return backend status tuple(s)"""
     stat = ''
     if backend:
         stat = backend.status()
     else:
-        for b in provider.backends():
-            stat += str(b.status())
+        for b_e in provider.backends():
+            stat += str(b_e.status())
     return stat
 
 
@@ -417,10 +447,14 @@ RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
 PLOT_STATE_CITY = ARGS.plot_state_city
 FIGURE_BASENAME = ARGS.figure_basename
+HISTOGRAM = ARGS.histogram
 STATUS = ARGS.status
 
 if PLOT_STATE_CITY:
     from qiskit.visualization import plot_state_city
+
+if HISTOGRAM:
+    from qiskit.tools.visualization import plot_histogram
 
 if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
     print('--token and --url must be used together for IBMQ provider or not at all',

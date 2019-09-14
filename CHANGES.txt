@@ -2,6 +2,7 @@ Changes by revision to qis_job
 
 v2.3:
 	- refactor result handling
-	- plotting state city but doesn't work without event loop
+	- plotting state city
+	- plotting histogram
 	- choose specific Aer simulator
 	- --status to show status
