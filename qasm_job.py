@@ -240,35 +240,36 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     printing to output file handle ofh
     passing original qasm filepath for figure output filename generation
     """
-    counts_exp = result_exp.get_counts(circ)
-    verbosity(counts_exp, 1)
-    sorted_keys = sorted(counts_exp.keys())
-    sorted_counts = []
-    for i in sorted_keys:
-        sorted_counts.append(counts_exp.get(i))
+    # Write qasm if requested
+    if ARGS.qasm:
+        ofh.write(qasm_source + '\n')
 
     # Raw data if requested
     if memory:
         print(result_exp.data(circ))
 
-    # Generate CSV
-    output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
-                     sorted_keys, sorted_counts)
+    # Print counts if any measurment was taken
+    if 'counts' in result_exp.data(circ):
+        counts_exp = result_exp.get_counts(circ)
+        verbosity(counts_exp, 1)
+        sorted_keys = sorted(counts_exp.keys())
+        sorted_counts = []
+        for i in sorted_keys:
+            sorted_counts.append(counts_exp.get(i))
 
-    # Write qasm if requested
-    if ARGS.qasm:
-        ofh.write(qasm_source + '\n')
+        # Generate CSV
+        output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
+                         sorted_keys, sorted_counts)
 
-    # Write CSV
-    for line in output:
-        ofh.write(line + '\n')
+        # Write CSV
+        for line in output:
+            ofh.write(line + '\n')
 
-    if PLOT_STATE_CITY:
-        state_city_plot(result_exp, circ, FIGURE_BASENAME,
-                        backend, decimals=PLOT_STATE_CITY)
-    if HISTOGRAM:
-        histogram(result_exp, circ, FIGURE_BASENAME, backend)
-
+        if PLOT_STATE_CITY:
+            state_city_plot(result_exp, circ, FIGURE_BASENAME,
+                            backend, decimals=PLOT_STATE_CITY)
+        if HISTOGRAM:
+            histogram(result_exp, circ, FIGURE_BASENAME, backend)
 
 # Do job loop
 # ###########

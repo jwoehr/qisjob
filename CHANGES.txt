@@ -1,5 +1,7 @@
 Changes by revision to qis_job
 
+v2.4:
+	- check for counts before trying to print
 v2.3:
 	- refactor result handling
 	- plotting state city
