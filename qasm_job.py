@@ -454,6 +454,16 @@ HISTOGRAM = ARGS.histogram
 STATUS = ARGS.status
 BACKENDS = ARGS.backends
 
+if QISKIT_VERSION:
+    try:
+        __qiskit_version__
+    except NameError:
+        print("__qiskit_version__ not present in this Qiskit level.")
+        exit(1)
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(__qiskit_version__)
+    exit(0)
+
 if PLOT_STATE_CITY:
     from qiskit.visualization import plot_state_city
 
@@ -488,16 +498,6 @@ elif STATUS:
 else:
     BACKEND = choose_backend(AER, TOKEN, URL,
                              BACKEND_NAME, SIM, QUBITS)
-
-if QISKIT_VERSION:
-    try:
-        __qiskit_version__
-    except NameError:
-        print("__qiskit_version__ not present in this Qiskit level.")
-        exit(1)
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-    PP.pprint(__qiskit_version__)
-    exit(0)
 
 if not FILEPATH:
     one_exp(None, BACKEND, OUTFILE, TRANSPILE,
