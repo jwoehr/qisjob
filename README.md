@@ -53,16 +53,17 @@ optional arguments:
                         simulator. Use -a --unitary-simulator to get Aer
                         unitary simulator.
   --qcgpu               Use qcgpu simulator. Default is statevector simulator.
-                        Use -a --qasm-simulator to get qcgpu qasm simulator.
+                        Use --qcgpu --qasm-simulator to get qcgpu qasm
+                        simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
-  --qasm_simulator      With -a use Aer or qcgpu qasm simulator instead of
+  --qasm_simulator      With -a or --qcgpu use qasm simulator instead of
                         statevector simulator
-  --unitary_simulator   With -a use Aer or qcgpu unitary simulator instead of
-                        statevector simulator
+  --unitary_simulator   With -a use unitary simulator instead of statevector
+                        simulator
   --api_provider API_PROVIDER
-                        Backend api provider, currently supported are [IBMQ |
-                        QI]. Default is IBMQ.
+                        Backend remote api provider, currently supported are
+                        [IBMQ | QI]. Default is IBMQ.
   --backends            Print list of backends to stdout and exit
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
