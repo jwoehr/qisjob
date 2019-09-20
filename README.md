@@ -17,12 +17,14 @@ argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs
       or with the command `pip install quantuminspire`. You will also need a
       [Quantum Inspire token](https://www.quantum-inspire.com/account).
       * **Note**: Currently only IBMQ and QI are supported as providers.
+    * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
+
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
 $ python qasm_job.py -h
-usage: qasm_job.py [-h] [-i] [-s] [-a] [--qasm_simulator]
-                   [--unitary_simulator] [-b BACKEND]
+usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
+                   [--qasm_simulator | --unitary_simulator]
                    [--api_provider API_PROVIDER] [--backends] [-1]
                    [-c CREDITS] [-j] [-m] [-o OUTFILE] [-p PROPERTIES]
                    [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
@@ -50,12 +52,14 @@ optional arguments:
                         simulator. Use -a --qasm-simulator to get Aer qasm
                         simulator. Use -a --unitary-simulator to get Aer
                         unitary simulator.
-  --qasm_simulator      With -a use Aer qasm simulator instead of Aer
-                        statevector simulator
-  --unitary_simulator   With -a use Aer unitary simulator instead of Aer
-                        statevector simulator
+  --qcgpu               Use qcgpu simulator. Default is statevector simulator.
+                        Use -a --qasm-simulator to get qcgpu qasm simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
+  --qasm_simulator      With -a use Aer or qcgpu qasm simulator instead of
+                        statevector simulator
+  --unitary_simulator   With -a use Aer or qcgpu unitary simulator instead of
+                        statevector simulator
   --api_provider API_PROVIDER
                         Backend api provider, currently supported are [IBMQ |
                         QI]. Default is IBMQ.
