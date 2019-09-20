@@ -34,6 +34,7 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 """
 PARSER = argparse.ArgumentParser(description=EXPLANATION)
 GROUP = PARSER.add_mutually_exclusive_group()
+GROUPB = PARSER.add_mutually_exclusive_group()
 GROUP.add_argument("-i", "--ibmq", action="store_true",
                    help="Use best genuine IBMQ processor (default)")
 GROUP.add_argument("-s", "--sim", action="store_true",
@@ -43,14 +44,18 @@ GROUP.add_argument("-a", "--aer", action="store_true",
                    Default is Aer statevector simulator.
                    Use -a --qasm-simulator to get Aer qasm simulator.
                    Use -a --unitary-simulator to get Aer unitary simulator.""")
-PARSER.add_argument("--qasm_simulator", action="store_true",
-                    help="""With -a use Aer qasm simulator
-                    instead of Aer statevector simulator""")
-PARSER.add_argument("--unitary_simulator", action="store_true",
-                    help="""With -a use Aer unitary simulator
-                    instead of Aer statevector simulator""")
+GROUP.add_argument("--qcgpu", action="store_true",
+                   help="""Use qcgpu simulator.
+                   Default is statevector simulator.
+                   Use -a --qasm-simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
+GROUPB.add_argument("--qasm_simulator", action="store_true",
+                    help="""With -a use Aer or qcgpu qasm simulator
+                    instead of statevector simulator""")
+GROUPB.add_argument("--unitary_simulator", action="store_true",
+                    help="""With -a use Aer or qcgpu unitary simulator
+                    instead of statevector simulator""")
 PARSER.add_argument("--api_provider", action="store",
                     help="""Backend api provider,
                     currently supported are [IBMQ | QI].
@@ -165,26 +170,33 @@ def csv_str(description, sort_keys, sort_counts):
 # ##############
 
 
-def choose_backend(aer, token, url, b_end, sim, qubits):
+def choose_backend(token, url, b_end, sim, qubits,
+                   local_sim=None, local_sim_type=None):
     """Return backend selected by user if account will activate and allow."""
     backend = None
-    if aer:
-        # Import Aer
-        from qiskit import BasicAer
-        # Run the quantum circuit on a statevector simulator backend
-        backend = BasicAer.get_backend('qasm_simulator'
-                                       if QASM_SIMULATOR else
-                                       'statevector_simulator')
+
+    if local_sim:
+        if local_sim == 'aer':
+            from qiskit import BasicAer
+            backend = BasicAer.get_backend(local_sim_type)
+
+        elif local_sim == 'qcgpu':
+            from qiskit_qcgpu_provider import QCGPUProvider
+            backend = QCGPUProvider().get_backend(local_sim_type)
+
     else:
         provider = account_fu(token, url)
         verbosity("Provider is " + str(provider), 3)
         verbosity("provider.backends is " + str(provider.backends()), 3)
+
         if b_end:
             backend = provider.get_backend(b_end)
             verbosity('b_end provider.get_backend() returns ' + str(backend), 3)
+
         elif sim:
             backend = provider.get_backend('ibmq_qasm_simulator')
             verbosity('sim provider.get_backend() returns ' + str(backend), 3)
+
         else:
             from qiskit.providers.ibmq import least_busy
             large_enough_devices = provider.backends(
@@ -438,6 +450,7 @@ URL = ARGS.url
 QISKIT_VERSION = ARGS.qiskit_version
 AER = ARGS.aer
 QASM_SIMULATOR = ARGS.qasm_simulator
+UNITARY_SIMULATOR = ARGS.unitary_simulator
 SIM = ARGS.sim
 QUBITS = ARGS.qubits
 FILEPATH = ARGS.filepath
@@ -453,6 +466,7 @@ FIGURE_BASENAME = ARGS.figure_basename
 HISTOGRAM = ARGS.histogram
 STATUS = ARGS.status
 BACKENDS = ARGS.backends
+QCGPU = ARGS.qcgpu
 
 if QISKIT_VERSION:
     try:
@@ -496,8 +510,22 @@ elif STATUS:
     exit(0)
 
 else:
-    BACKEND = choose_backend(AER, TOKEN, URL,
-                             BACKEND_NAME, SIM, QUBITS)
+    LOCAL_SIM = None
+    if AER:
+        LOCAL_SIM = 'aer'
+    if QCGPU:
+        LOCAL_SIM = 'qcgpu'
+
+    LOCAL_SIM_TYPE = 'statevector_simulator'
+    if QASM_SIMULATOR:
+        LOCAL_SIM_TYPE = 'qasm_simulator'
+    if UNITARY_SIMULATOR:
+        LOCAL_SIM_TYPE = 'unitary_simulator'
+
+    BACKEND = choose_backend(TOKEN, URL,
+                             BACKEND_NAME, SIM, QUBITS,
+                             local_sim=LOCAL_SIM,
+                             local_sim_type=LOCAL_SIM_TYPE)
 
 if not FILEPATH:
     one_exp(None, BACKEND, OUTFILE, TRANSPILE,

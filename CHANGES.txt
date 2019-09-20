@@ -1,7 +1,10 @@
-Changes by revision to qis_job
+Changes by revision to qis_job / qasm_job
 
 v2.4:
+	- support qiskit-qcgpu-simulator
+	- support aer unitary_simulator
 	- check for counts before trying to print
+	
 v2.3:
 	- refactor result handling
 	- plotting state city
