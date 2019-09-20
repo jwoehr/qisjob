@@ -47,17 +47,17 @@ GROUP.add_argument("-a", "--aer", action="store_true",
 GROUP.add_argument("--qcgpu", action="store_true",
                    help="""Use qcgpu simulator.
                    Default is statevector simulator.
-                   Use -a --qasm-simulator to get qcgpu qasm simulator.""")
+                   Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
 GROUPB.add_argument("--qasm_simulator", action="store_true",
-                    help="""With -a use Aer or qcgpu qasm simulator
+                    help="""With -a or --qcgpu use qasm simulator
                     instead of statevector simulator""")
 GROUPB.add_argument("--unitary_simulator", action="store_true",
-                    help="""With -a use Aer or qcgpu unitary simulator
+                    help="""With -a use unitary simulator
                     instead of statevector simulator""")
 PARSER.add_argument("--api_provider", action="store",
-                    help="""Backend api provider,
+                    help="""Backend remote api provider,
                     currently supported are [IBMQ | QI].
                     Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("--backends", action="store_true",
