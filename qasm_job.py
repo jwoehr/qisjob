@@ -181,7 +181,7 @@ def choose_backend(token, url, b_end, sim, qubits,
             backend = BasicAer.get_backend(local_sim_type)
 
         elif local_sim == 'qcgpu':
-            from qcgpu import QCGPUProvider
+            from qiskit_qcgpu_provider import QCGPUProvider
             backend = QCGPUProvider().get_backend(local_sim_type)
 
     else:
