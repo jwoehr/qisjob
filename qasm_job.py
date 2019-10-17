@@ -511,16 +511,18 @@ elif STATUS:
 
 else:
     LOCAL_SIM = None
+    LOCAL_SIM_TYPE = None
     if AER:
         LOCAL_SIM = 'aer'
-    if QCGPU:
+    elif QCGPU:
         LOCAL_SIM = 'qcgpu'
 
-    LOCAL_SIM_TYPE = 'statevector_simulator'
-    if QASM_SIMULATOR:
-        LOCAL_SIM_TYPE = 'qasm_simulator'
-    if UNITARY_SIMULATOR:
-        LOCAL_SIM_TYPE = 'unitary_simulator'
+    if LOCAL_SIM:
+        LOCAL_SIM_TYPE = 'statevector_simulator'
+        if QASM_SIMULATOR:
+            LOCAL_SIM_TYPE = 'qasm_simulator'
+        elif UNITARY_SIMULATOR:
+            LOCAL_SIM_TYPE = 'unitary_simulator'
 
     BACKEND = choose_backend(TOKEN, URL,
                              BACKEND_NAME, SIM, QUBITS,
