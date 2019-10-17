@@ -493,7 +493,7 @@ if PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(PROPERTIES)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-    PP.pprint(BACKEND.properties())
+    PP.pprint(BACKEND.properties().to_dict())
     exit(0)
 
 elif BACKENDS:
