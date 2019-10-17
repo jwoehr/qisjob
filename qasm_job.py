@@ -297,7 +297,7 @@ def one_exp(filepath, backend, outfile, xpile, shots, memory, j_b, res):
 
     if backend is None:
         print("No backend available, quitting.")
-        exit(100)
+        sys.exit(100)
 
     # Get file
     verbosity("File path is " + ("stdin" if filepath is sys.stdin else filepath), 2)
