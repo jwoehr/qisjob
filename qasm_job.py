@@ -66,16 +66,18 @@ PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on each job, default is 3")
-PARSER.add_argument("-g", "--configuration", action="store",
-                    help="Print configuration for specified backend to stdout and exit 0")
+PARSER.add_argument("-g", "--configuration", action="store_true",
+                    help="""Print configuration for backend specified by -b
+                    to stdout and exit 0""")
 PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print job dictionary")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-o", "--outfile", action="store",
                     help="Write appending CSV to outfile, default is stdout")
-PARSER.add_argument("-p", "--properties", action="store",
-                    help="Print properties for specified backend to stdout and exit 0")
+PARSER.add_argument("-p", "--properties", action="store_true",
+                    help="""Print properties for backend specified by -b to
+                    stdout and exit 0""")
 PARSER.add_argument("-q", "--qubits", type=int, action="store", default=5,
                     help="Number of qubits for the experiment, default is 5")
 PARSER.add_argument("--qiskit_version", action="store_true",
@@ -494,14 +496,14 @@ if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
 
 if CONFIGURATION:
     PROVIDER = account_fu(TOKEN, URL)
-    BACKEND = PROVIDER.get_backend(CONFIGURATION)
+    BACKEND = PROVIDER.get_backend(BACKEND_NAME)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.configuration().to_dict())
     sys.exit(0)
 
 if PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
-    BACKEND = PROVIDER.get_backend(PROPERTIES)
+    BACKEND = PROVIDER.get_backend(BACKEND_NAME)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties().to_dict())
     sys.exit(0)
