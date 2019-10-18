@@ -1,5 +1,13 @@
 Changes by revision to qis_job / qasm_job
 
+
+v2.5:
+    - more sample files
+    - --properties now does to_dict() before pretty printing
+    - -g --configuration prints backend configuration
+    - -p and -g take backend name from -b switch
+    - various bug fixes
+
 v2.4:
 	- support qiskit-qcgpu-simulator
 	- support aer unitary_simulator
