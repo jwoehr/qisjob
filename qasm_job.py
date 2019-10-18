@@ -66,6 +66,8 @@ PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on each job, default is 3")
+PARSER.add_argument("-g", "--configuration", action="store",
+                    help="Print configuration for specified backend to stdout and exit 0")
 PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print job dictionary")
 PARSER.add_argument("-m", "--memory", action="store_true",
@@ -364,7 +366,7 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
 
     if backend is None:
         print("No backend available, quitting.")
-        exit(100)
+        sys.exit(100)
 
     circs = []
 
@@ -467,16 +469,17 @@ HISTOGRAM = ARGS.histogram
 STATUS = ARGS.status
 BACKENDS = ARGS.backends
 QCGPU = ARGS.qcgpu
+CONFIGURATION = ARGS.configuration
 
 if QISKIT_VERSION:
     try:
         __qiskit_version__
     except NameError:
         print("__qiskit_version__ not present in this Qiskit level.")
-        exit(1)
+        sys.exit(1)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(__qiskit_version__)
-    exit(0)
+    sys.exit(0)
 
 if PLOT_STATE_CITY:
     from qiskit.visualization import plot_state_city
@@ -487,27 +490,34 @@ if HISTOGRAM:
 if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
     print('--token and --url must be used together for IBMQ provider or not at all',
           file=sys.stderr)
-    exit(1)
+    sys.exit(1)
+
+if CONFIGURATION:
+    PROVIDER = account_fu(TOKEN, URL)
+    BACKEND = PROVIDER.get_backend(CONFIGURATION)
+    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+    PP.pprint(BACKEND.configuration().to_dict())
+    sys.exit(0)
 
 if PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(PROPERTIES)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties().to_dict())
-    exit(0)
+    sys.exit(0)
 
 elif BACKENDS:
     PROVIDER = account_fu(TOKEN, URL)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(PROVIDER.backends())
-    exit(0)
+    sys.exit(0)
 
 elif STATUS:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME) if BACKEND_NAME else None
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(get_statuses(PROVIDER, BACKEND))
-    exit(0)
+    sys.exit(0)
 
 else:
     LOCAL_SIM = None
