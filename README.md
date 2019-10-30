@@ -26,9 +26,10 @@ $ python qasm_job.py -h
 usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                    [--qasm_simulator | --unitary_simulator]
                    [--api_provider API_PROVIDER] [--backends] [-1]
-                   [-c CREDITS] [-g] [-j] [-m] [-o OUTFILE] [-p] [-q QUBITS]
-                   [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--histogram]
-                   [--plot_state_city PLOT_STATE_CITY]
+                   [-c CREDITS] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID]
+                   [--job_result JOB_RESULT] [-m] [-o OUTFILE] [-p]
+                   [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
+                   [--histogram] [--plot_state_city PLOT_STATE_CITY]
                    [--figure_basename FIGURE_BASENAME] [--qasm] [--status]
                    [--token TOKEN] [--url URL]
                    [filepath [filepath ...]]
@@ -70,7 +71,11 @@ optional arguments:
                         Max credits to expend on each job, default is 3
   -g, --configuration   Print configuration for backend specified by -b to
                         stdout and exit 0
-  -j, --job             Print job dictionary
+  -j, --job             Print your job's dictionary
+  --jobs JOBS           Print n jobs and status for -b backend and exit
+  --job_id JOB_ID       Print status of job_id n for -b backend and exit
+  --job_result JOB_RESULT
+                        Print result of job_id n for -b backend and exit
   -m, --memory          Print individual results of multishot experiment
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout
@@ -106,4 +111,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2019-10-18
+Jack Woehr 2019-10-30
