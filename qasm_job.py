@@ -70,7 +70,11 @@ PARSER.add_argument("-g", "--configuration", action="store_true",
                     help="""Print configuration for backend specified by -b
                     to stdout and exit 0""")
 PARSER.add_argument("-j", "--job", action="store_true",
-                    help="Print job dictionary")
+                    help="Print your job's dictionary")
+PARSER.add_argument("--jobs", type=int, action="store",
+                    help="Print n jobs and status for -b backend and exit")
+PARSER.add_argument("--job_id", type=str, action="store",
+                    help="Print status of job_id n for -b backend and exit")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-o", "--outfile", action="store",
@@ -463,6 +467,8 @@ TRANSPILE = ARGS.transpile
 SHOTS = ARGS.shots
 MEMORY = ARGS.memory
 JOB = ARGS.job
+JOBS = ARGS.jobs
+JOB_ID = ARGS.job_id
 RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
 PLOT_STATE_CITY = ARGS.plot_state_city
@@ -494,6 +500,8 @@ if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
           file=sys.stderr)
     sys.exit(1)
 
+# print("jobs" + str(JOBS))
+# print("JOB_ID" + str(JOB_ID))
 if CONFIGURATION:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME)
@@ -501,7 +509,7 @@ if CONFIGURATION:
     PP.pprint(BACKEND.configuration().to_dict())
     sys.exit(0)
 
-if PROPERTIES:
+elif PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME)
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
@@ -520,6 +528,28 @@ elif STATUS:
     PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(get_statuses(PROVIDER, BACKEND))
     sys.exit(0)
+
+elif JOBS or JOB_ID:
+    if not BACKEND_NAME:
+        print("--jobs or --JOB_ID also require --backend")
+        sys.exit(12)
+
+    f_string = "Job {} {}"
+
+    if JOBS:
+        PROVIDER = account_fu(TOKEN, URL)
+        BACKEND = PROVIDER.get_backend(BACKEND_NAME)
+        be_jobs = BACKEND.jobs(limit=JOBS)
+        for a_job in be_jobs:
+            print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+        sys.exit(0)
+
+    elif JOB_ID:
+        PROVIDER = account_fu(TOKEN, URL)
+        BACKEND = PROVIDER.get_backend(BACKEND_NAME)
+        a_job = BACKEND.retrieve_job(JOB_ID)
+        print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+        sys.exit(0)
 
 else:
     LOCAL_SIM = None
