@@ -75,6 +75,8 @@ PARSER.add_argument("--jobs", type=int, action="store",
                     help="Print n jobs and status for -b backend and exit")
 PARSER.add_argument("--job_id", type=str, action="store",
                     help="Print status of job_id n for -b backend and exit")
+PARSER.add_argument("--job_result", type=str, action="store",
+                    help="Print result of job_id n for -b backend and exit")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-o", "--outfile", action="store",
@@ -469,6 +471,7 @@ MEMORY = ARGS.memory
 JOB = ARGS.job
 JOBS = ARGS.jobs
 JOB_ID = ARGS.job_id
+JOB_RESULT = ARGS.job_result
 RESULT = ARGS.result
 BACKEND_NAME = ARGS.backend
 PLOT_STATE_CITY = ARGS.plot_state_city
@@ -529,9 +532,9 @@ elif STATUS:
     PP.pprint(get_statuses(PROVIDER, BACKEND))
     sys.exit(0)
 
-elif JOBS or JOB_ID:
+elif JOBS or JOB_ID or JOB_RESULT:
     if not BACKEND_NAME:
-        print("--jobs or --JOB_ID also require --backend")
+        print("--jobs or --job_id or --job_result also require --backend")
         sys.exit(12)
 
     f_string = "Job {} {}"
@@ -549,6 +552,15 @@ elif JOBS or JOB_ID:
         BACKEND = PROVIDER.get_backend(BACKEND_NAME)
         a_job = BACKEND.retrieve_job(JOB_ID)
         print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+        sys.exit(0)
+
+    elif JOB_RESULT:
+        PROVIDER = account_fu(TOKEN, URL)
+        BACKEND = PROVIDER.get_backend(BACKEND_NAME)
+        a_job = BACKEND.retrieve_job(JOB_RESULT)
+        print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+        PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+        PP.pprint(a_job.result().to_dict())
         sys.exit(0)
 
 else:
