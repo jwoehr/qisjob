@@ -342,7 +342,7 @@ def one_exp(filepath, backend, outfile, xpile, shots, memory, j_b, res):
     job_exp = execute(circ, backend=backend, shots=shots,
                       max_credits=max_credits, memory=memory)
     if j_b:
-        print(job_exp)
+        PP.pprint(job_exp.to_dict())
 
     job_monitor(job_exp)
     result_exp = job_exp.result()
@@ -414,7 +414,7 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
     job_exp = execute(circs, backend=backend, shots=shots,
                       max_credits=max_credits, memory=memory)
     if j_b:
-        print(job_exp)
+        PP.pprint(job_exp.to_dict())
 
     job_monitor(job_exp)
     result_exp = job_exp.result()
@@ -481,6 +481,7 @@ STATUS = ARGS.status
 BACKENDS = ARGS.backends
 QCGPU = ARGS.qcgpu
 CONFIGURATION = ARGS.configuration
+PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
 
 if QISKIT_VERSION:
     try:
@@ -488,7 +489,6 @@ if QISKIT_VERSION:
     except NameError:
         print("__qiskit_version__ not present in this Qiskit level.")
         sys.exit(1)
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(__qiskit_version__)
     sys.exit(0)
 
@@ -508,27 +508,23 @@ if API_PROVIDER == "IBMQ" and ((TOKEN and not URL) or (URL and not TOKEN)):
 if CONFIGURATION:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME)
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.configuration().to_dict())
     sys.exit(0)
 
 elif PROPERTIES:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME)
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(BACKEND.properties().to_dict())
     sys.exit(0)
 
 elif BACKENDS:
     PROVIDER = account_fu(TOKEN, URL)
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(PROVIDER.backends())
     sys.exit(0)
 
 elif STATUS:
     PROVIDER = account_fu(TOKEN, URL)
     BACKEND = PROVIDER.get_backend(BACKEND_NAME) if BACKEND_NAME else None
-    PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
     PP.pprint(get_statuses(PROVIDER, BACKEND))
     sys.exit(0)
 
@@ -559,7 +555,6 @@ elif JOBS or JOB_ID or JOB_RESULT:
         BACKEND = PROVIDER.get_backend(BACKEND_NAME)
         a_job = BACKEND.retrieve_job(JOB_RESULT)
         print(f_string.format(str(a_job.job_id()), str(a_job.status())))
-        PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
         PP.pprint(a_job.result().to_dict())
         sys.exit(0)
 
