@@ -22,7 +22,6 @@ argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs
 * Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
-$ python qasm_job.py -h
 usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                    [--qasm_simulator | --unitary_simulator]
                    [--api_provider API_PROVIDER] [--backends] [-1]
@@ -72,10 +71,11 @@ optional arguments:
   -g, --configuration   Print configuration for backend specified by -b to
                         stdout and exit 0
   -j, --job             Print your job's dictionary
-  --jobs JOBS           Print n jobs and status for -b backend and exit
-  --job_id JOB_ID       Print status of job_id n for -b backend and exit
+  --jobs JOBS           Print JOBS jobs and status for -b backend and exit
+  --job_id JOB_ID       Print job number JOB_ID for -b backend and exit
   --job_result JOB_RESULT
-                        Print result of job_id n for -b backend and exit
+                        Print result of job number JOB_RESULT for -b backend
+                        and exit
   -m, --memory          Print individual results of multishot experiment
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout

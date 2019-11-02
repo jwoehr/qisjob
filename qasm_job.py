@@ -72,11 +72,11 @@ PARSER.add_argument("-g", "--configuration", action="store_true",
 PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print your job's dictionary")
 PARSER.add_argument("--jobs", type=int, action="store",
-                    help="Print n jobs and status for -b backend and exit")
+                    help="Print JOBS jobs and status for -b backend and exit")
 PARSER.add_argument("--job_id", type=str, action="store",
-                    help="Print status of job_id n for -b backend and exit")
+                    help="Print job number JOB_ID for -b backend and exit")
 PARSER.add_argument("--job_result", type=str, action="store",
-                    help="Print result of job_id n for -b backend and exit")
+                    help="Print result of job number JOB_RESULT for -b backend and exit")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-o", "--outfile", action="store",
@@ -547,7 +547,7 @@ elif JOBS or JOB_ID or JOB_RESULT:
         PROVIDER = account_fu(TOKEN, URL)
         BACKEND = PROVIDER.get_backend(BACKEND_NAME)
         a_job = BACKEND.retrieve_job(JOB_ID)
-        print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+        PP.pprint(a_job.to_dict())
         sys.exit(0)
 
     elif JOB_RESULT:
