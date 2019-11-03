@@ -1,5 +1,21 @@
-Changes by revision to qis_job / qasm_job
+Changes by revision to qis_job / qasm_job / qc_job
 
+v2.7:
+   - Factor into QisJob object preparatory to
+     adding a qc_job driver.
+   - Output cleanups.
+
+v2.6.2:
+    - --job_id now dumps the whole job
+    - Cleanup of job display
+
+v2.6.1:
+    - Cleanup of output from -j flag.
+
+v2.6:
+    - --jobs gets joblist from --backend
+    - --job_id gets status of specific job from --backend
+    - --job_result prints results of specific job from --backend
 
 v2.5:
     - more sample files
@@ -9,14 +25,14 @@ v2.5:
     - various bug fixes
 
 v2.4:
-	- support qiskit-qcgpu-simulator
-	- support aer unitary_simulator
-	- check for counts before trying to print
-	
+    - support qiskit-qcgpu-simulator
+    - support aer unitary_simulator
+    - check for counts before trying to print
+
 v2.3:
-	- refactor result handling
-	- plotting state city
-	- plotting histogram
-	- choose specific Aer simulator
-	- --status to show status
-	- --backends to list backends
+    - refactor result handling
+    - plotting state city
+    - plotting histogram
+    - choose specific Aer simulator
+    - --status to show status
+    - --backends to list backends
