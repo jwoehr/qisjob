@@ -18,18 +18,20 @@ from qiskit.compiler import transpile
 from qiskit.tools.monitor import job_monitor
 
 
-class QisJob: #pylint: disable-msg=too-many-instance-attributes
+class QisJob:  # pylint: disable-msg=too-many-instance-attributes
     """Embody preparation, execution, display of Qiskit job or jobs"""
-    def __init__(self, filepaths=None, #pylint: disable-msg=too-many-arguments, too-many-locals
+    def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals
                  provider_name="IBMQ", backend_name=None,
                  token=None, url=None,
                  num_qubits=5, shots=1024, max_credits=3,
-                 outfile=None, one_job=False, qasm=False,
+                 outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
-                 qcgpu=False,
-                 print_job=False, memory=False, result=False,
-                 jobs_status=False, job_id=False, job_result=False,
+                 qcgpu=False, use_sim=False,
+                 xpile=False,
+                 print_job=False, memory=False, show_result=False,
+                 jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
+                 show_statuses=False,
                  print_histogram=False, print_state_city=0, figure_basename='figout',
                  show_q_version=False, verbose=0):
         """Initialize factors from commandline options"""
@@ -43,22 +45,25 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         self.num_qubits = num_qubits
         self.shots = shots
         self.max_credits = max_credits
-        self.outfile = outfile
+        self.outfile_path = outfile_path
         self.one_job = one_job
         self.qasm = qasm
         self.use_aer = use_aer
         self.use_qasm_simulator = use_qasm_simulator
         self.use_unitary_simulator = use_unitary_simulator
         self.qcgpu = qcgpu
+        self.use_sim = use_sim
+        self.xpile = xpile
         self.print_job = print_job
         self.memory = memory
-        self.result = result
+        self.show_result = show_result
         self.jobs_status = jobs_status
         self.job_id = job_id
         self.job_result = job_result
         self.show_backends = show_backends
         self.show_configuration = show_configuration
         self.show_properties = show_properties
+        self.show_statuses = show_statuses
         self.print_histogram = print_histogram
         self.print_state_city = print_state_city
         self.figure_basename = figure_basename
@@ -66,12 +71,86 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
 
+    def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements
+        """Run the whole program given ctor args from the driver script"""
+
+        if self.show_q_version:
+            from qiskit import __qiskit_version__
+            self._pp.pprint(__qiskit_version__)
+            sys.exit(0)
+
+        elif self.provider_name == "IBMQ" and ((self.token and not self.url)
+                                               or (self.url and not self.token)):
+            print('--token and --url must be used together for IBMQ provider or not at all',
+                  file=sys.stderr)
+            sys.exit(1)
+
+        elif self.show_configuration:
+            self.account_fu()
+            self.backend = self.provider.get_backend(self.backend_name)
+            self._pp.pprint(self.backend.configuration().to_dict())
+            sys.exit(0)
+
+        elif self.show_properties:
+            self.account_fu()
+            self.backend = self.provider.get_backend(self.backend_name)
+            self._pp.pprint(self.backend.properties().to_dict())
+            sys.exit(0)
+
+        elif self.show_backends:
+            self.account_fu()
+            self._pp.pprint(self.provider.backends())
+            sys.exit(0)
+
+        elif self.show_statuses:
+            self.account_fu()
+            if not self.backend_name:
+                print("Error, need --backend for --status")
+                sys.exit(1)
+            self.backend = self.provider.get_backend(self.backend_name)
+            self._pp.pprint(self.get_statuses())
+
+        elif self.jobs_status or self.job_id or self.job_result:
+            if not self.backend_name:
+                print("--jobs or --job_id or --job_result also require --backend")
+                sys.exit(12)
+
+            self.account_fu()
+            self.backend = self.provider.get_backend(self.backend_name)
+            f_string = "Job {} {}"
+
+            if self.jobs_status:
+                be_jobs = self.backend.jobs(limit=self.jobs_status)
+                for a_job in be_jobs:
+                    print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+                    sys.exit(0)
+
+            elif self.job_id:
+                a_job = self.backend.retrieve_job(self.job_id)
+                self._pp.pprint(a_job.to_dict())
+                sys.exit(0)
+
+            elif self.job_result:
+                a_job = self.backend.retrieve_job(self.job_result)
+                print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+                self._pp.pprint(a_job.result().to_dict())
+                sys.exit(0)
+
+        else:
+            self.choose_backend()
+            if not self.filepaths:
+                self.one_exp()
+            else:
+                if self.one_job:
+                    self.multi_exps()
+                else:
+                    for f_path in self.filepaths:
+                        self.one_exp(f_path)
 
     def verbosity(self, text, count):
         """Print text if count exceeds verbose level"""
         if self.verbose >= count:
             print(text)
-
 
     def ibmq_account_fu(self):
         """Load IBMQ account appropriately and return provider"""
@@ -79,7 +158,6 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
             self.provider = IBMQ.enable_account(self.token, url=self.url)
         else:
             self.provider = IBMQ.load_account()
-
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and return provider"""
@@ -90,55 +168,55 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         QI.set_authentication()
         self.provider = QI
 
-
     def account_fu(self):
         """Load account from correct API provider"""
         if self.provider_name == "IBMQ":
-            self.provider = self.ibmq_account_fu(self.token, self.url)
+            self.ibmq_account_fu()
         elif self.provider_name == "QI":
-            self.provider = self.qi_account_fu(self.token)
+            self.qi_account_fu()
 
-
-    def choose_backend(self, api_provider, b_end=None,
-                       token=None, url=None,
-                       qubits=5, sim=None, local_sim=None, local_sim_type=None):
+    def choose_backend(self):
         """Return backend selected by user if account will activate and allow."""
-        backend = None
+        self.backend = None
 
-        if local_sim:
-            if local_sim == 'aer':
-                from qiskit import BasicAer
-                backend = BasicAer.get_backend(local_sim_type)
+        local_sim_type = 'statevector_simulator'
+        if self.use_qasm_simulator:
+            local_sim_type = 'qasm_simulator'
+        elif self.use_unitary_simulator:
+            local_sim_type = 'unitary_simulator'
 
-            elif local_sim == 'qcgpu':
-                from qiskit_qcgpu_provider import QCGPUProvider
-                backend = QCGPUProvider().get_backend(local_sim_type)
+        if self.use_aer:
+            from qiskit import BasicAer
+            self.backend = BasicAer.get_backend(local_sim_type)
+
+        elif self.qcgpu:
+            from qiskit_qcgpu_provider import QCGPUProvider
+            self.backend = QCGPUProvider().get_backend(local_sim_type)
 
         else:
-            provider = account_fu(api_provider, token, url)
-            verbosity("Provider is " + str(provider), 3)
-            verbosity("provider.backends is " + str(provider.backends()), 3)
+            self.account_fu()
+            self.verbosity("Provider is " + str(self.provider), 3)
+            self.verbosity("Provider.backends is " + str(self.provider.backends()), 3)
 
-            if b_end:
-                backend = provider.get_backend(b_end)
-                verbosity('b_end provider.get_backend() returns ' + str(backend), 3)
+            if self.backend_name:
+                self.backend = self.provider.get_backend(self.backend_name)
+                self.verbosity('provider.get_backend() returns ' + str(self.backend), 3)
 
-            elif sim:
-                backend = provider.get_backend('ibmq_qasm_simulator')
-                verbosity('sim provider.get_backend() returns ' + str(backend), 3)
+            elif self.use_sim:
+                self.backend = self.provider.get_backend('ibmq_qasm_simulator')
+                self.verbosity('sim provider.get_backend() returns ' + str(self.backend), 3)
 
             else:
                 from qiskit.providers.ibmq import least_busy
-                large_enough_devices = provider.backends(
-                    filters=lambda x: x.configuration().n_qubits >= qubits
+                large_enough_devices = self.provider.backends(
+                    filters=lambda x: x.configuration().n_qubits >= self.num_qubits
                     and not x.configuration().simulator)
-                backend = least_busy(large_enough_devices)
-                verbosity("The best backend is " + backend.name(), 2)
-                verbosity("Backend is " + str(backend), 1)
-        return backend
+                self.backend = least_busy(large_enough_devices)
+                self.verbosity("The best backend is " + self.backend.name(), 2)
+                self.verbosity("Backend is " + str(self.backend), 1)
 
-
-    def csv_str(self, description, sort_keys, sort_counts):
+    @staticmethod
+    def csv_str(description, sort_keys, sort_counts):
         """Generate a cvs as a string from sorted keys and sorted counts"""
         csv = []
         csv.append(description)
@@ -152,18 +230,18 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         csv.append(counts)
         return csv
 
-
-    def fig_name_str(self, filepath, backend):
+    @staticmethod
+    def fig_name_str(filepath, backend):
         """Create name consisting of filepath, backend and timestamp"""
         return filepath + '_' + str(backend) + '_' + datetime.datetime.now().isoformat()
 
-
-    def save_fig(self, figure, filepath, backend, tail):
+    @staticmethod
+    def save_fig(figure, filepath, backend, tail):
         """Write a figure to an algorithmically named destination file"""
-        figure.savefig(fig_name_str(filepath, backend) + '.' + tail)
+        figure.savefig(QisJob.fig_name_str(filepath, backend) + '.' + tail)
 
-
-    def state_city_plot(self, result_exp, circ, figure_basename, backend, decimals=3):
+    @staticmethod
+    def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
         """Plot state_city style the output state
         result_exp - experiment result
         circ - the circuit
@@ -174,10 +252,10 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         from qiskit.visualization import plot_state_city
         outputstate = result_exp.get_statevector(circ, decimals)
         fig = plot_state_city(outputstate)
-        save_fig(fig, figure_basename, backend, 'state_city.png')
+        QisJob.save_fig(fig, figure_basename, backend, 'state_city.png')
 
-
-    def do_histogram(self, result_exp, circ, figure_basename, backend):
+    @staticmethod
+    def do_histogram(result_exp, circ, figure_basename, backend):
         """Plot histogram style the counts of
         result_exp - experiment result
         circ - the circuit
@@ -187,171 +265,158 @@ class QisJob: #pylint: disable-msg=too-many-instance-attributes
         from qiskit.tools.visualization import plot_histogram
         outputstate = result_exp.get_counts(circ)
         fig = plot_histogram(outputstate)
-        save_fig(fig, figure_basename, backend, 'histogram.png')
+        QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
 
-
-    def process_result(self, result_exp, circ, backend, qasm_source, ofh,
-                       write_qasm=False, memory=False,
-                       plot_state_city=None, histogram=False,
-                       figure_basename=None):
+    def process_result(self, result_exp, circ, qasm_source, ofh):
         """Process the result of one circuit circ
         from result result_exp
         printing to output file handle ofh
         passing original qasm filepath for figure output filename generation
         """
         # Write qasm if requested
-        if write_qasm:
+        if self.qasm:
             ofh.write(qasm_source + '\n')
 
         # Raw data if requested
-        if memory:
+        if self.memory:
             print(result_exp.data(circ))
 
         # Print counts if any measurment was taken
         if 'counts' in result_exp.data(circ):
             counts_exp = result_exp.get_counts(circ)
-            verbosity(counts_exp, 1)
+            self.verbosity(counts_exp, 1)
             sorted_keys = sorted(counts_exp.keys())
             sorted_counts = []
             for i in sorted_keys:
                 sorted_counts.append(counts_exp.get(i))
 
             # Generate CSV
-            output = csv_str(str(backend) + ' ' + datetime.datetime.now().isoformat(),
-                             sorted_keys, sorted_counts)
+            output = QisJob.csv_str(str(self.backend) + ' ' + datetime.datetime.now().isoformat(),
+                                    sorted_keys, sorted_counts)
 
             # Write CSV
             for line in output:
                 ofh.write(line + '\n')
 
-            if plot_state_city:
-                state_city_plot(result_exp, circ, figure_basename,
-                                backend, decimals=plot_state_city)
-            if histogram:
-                histogram(result_exp, circ, figure_basename, backend)
+            if self.print_state_city:
+                QisJob.state_city_plot(result_exp, circ, self.figure_basename,
+                                       self.backend, decimals=self.print_state_city)
+            if self.print_histogram:
+                QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-
-    def one_exp(self, backend, filepath=None, outfile=None, xpile=False, j_b=False,
-                shots=1024, max_credits=3,
-                memory=False, res=False):
+    def one_exp(self, filepath_name=None):
         """Load qasm and run the job, print csv and other selected output"""
 
-        if filepath is None:
-            filepath = sys.stdin
-        if outfile is None:
-            outfile = sys.stdout
+        if filepath_name is None:
+            ifh = sys.stdin
+        else:
+            ifh = open(filepath_name, 'r')
 
-        if backend is None:
+        if self.outfile_path is None:
+            ofh = sys.stdout
+        else:
+            ofh = open(self.outfile_path, 'w')
+
+        if self.backend is None:
             print("No backend available, quitting.")
             sys.exit(100)
 
-        # Get file
-        verbosity("File path is " + ("stdin" if filepath is sys.stdin else filepath), 2)
-        ifh = filepath if filepath is sys.stdin else open(filepath, "r")
-        verbosity("File handle is " + str(ifh), 3)
+        self.verbosity("File path is " + ("stdin" if ifh is sys.stdin else filepath_name), 2)
+        self.verbosity("File handle is " + str(ifh), 3)
 
         # Read source
         qasm_source = ifh.read()
-        if filepath is not sys.stdin:
+        if ifh is not sys.stdin:
             ifh.close()
-        verbosity("qasm source:\n" + qasm_source, 1)
+        self.verbosity("qasm source:\n" + qasm_source, 1)
 
         circ = QuantumCircuit.from_qasm_str(qasm_source)
-        verbosity(circ.draw(), 2)
+        self.verbosity(circ.draw(), 2)
 
-        if xpile:
-            print(transpile(circ, backend=backend))
+        if self.xpile:
+            print(transpile(circ, backend=self.backend))
 
-        job_exp = execute(circ, backend=backend, shots=shots,
-                          max_credits=max_credits, memory=memory)
-        if j_b:
+        job_exp = execute(circ, backend=self.backend, shots=self.shots,
+                          max_credits=self.max_credits, memory=self.memory)
+        if self.print_job:
             self._pp.pprint(job_exp.to_dict())
 
         job_monitor(job_exp)
         result_exp = job_exp.result()
 
-        if res:
-            print(result_exp)
+        if self.show_result:
+            self._pp.pprint(result_exp.to_dict())
 
         # Open outfile
-        verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
-        ofh = outfile if outfile is sys.stdout else open(outfile, "a")
-        verbosity("File handle is " + str(ofh), 3)
+        self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+        self.verbosity("File handle is " + str(ofh), 3)
 
-        process_result(result_exp, circ, memory, backend, qasm_source, ofh)
+        self.process_result(result_exp, circ, qasm_source, ofh)
 
-        if outfile is not sys.stdout:
+        if ofh is not sys.stdout:
             ofh.close()
 
-
-    def multi_exps(self, backend, filepaths, outfile=None, xpile=False, j_b=False,
-                   shots=1024, max_credits=3,
-                   memory=False, res=False):
+    def multi_exps(self):
         """Load qasms and run all as one the job,
         print csvs and other selected output
         """
-
-        if outfile is None:
-            outfile = sys.stdout
-
-        if backend is None:
+        if self.backend is None:
             print("No backend available, quitting.")
             sys.exit(100)
 
+        if self.outfile_path is None:
+            ofh = sys.stdout
+        else:
+            ofh = open(self.outfile_path, 'w')
+
+        self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+        self.verbosity("File handle is " + str(ofh), 3)
+
         circs = []
 
-        for fpath in filepaths:
+        for fpath in self.filepaths:
             # Get file
-            verbosity("File path is " + ("stdin" if fpath is sys.stdin else fpath), 2)
-            ifh = fpath if fpath is sys.stdin else open(fpath, "r")
-            verbosity("File handle is " + str(ifh), 3)
+            self.verbosity("File path is " + fpath, 2)
+            ifh = open(fpath, "r")
+            self.verbosity("File handle is " + str(ifh), 3)
 
             # Read source
             qasm_source = ifh.read()
             ifh.close()
-            verbosity("qasm source:\n" + qasm_source, 1)
+            self.verbosity("qasm source:\n" + qasm_source, 1)
 
             # Create circuit
             circ = QuantumCircuit.from_qasm_str(qasm_source)
-            verbosity(circ.draw(), 2)
+            self.verbosity(circ.draw(), 2)
 
-            if xpile:
-                try:
-                    print(transpile(circ, backend=backend))
-                except NameError:
-                    print('Transpiler not available this Qiskit level.', file=sys.stderr)
+            if self.xpile:
+                print(transpile(circ, backend=self.backend))
 
             circs.append(circ)
 
-        job_exp = execute(circs, backend=backend, shots=shots,
-                          max_credits=max_credits, memory=memory)
-        if j_b:
+        job_exp = execute(circs, backend=self.backend, shots=self.shots,
+                          max_credits=self.max_credits, memory=self.memory)
+        if self.print_job:
             self._pp.pprint(job_exp.to_dict())
 
         job_monitor(job_exp)
         result_exp = job_exp.result()
 
-        if res:
-            print(result_exp)
-
-        # Open outfile
-        verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
-        ofh = outfile if outfile is sys.stdout else open(outfile, "a")
-        verbosity("File handle is " + str(ofh), 3)
+        if self.show_result:
+            self._pp.pprint(result_exp.to_dict())
 
         for circ in circs:
-            process_result(result_exp, circ, memory, backend, qasm_source, ofh)
+            self.process_result(result_exp, circ, qasm_source, ofh)
 
-        if outfile is not sys.stdout:
+        if ofh is not sys.stdout:
             ofh.close()
 
-
-    def get_statuses(self, provider, backend):
+    def get_statuses(self):
         """Return backend status tuple(s)"""
         stat = ''
-        if backend:
-            stat = backend.status()
+        if self.backend:
+            stat = self.backend.status()
         else:
-            for b_e in provider.backends():
+            for b_e in self.provider.backends():
                 stat += str(b_e.status())
         return stat
