@@ -14,9 +14,56 @@ import sys
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
-from qiskit import __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.tools.monitor import job_monitor
+
+
+class QisJob: #pylint: disable-msg=too-many-instance-attributes
+    """Embody preparation, execution, display of Qiskit job or jobs"""
+    def __init__(self, filepaths=None, #pylint: disable-msg=too-many-arguments, too-many-locals
+                 provider_name="IBMQ", backend_name=None,
+                 token=None, url=None,
+                 num_qubits=5, shots=1024, max_credits=3,
+                 outfile=None, one_job=False, qasm=False,
+                 use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
+                 qcgpu=False,
+                 print_job=False, memory=False, result=False,
+                 jobs_status=False, job_id=False, job_result=False,
+                 show_backends=False, show_configuration=False, show_properties=False,
+                 print_histogram=False, print_state_city=0, figure_basename='figout',
+                 show_q_version=False, verbose=0):
+        """Initialize factors from commandline options"""
+        self.provider_name = provider_name
+        self.filepaths = filepaths
+        self.backend_name = backend_name
+        self.token = token
+        self.url = url
+        self.num_qubits = num_qubits
+        self.shots = shots
+        self.max_credits = max_credits
+        self.outfile = outfile
+        self.one_job = one_job
+        self.qasm = qasm
+        self.use_aer = use_aer
+        self.use_qasm_simulator = use_qasm_simulator
+        self.use_unitary_simulator = use_unitary_simulator
+        self.qcgpu = qcgpu
+        self.print_job = print_job
+        self.memory = memory
+        self.result = result
+        self.jobs_status = jobs_status
+        self.job_id = job_id
+        self.job_result = job_result
+        self.show_backends = show_backends
+        self.show_configuration = show_configuration
+        self.show_properties = show_properties
+        self.print_histogram = print_histogram
+        self.print_state_city = print_state_city
+        self.figure_basename = figure_basename
+        self.show_q_version = show_q_version
+        self.verbose = verbose
+        self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+
 
 _PP = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
 
@@ -129,31 +176,36 @@ def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
     backend - backend run on
     decimals - how many decimal places
     """
+    from qiskit.visualization import plot_state_city
     outputstate = result_exp.get_statevector(circ, decimals)
     fig = plot_state_city(outputstate)
     save_fig(fig, figure_basename, backend, 'state_city.png')
 
 
-def histogram(result_exp, circ, figure_basename, backend):
+def do_histogram(result_exp, circ, figure_basename, backend):
     """Plot histogram style the counts of
     result_exp - experiment result
     circ - the circuit
     figure_basename - base file name of output
     backend - backend run on
     """
+    from qiskit.tools.visualization import plot_histogram
     outputstate = result_exp.get_counts(circ)
     fig = plot_histogram(outputstate)
     save_fig(fig, figure_basename, backend, 'histogram.png')
 
 
-def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
+def process_result(result_exp, circ, backend, qasm_source, ofh,
+                   write_qasm=False, memory=False,
+                   plot_state_city=None, histogram=False,
+                   figure_basename=None, verbose=0):
     """Process the result of one circuit circ
     from result result_exp
     printing to output file handle ofh
     passing original qasm filepath for figure output filename generation
     """
     # Write qasm if requested
-    if ARGS.qasm:
+    if write_qasm:
         ofh.write(qasm_source + '\n')
 
     # Raw data if requested
@@ -163,7 +215,7 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
     # Print counts if any measurment was taken
     if 'counts' in result_exp.data(circ):
         counts_exp = result_exp.get_counts(circ)
-        verbosity(counts_exp, 1)
+        verbosity(counts_exp, 1, verbose)
         sorted_keys = sorted(counts_exp.keys())
         sorted_counts = []
         for i in sorted_keys:
@@ -177,16 +229,16 @@ def process_result(result_exp, circ, memory, backend, qasm_source, ofh):
         for line in output:
             ofh.write(line + '\n')
 
-        if PLOT_STATE_CITY:
-            state_city_plot(result_exp, circ, FIGURE_BASENAME,
-                            backend, decimals=PLOT_STATE_CITY)
-        if HISTOGRAM:
-            histogram(result_exp, circ, FIGURE_BASENAME, backend)
+        if plot_state_city:
+            state_city_plot(result_exp, circ, figure_basename,
+                            backend, decimals=plot_state_city)
+        if histogram:
+            histogram(result_exp, circ, figure_basename, backend)
 
 
 def one_exp(backend, filepath=None, outfile=None, xpile=False, j_b=False,
-            shots=1024, credits=3,
-            memory=False, res=False, verbose=False):
+            shots=1024, max_credits=3,
+            memory=False, res=False, verbose=0):
     """Load qasm and run the job, print csv and other selected output"""
 
     if filepath is None:
@@ -201,7 +253,7 @@ def one_exp(backend, filepath=None, outfile=None, xpile=False, j_b=False,
     # Get file
     verbosity("File path is " + ("stdin" if filepath is sys.stdin else filepath), 2, verbose)
     ifh = filepath if filepath is sys.stdin else open(filepath, "r")
-    verbosity("File handle is " + str(ifh), 3)
+    verbosity("File handle is " + str(ifh), 3, verbose)
 
     # Read source
     qasm_source = ifh.read()
@@ -210,13 +262,13 @@ def one_exp(backend, filepath=None, outfile=None, xpile=False, j_b=False,
     verbosity("qasm source:\n" + qasm_source, 1, verbose)
 
     circ = QuantumCircuit.from_qasm_str(qasm_source)
-    verbosity(circ.draw(), 2)
+    verbosity(circ.draw(), 2, verbose)
 
     if xpile:
         print(transpile(circ, backend=backend))
 
     job_exp = execute(circ, backend=backend, shots=shots,
-                      max_credits=credits, memory=memory)
+                      max_credits=max_credits, memory=memory)
     if j_b:
         _PP.pprint(job_exp.to_dict())
 
@@ -227,9 +279,9 @@ def one_exp(backend, filepath=None, outfile=None, xpile=False, j_b=False,
         print(result_exp)
 
     # Open outfile
-    verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
+    verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2, verbose)
     ofh = outfile if outfile is sys.stdout else open(outfile, "a")
-    verbosity("File handle is " + str(ofh), 3)
+    verbosity("File handle is " + str(ofh), 3, verbose)
 
     process_result(result_exp, circ, memory, backend, qasm_source, ofh)
 
@@ -237,7 +289,9 @@ def one_exp(backend, filepath=None, outfile=None, xpile=False, j_b=False,
         ofh.close()
 
 
-def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
+def multi_exps(backend, filepaths, outfile=None, xpile=False, j_b=False,
+               shots=1024, max_credits=3,
+               memory=False, res=False, verbose=0):
     """Load qasms and run all as one the job,
     print csvs and other selected output
     """
@@ -253,21 +307,18 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
 
     for fpath in filepaths:
         # Get file
-        verbosity("File path is " + ("stdin" if fpath is sys.stdin else fpath), 2)
+        verbosity("File path is " + ("stdin" if fpath is sys.stdin else fpath), 2, verbose)
         ifh = fpath if fpath is sys.stdin else open(fpath, "r")
-        verbosity("File handle is " + str(ifh), 3)
+        verbosity("File handle is " + str(ifh), 3, verbose)
 
         # Read source
         qasm_source = ifh.read()
         ifh.close()
-        verbosity("qasm source:\n" + qasm_source, 1)
+        verbosity("qasm source:\n" + qasm_source, 1, verbose)
 
         # Create circuit
         circ = QuantumCircuit.from_qasm_str(qasm_source)
-        verbosity(circ.draw(), 2)
-
-        # Transpile if requested and available and show transpiled circuit
-        # ################################################################
+        verbosity(circ.draw(), 2, verbose)
 
         if xpile:
             try:
@@ -277,17 +328,10 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
 
         circs.append(circ)
 
-    # Prepare job
-    # ###########
-
-    # Maximum number of credits to spend on executions.
-    max_credits = ARGS.credits
-
-    # Execute
     job_exp = execute(circs, backend=backend, shots=shots,
                       max_credits=max_credits, memory=memory)
     if j_b:
-        PP.pprint(job_exp.to_dict())
+        _PP.pprint(job_exp.to_dict())
 
     job_monitor(job_exp)
     result_exp = job_exp.result()
@@ -296,9 +340,9 @@ def multi_exps(filepaths, backend, outfile, xpile, shots, memory, j_b, res):
         print(result_exp)
 
     # Open outfile
-    verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2)
+    verbosity("Outfile is " + ("stdout" if outfile is sys.stdout else outfile), 2, verbose)
     ofh = outfile if outfile is sys.stdout else open(outfile, "a")
-    verbosity("File handle is " + str(ofh), 3)
+    verbosity("File handle is " + str(ofh), 3, verbose)
 
     for circ in circs:
         process_result(result_exp, circ, memory, backend, qasm_source, ofh)
