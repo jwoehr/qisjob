@@ -1,25 +1,20 @@
 # qis_job
 QISKit Job Control
 
-**`qis_job`** is the (historical) name of this project which provides an [IBM Q Experience](https://quantum-computing.ibm.com)
-argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429) experiment execution script.
+**`qis_job`** is the name of this project which provides:
+* `qasm_job.py` an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429) experiment execution script.
+* `qc_job.py` an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing QuantumCircuit program experiment execution script.
 
-* `qasm_job.py` is the name of the script. The current releases are based on the [QISKit](https://github.com/Qiskit) API 2.
-  * See the earlier release [Qis Job v0.7](https://github.com/jwoehr/qis_job/releases/tag/v0.7) for API 1 support.
-  * For this project you will need to install
-    * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
-    * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
-    * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
-      * If you choose the IBMQ provider, you will need an
-      [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
-      * If you choose the QI provider you will need to install QuTech-Delft/quantuminspire either
-      from [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
-      or with the command `pip install quantuminspire`. You will also need a
-      [Quantum Inspire token](https://www.quantum-inspire.com/account).
-      * **Note**: Currently only IBMQ and QI are supported as providers.
-    * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
+For this project you will need to install
+* [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
+* [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
+* A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
+  * If you choose the IBMQ provider, you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
+  * If you choose the QI provider you will need to install QuTech-Delft/quantuminspire either from [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire) or with the command `pip install quantuminspire`. You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
+* **Note**: Currently only IBMQ and QI are supported as providers.
+* To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
 
-* Additionally, there are example qasm programs in the `qasm_examples` directory.
+Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
 usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
