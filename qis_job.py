@@ -343,7 +343,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if _op and callable(_op):
                 self._pp.pprint(job_exp.to_dict())
             else:
-                self._pp.pprint(job_exp)
+                self._pp.pprint(job_exp.__dict__)
 
         job_monitor(job_exp)
         result_exp = job_exp.result()
