@@ -16,6 +16,9 @@ from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit.compiler import transpile
 from qiskit.tools.monitor import job_monitor
+from quantuminspire.api import QuantumInspireAPI
+from quantuminspire.qiskit import QI
+from quantuminspire.credentials import enable_account
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes
@@ -120,9 +123,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             f_string = "Job {} {}"
 
             if self.jobs_status:
-                be_jobs = self.backend.jobs(limit=self.jobs_status)
+                be_jobs = []
+                if self.provider_name == "QI":
+                    be_jobs = QuantumInspireAPI().get_jobs()
+                else:
+                    be_jobs = self.backend.jobs(limit=self.jobs_status)
                 for a_job in be_jobs:
-                    print(f_string.format(str(a_job.job_id()), str(a_job.status())))
+                    if self.provider_name != "QI":
+                        a_job = a_job.to_dict()
+                    self._pp.pprint(a_job)
                     sys.exit(0)
 
             elif self.job_id:
@@ -161,8 +170,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and return provider"""
-        from quantuminspire.qiskit import QI
-        from quantuminspire.credentials import enable_account
         if self.token:
             enable_account(self.token)
         QI.set_authentication()
