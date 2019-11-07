@@ -1,9 +1,9 @@
 Changes by revision to qis_job / qasm_job / qc_job
 
 v2.7:
-   - Factor into QisJob object preparatory to
-     adding a qc_job driver.
+   - Factor into QisJob object preparatory to adding a qc_job driver.
    - Output cleanups.
+   - --job* commands work better with QI now
 
 v2.6.2:
     - --job_id now dumps the whole job
