@@ -24,7 +24,7 @@ etc.
     * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
   * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
   
-You can load an run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qasm_job.py` script.
+You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qasm_job.py` script.
 
 For this project you will need to install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
