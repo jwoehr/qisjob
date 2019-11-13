@@ -30,7 +30,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
                  qcgpu=False, use_sim=False,
-                 xpile=False,
+                 qc_name=None, xpile=False,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
@@ -56,6 +56,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.use_unitary_simulator = use_unitary_simulator
         self.qcgpu = qcgpu
         self.use_sim = use_sim
+        self.qc_name = qc_name
         self.xpile = xpile
         self.print_job = print_job
         self.memory = memory
@@ -274,7 +275,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         fig = plot_histogram(outputstate)
         QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
 
-    def process_result(self, result_exp, circ, qasm_source, ofh):
+    def process_result(self, result_exp, circ, ofh):
         """Process the result of one circuit circ
         from result result_exp
         printing to output file handle ofh
@@ -282,7 +283,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """
         # Write qasm if requested
         if self.qasm:
-            ofh.write(qasm_source + '\n')
+            ofh.write(circ.qasm() + '\n')
 
         # Raw data if requested
         if self.memory:
@@ -332,12 +333,20 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbosity("File handle is " + str(ifh), 3)
 
         # Read source
-        qasm_source = ifh.read()
+        the_source = ifh.read()
         if ifh is not sys.stdin:
             ifh.close()
-        self.verbosity("qasm source:\n" + qasm_source, 1)
+        self.verbosity("source:\n" + the_source, 1)
 
-        circ = QuantumCircuit.from_qasm_str(qasm_source)
+        if (self.qc_name):
+            my_glob = {}
+            my_loc = {}
+            exec(the_source, my_glob, my_loc)
+            self._pp.pprint(my_loc)
+            circ = my_loc[self.qc_name]
+        else:
+            circ = QuantumCircuit.from_qasm_str(the_source)
+
         self.verbosity(circ.draw(), 2)
 
         if self.xpile:
@@ -362,7 +371,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
         self.verbosity("File handle is " + str(ofh), 3)
 
-        self.process_result(result_exp, circ, qasm_source, ofh)
+        self.process_result(result_exp, circ, ofh)
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -392,12 +401,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.verbosity("File handle is " + str(ifh), 3)
 
             # Read source
-            qasm_source = ifh.read()
+            the_source = ifh.read()
             ifh.close()
-            self.verbosity("qasm source:\n" + qasm_source, 1)
+            self.verbosity("source:\n" + the_source, 1)
 
             # Create circuit
-            circ = QuantumCircuit.from_qasm_str(qasm_source)
+            if (self.qc_name):
+                exec(the_source)
+                exec('circ = ' + self.qc_name)
+            else:
+                circ = QuantumCircuit.from_qasm_str(the_source)
+
             self.verbosity(circ.draw(), 2)
 
             if self.xpile:
@@ -417,7 +431,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self._pp.pprint(result_exp.to_dict())
 
         for circ in circs:
-            self.process_result(result_exp, circ, qasm_source, ofh)
+            self.process_result(result_exp, circ, ofh)
 
         if ofh is not sys.stdout:
             ofh.close()

@@ -1,9 +1,30 @@
 # qis_job
 QISKit Job Control
 
-**`qis_job`** is the name of this project which provides:
-* `qasm_job.py` an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429) experiment execution script.
-* `qc_job.py` an [IBM Q Experience](https://quantum-computing.ibm.com) argument-parsing QuantumCircuit program experiment execution script.
+**`qis_job`** is the name of this project. It provides a script called `qasm_job.py`.
+
+The `qasm_job.py` script loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
+computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com)
+
+The script also provides some utility functions such as:
+
+* enumerating backend platforms
+* checking on status of backend platforms
+* checking on status of jobs
+
+etc.
+
+`qasm_job.py` can run Qiskit experiments expressed as either:
+* [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
+  * Use a well-formed OPENQASM2 file.
+  * Examples are found in the `qasm_examples` subdirectory of the project.
+* a Qiskit Terra `QuantumCircuit` Python code snippet.
+  * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
+  * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qasm_job.py`
+    * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
+  * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
+  
+You can load an run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qasm_job.py` script.
 
 For this project you will need to install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
@@ -14,9 +35,9 @@ For this project you will need to install
 * **Note**: Currently only IBMQ and QI are supported as providers.
 * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
 
-Additionally, there are example qasm programs in the `qasm_examples` directory.
 
 ```
+$ python qasm_job.py --help
 usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                    [--qasm_simulator | --unitary_simulator]
                    [--api_provider API_PROVIDER] [--backends] [-1]
@@ -24,13 +45,15 @@ usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                    [--job_result JOB_RESULT] [-m] [-o OUTFILE] [-p]
                    [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
                    [--histogram] [--plot_state_city PLOT_STATE_CITY]
-                   [--figure_basename FIGURE_BASENAME] [--qasm] [--status]
-                   [--token TOKEN] [--url URL]
+                   [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
+                   [--status] [--token TOKEN] [--url URL]
                    [filepath [filepath ...]]
 
-qasm_job.py : Loads from one or more qasm source files and runs experiments
-with reporting in CSV form. Also can give info on backend properties, qiskit
-version, transpilation, etc. Can run as multiple jobs or all as one job.
+qasm_job.py : Loads from one or more qasm source files or from a file
+containing a Qiskit QuantumCircuit definition in Python and runs as
+experiments with reporting in CSV form. Can graph results as histogram or
+state-city plot. Also can give info on backend properties, qiskit version,
+show circuit transpilation, etc. Can run as multiple jobs or all as one job.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO
 80402-0051. BSD-3 license -- See LICENSE which you should have received with
 this code. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -95,6 +118,7 @@ optional arguments:
                         default='figout', backend name, figure type, and
                         timestamp will be appended
   --qasm                Print qasm file to stdout before running job
+  --qc QC               Indicate circuit name of python-coded QuantumCircuit
   --status              Print status of chosen --backend to stdout (default
                         all backends) of --api_provider (default IBMQ) and
                         exit
@@ -106,4 +130,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2019-10-30
+Jack Woehr 2019-11-14
