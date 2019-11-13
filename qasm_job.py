@@ -28,8 +28,9 @@ import sys
 from qis_job import QisJob
 
 EXPLANATION = """qasm_job.py : Loads from one or more qasm source files and runs
-experiments with reporting in CSV form. Also can give info on backend properties,
-qiskit version, transpilation, etc. Can run as multiple jobs or all as one job.
+experiments with reporting in CSV form. Can graph results as histogram or
+state-city plot. Also can give info on backend properties, qiskit version,
+show circuit transpilation, etc. Can run as multiple jobs or all as one job.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
 BSD-3 license -- See LICENSE which you should have received with this code.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
