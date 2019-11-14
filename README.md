@@ -4,7 +4,7 @@ QISKit Job Control
 **`qis_job`** is the name of this project. It provides a script called `qasm_job.py`.
 
 The `qasm_job.py` script loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
-computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com)
+computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
 The script also provides some utility functions such as:
 
