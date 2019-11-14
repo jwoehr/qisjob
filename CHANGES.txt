@@ -1,7 +1,8 @@
-Changes by revision to qis_job / qasm_job / qc_job
+Changes by revision to QisJob
 
 v2.7:
-   - Factor into QisJob object preparatory to adding a qc_job driver.
+   - Supports loading QuantumCircuit Python code as well as QASM.
+   - Factor into QisJob object.
    - Output cleanups.
    - --job* commands work better with QI now
 
