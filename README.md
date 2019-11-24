@@ -41,10 +41,11 @@ $ python qasm_job.py --help
 usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                    [--qasm_simulator | --unitary_simulator]
                    [--api_provider API_PROVIDER] [--backends] [-1]
-                   [-c CREDITS] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID]
-                   [--job_result JOB_RESULT] [-m] [-o OUTFILE] [-p]
-                   [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
-                   [--histogram] [--plot_state_city PLOT_STATE_CITY]
+                   [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
+                   [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
+                   [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r]
+                   [-t SHOTS] [-v] [-x] [--histogram]
+                   [--plot_state_city PLOT_STATE_CITY]
                    [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
                    [--status] [--token TOKEN] [--url URL]
                    [filepath [filepath ...]]
@@ -86,6 +87,9 @@ optional arguments:
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
                         Max credits to expend on each job, default is 3
+  -d DATETIME, --datetime DATETIME
+                        Datetime 'year,month,day[,hour,min,sec]' for -p,--
+                        properties
   -g, --configuration   Print configuration for backend specified by -b to
                         stdout and exit 0
   -j, --job             Print your job's dictionary
