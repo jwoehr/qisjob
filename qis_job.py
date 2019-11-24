@@ -166,6 +166,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
     @staticmethod
     def get_date_time(datetime_comma_string):
+        """Convert comma-separated date elements to datetime."""
         the_args = []
         the_split = datetime_comma_string.split(',')
         for i in the_split:
@@ -348,7 +349,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             ifh.close()
         self.verbosity("source:\n" + the_source, 1)
 
-        if (self.qc_name):
+        if self.qc_name:
             my_glob = {}
             my_loc = {}
             exec(the_source, my_glob, my_loc)
@@ -416,7 +417,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.verbosity("source:\n" + the_source, 1)
 
             # Create circuit
-            if (self.qc_name):
+            if self.qc_name:
                 my_glob = {}
                 my_loc = {}
                 exec(the_source, my_glob, my_loc)
