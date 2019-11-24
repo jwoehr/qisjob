@@ -53,6 +53,9 @@ PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
                     help="Max credits to expend on each job, default is 3")
+PARSER.add_argument("-d", "--datetime", type=str, action="store",
+                    help="""Datetime 'year,month,day[,hour,min,sec]'
+                    for -p,--properties""")
 PARSER.add_argument("-g", "--configuration", action="store_true",
                     help="""Print configuration for backend specified by -b
                     to stdout and exit 0""")
@@ -112,14 +115,13 @@ PARSER.add_argument("filepath", nargs='*',
 
 ARGS = PARSER.parse_args()
 
-
-
 AER = ARGS.aer
 API_PROVIDER = ARGS.api_provider.upper()
 ARGS = PARSER.parse_args()
 BACKEND_NAME = ARGS.backend
 BACKENDS = ARGS.backends
 CONFIGURATION = ARGS.configuration
+DATETIME = ARGS.datetime
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -161,7 +163,7 @@ QJ = QisJob(filepaths=FILEPATH,
             print_job=JOB, memory=MEMORY, show_result=RESULT,
             jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
             show_backends=BACKENDS, show_configuration=CONFIGURATION, show_properties=PROPERTIES,
-            show_statuses=STATUS,
+            show_statuses=STATUS, date_time=DATETIME,
             print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
             figure_basename=FIGURE_BASENAME,
             show_q_version=QISKIT_VERSION, verbose=VERBOSE)

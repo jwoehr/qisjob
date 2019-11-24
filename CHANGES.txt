@@ -1,4 +1,8 @@
 Changes by revision to QisJob
+v2.7.1:
+   - Support datetime for backend properties
+   - Fix bug in single-job for quantum circuit file input
+   - Remove extraneous printout of env
 
 v2.7:
    - Supports loading QuantumCircuit Python code as well as QASM.

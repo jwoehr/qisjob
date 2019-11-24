@@ -34,7 +34,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
-                 show_statuses=False,
+                 show_statuses=False, date_time=None,
                  print_histogram=False, print_state_city=0, figure_basename='figout',
                  show_q_version=False, verbose=0):
         """Initialize factors from commandline options"""
@@ -68,6 +68,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.show_configuration = show_configuration
         self.show_properties = show_properties
         self.show_statuses = show_statuses
+        self.date_time = date_time
         self.print_histogram = print_histogram
         self.print_state_city = print_state_city
         self.figure_basename = figure_basename
@@ -98,7 +99,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         elif self.show_properties:
             self.account_fu()
             self.backend = self.provider.get_backend(self.backend_name)
-            self._pp.pprint(self.backend.properties().to_dict())
+            the_date_time = QisJob.get_date_time(self.date_time) if self.date_time else None
+            self._pp.pprint(self.backend.properties(datetime=the_date_time).to_dict())
             sys.exit(0)
 
         elif self.show_backends:
@@ -161,6 +163,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Print text if count exceeds verbose level"""
         if self.verbose >= count:
             print(text)
+
+    @staticmethod
+    def get_date_time(datetime_comma_string):
+        the_args = [0, 0, 0, 0, 0, 0]
+        the_split = datetime_comma_string.split(',')
+        for x in range(0, len(the_split)):
+            the_args[x] = int(the_split[x])
+        return datetime.datetime(*the_args)
 
     def ibmq_account_fu(self):
         """Load IBMQ account appropriately and return provider"""
@@ -342,7 +352,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             my_glob = {}
             my_loc = {}
             exec(the_source, my_glob, my_loc)
-            self._pp.pprint(my_loc)
+            # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
             circ = QuantumCircuit.from_qasm_str(the_source)
@@ -407,8 +417,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             # Create circuit
             if (self.qc_name):
-                exec(the_source)
-                exec('circ = ' + self.qc_name)
+                my_glob = {}
+                my_loc = {}
+                exec(the_source, my_glob, my_loc)
+                # self._pp.pprint(my_loc)
+                circ = my_loc[self.qc_name]
             else:
                 circ = QuantumCircuit.from_qasm_str(the_source)
 
