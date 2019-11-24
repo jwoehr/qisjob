@@ -166,10 +166,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
     @staticmethod
     def get_date_time(datetime_comma_string):
-        the_args = [0, 0, 0, 0, 0, 0]
+        the_args = []
         the_split = datetime_comma_string.split(',')
-        for x in range(0, len(the_split)):
-            the_args[x] = int(the_split[x])
+        for i in the_split:
+            the_args.append(int(i))
         return datetime.datetime(*the_args)
 
     def ibmq_account_fu(self):
