@@ -134,4 +134,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2019-11-14
+Jack Woehr 2019-11-24
