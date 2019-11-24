@@ -99,7 +99,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         elif self.show_properties:
             self.account_fu()
             self.backend = self.provider.get_backend(self.backend_name)
-            the_date_time = QisJob.get_date_time(self.date_time) if self.date_time else None
+            the_date_time = QisJob.gen_datetime(self.date_time) if self.date_time else None
             self._pp.pprint(self.backend.properties(datetime=the_date_time).to_dict())
             sys.exit(0)
 
@@ -165,7 +165,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             print(text)
 
     @staticmethod
-    def get_date_time(datetime_comma_string):
+    def gen_datetime(datetime_comma_string):
         """Convert comma-separated date elements to datetime."""
         the_args = []
         the_split = datetime_comma_string.split(',')
@@ -323,7 +323,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.print_histogram:
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-    def one_exp(self, filepath_name=None):
+    def one_exp(self, filepath_name=None): #pylint: disable-msg=too-many-branches
         """Load qasm and run the job, print csv and other selected output"""
 
         if filepath_name is None:
@@ -352,7 +352,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if self.qc_name:
             my_glob = {}
             my_loc = {}
-            exec(the_source, my_glob, my_loc)
+            exec(the_source, my_glob, my_loc) #pylint: disable-msg=exec-used
             # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
@@ -420,7 +420,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.qc_name:
                 my_glob = {}
                 my_loc = {}
-                exec(the_source, my_glob, my_loc)
+                exec(the_source, my_glob, my_loc) #pylint: disable-msg=exec-used
                 # self._pp.pprint(my_loc)
                 circ = my_loc[self.qc_name]
             else:
