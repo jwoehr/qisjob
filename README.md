@@ -128,7 +128,7 @@ optional arguments:
                         exit
   --token TOKEN         Use this token
   --url URL             Use this url
-```
+  ```
 
 It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
 
