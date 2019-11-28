@@ -11,14 +11,18 @@ Created on Sat Nov  2 18:05:21 2019
 import datetime
 import pprint
 import sys
+import warnings
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit.compiler import transpile
 from qiskit.tools.monitor import job_monitor
-from quantuminspire.api import QuantumInspireAPI
-from quantuminspire.qiskit import QI
-from quantuminspire.credentials import enable_account
+try:
+    from quantuminspire.api import QuantumInspireAPI
+    from quantuminspire.qiskit import QI
+    from quantuminspire.credentials import enable_account
+except ImportError:
+    warnings.warn("QuantumInspire not available")
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes
@@ -323,7 +327,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.print_histogram:
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-    def one_exp(self, filepath_name=None): #pylint: disable-msg=too-many-branches
+    def one_exp(self, filepath_name=None):  # pylint: disable-msg=too-many-branches
         """Load qasm and run the job, print csv and other selected output"""
 
         if filepath_name is None:
@@ -352,7 +356,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if self.qc_name:
             my_glob = {}
             my_loc = {}
-            exec(the_source, my_glob, my_loc) #pylint: disable-msg=exec-used
+            exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
             # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
@@ -420,7 +424,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.qc_name:
                 my_glob = {}
                 my_loc = {}
-                exec(the_source, my_glob, my_loc) #pylint: disable-msg=exec-used
+                exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
                 # self._pp.pprint(my_loc)
                 circ = my_loc[self.qc_name]
             else:
