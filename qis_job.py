@@ -22,7 +22,7 @@ try:
     from quantuminspire.qiskit import QI
     from quantuminspire.credentials import enable_account
 except ImportError:
-    warnings.warn("QuantumInspire not available")
+    warnings.warn("QuantumInspire not installed.")
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes
