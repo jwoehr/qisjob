@@ -1,4 +1,8 @@
 Changes by revision to QisJob
+
+v2.7.2:
+	- Warn, don't fail, if QuantumInspire not installed.
+
 v2.7.1:
    - Support datetime for backend properties
    - Fix bug in single-job for quantum circuit file input
