@@ -2,6 +2,9 @@ Changes by revision to QisJob
 
 v2.7.2:
 	- Warn, don't fail, if QuantumInspire not installed.
+	- Added guarded import for Rigetti Forest  
+	- IBMQJobFailureError now prints job.error_mssage() and exits 111
+
 
 v2.7.1:
    - Support datetime for backend properties
