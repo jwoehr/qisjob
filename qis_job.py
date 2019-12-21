@@ -16,6 +16,7 @@ from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit.compiler import transpile
+from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
 from qiskit.tools.monitor import job_monitor
 try:
     from quantuminspire.api import QuantumInspireAPI
@@ -23,6 +24,10 @@ try:
     from quantuminspire.credentials import enable_account
 except ImportError:
     warnings.warn("QuantumInspire not installed.")
+try:
+    from quantastica.qiskit_forest import ForestBackend
+except ImportError:
+    warnings.warn("Rigetti Forest not installed.")
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes
@@ -367,26 +372,32 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if self.xpile:
             print(transpile(circ, backend=self.backend))
 
-        job_exp = execute(circ, backend=self.backend, shots=self.shots,
-                          max_credits=self.max_credits, memory=self.memory)
-        if self.print_job:
-            _op = getattr(job_exp, 'to_dict', None)
-            if _op and callable(_op):
-                self._pp.pprint(job_exp.to_dict())
-            else:
-                self._pp.pprint(job_exp.__dict__)
+        try:
+            job_exp = execute(circ, backend=self.backend, shots=self.shots,
+                              max_credits=self.max_credits, memory=self.memory)
 
-        job_monitor(job_exp)
-        result_exp = job_exp.result()
+            if self.print_job:
+                _op = getattr(job_exp, 'to_dict', None)
+                if _op and callable(_op):
+                    self._pp.pprint(job_exp.to_dict())
+                else:
+                    self._pp.pprint(job_exp.__dict__)
 
-        if self.show_result:
-            self._pp.pprint(result_exp.to_dict())
+            job_monitor(job_exp)
+            result_exp = job_exp.result()
 
-        # Open outfile
-        self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
-        self.verbosity("File handle is " + str(ofh), 3)
+            if self.show_result:
+                self._pp.pprint(result_exp.to_dict())
 
-        self.process_result(result_exp, circ, ofh)
+            # Open outfile
+            self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+            self.verbosity("File handle is " + str(ofh), 3)
+
+            self.process_result(result_exp, circ, ofh)
+
+        except IBMQJobFailureError:
+            print(job_exp.error_message())
+            sys.exit(111)
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -437,19 +448,25 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             circs.append(circ)
 
-        job_exp = execute(circs, backend=self.backend, shots=self.shots,
-                          max_credits=self.max_credits, memory=self.memory)
-        if self.print_job:
-            self._pp.pprint(job_exp.to_dict())
+        try:
+            job_exp = execute(circs, backend=self.backend, shots=self.shots,
+                              max_credits=self.max_credits, memory=self.memory)
 
-        job_monitor(job_exp)
-        result_exp = job_exp.result()
+            if self.print_job:
+                self._pp.pprint(job_exp.to_dict())
 
-        if self.show_result:
-            self._pp.pprint(result_exp.to_dict())
+            job_monitor(job_exp)
+            result_exp = job_exp.result()
 
-        for circ in circs:
-            self.process_result(result_exp, circ, ofh)
+            if self.show_result:
+                self._pp.pprint(result_exp.to_dict())
+
+            for circ in circs:
+                self.process_result(result_exp, circ, ofh)
+
+        except IBMQJobFailureError:
+            print(job_exp.error_message())
+            sys.exit(111)
 
         if ofh is not sys.stdout:
             ofh.close()
