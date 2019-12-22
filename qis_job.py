@@ -38,7 +38,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  num_qubits=5, shots=1024, max_credits=3,
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
-                 qcgpu=False, use_sim=False,
+                 qcgpu=False, use_sim=False, qvm=False,
                  qc_name=None, xpile=False,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
@@ -65,6 +65,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.use_unitary_simulator = use_unitary_simulator
         self.qcgpu = qcgpu
         self.use_sim = use_sim
+        self.qvm = qvm
         self.qc_name = qc_name
         self.xpile = xpile
         self.print_job = print_job
@@ -89,7 +90,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Run the whole program given ctor args from the driver script"""
 
         if self.show_q_version:
-            from qiskit import __qiskit_version__
+            from qiskit import __qiskit_version__  # pylint: disable-msg=import-outside-toplevel
             self._pp.pprint(__qiskit_version__)
             sys.exit(0)
 
@@ -196,12 +197,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         QI.set_authentication()
         self.provider = QI
 
+    def forest_account_fu(self):
+        """Load Rigetti Forest account appropriately and return provider"""
+        self.provider = ForestBackend
+
     def account_fu(self):
         """Load account from correct API provider"""
         if self.provider_name == "IBMQ":
             self.ibmq_account_fu()
         elif self.provider_name == "QI":
             self.qi_account_fu()
+        elif self.provider_name == "Forest":
+            self.forest_account_fu()
 
     def choose_backend(self):
         """Return backend selected by user if account will activate and allow."""
@@ -214,12 +221,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             local_sim_type = 'unitary_simulator'
 
         if self.use_aer:
-            from qiskit import BasicAer
+            from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
             self.backend = BasicAer.get_backend(local_sim_type)
 
         elif self.qcgpu:
-            from qiskit_qcgpu_provider import QCGPUProvider
+            from qiskit_qcgpu_provider import QCGPUProvider  # pylint: disable-msg=import-outside-toplevel, line-too-long
             self.backend = QCGPUProvider().get_backend(local_sim_type)
+
+        elif self.qvm:
+            self.backend = ForestBackend.get_backend(self.backend, True)
 
         else:
             self.account_fu()
@@ -235,7 +245,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 self.verbosity('sim provider.get_backend() returns ' + str(self.backend), 3)
 
             else:
-                from qiskit.providers.ibmq import least_busy
+                from qiskit.providers.ibmq import least_busy  # pylint: disable-msg=import-outside-toplevel, line-too-long
                 large_enough_devices = self.provider.backends(
                     filters=lambda x: x.configuration().n_qubits >= self.num_qubits
                     and not x.configuration().simulator)
@@ -277,7 +287,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         backend - backend run on
         decimals - how many decimal places
         """
-        from qiskit.visualization import plot_state_city
+        from qiskit.visualization import plot_state_city  # pylint: disable-msg=import-outside-toplevel, line-too-long
         outputstate = result_exp.get_statevector(circ, decimals)
         fig = plot_state_city(outputstate)
         QisJob.save_fig(fig, figure_basename, backend, 'state_city.png')
@@ -290,7 +300,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         figure_basename - base file name of output
         backend - backend run on
         """
-        from qiskit.tools.visualization import plot_histogram
+        from qiskit.tools.visualization import plot_histogram  # pylint: disable-msg=import-outside-toplevel, line-too-long
         outputstate = result_exp.get_counts(circ)
         fig = plot_histogram(outputstate)
         QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
@@ -390,8 +400,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 self._pp.pprint(result_exp.to_dict())
 
             # Open outfile
-            self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
-            self.verbosity("File handle is " + str(ofh), 3)
+            self.verbosity("Outfile is {}"
+                           .format("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+            self.verbosity("File handle is {}".format(str(ofh)), 3)
 
             self.process_result(result_exp, circ, ofh)
 
