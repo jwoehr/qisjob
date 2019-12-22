@@ -14,6 +14,7 @@ from a file containing a Qiskit QuantumCircuit definition in Python and runs as
 experiments with reporting in CSV form. Can graph results as histogram or
 state-city plot. Also can give info on backend properties, qiskit version,
 show circuit transpilation, etc. Can run as multiple jobs or all as one job.
+Exits 0 on success, 1 on argument error, 100 on runtime error.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
 BSD-3 license -- See LICENSE which you should have received with this code.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -48,7 +49,7 @@ PARSER.add_argument("--api_provider", action="store",
                     currently supported are [IBMQ | QI].
                     Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("--backends", action="store_true",
-                    help="Print list of backends to stdout and exit")
+                    help="Print list of backends to stdout and exit 0")
 PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
 PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
@@ -62,11 +63,12 @@ PARSER.add_argument("-g", "--configuration", action="store_true",
 PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print your job's dictionary")
 PARSER.add_argument("--jobs", type=int, action="store",
-                    help="Print JOBS jobs and status for -b backend and exit")
+                    help="Print JOBS jobs and status for -b backend and exit 0")
 PARSER.add_argument("--job_id", type=str, action="store",
-                    help="Print job number JOB_ID for -b backend and exit")
+                    help="Print job number JOB_ID for -b backend and exit 0")
 PARSER.add_argument("--job_result", type=str, action="store",
-                    help="Print result of job number JOB_RESULT for -b backend and exit")
+                    help=""""Print result of job number JOB_RESULT for
+                    -b backend and exit 0""")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-o", "--outfile", action="store",
@@ -105,7 +107,7 @@ PARSER.add_argument("--status", action="store_true",
                     help="""Print status of chosen --backend to stdout
                     (default all backends)
                     of --api_provider (default IBMQ)
-                    and exit""")
+                    and exit 0""")
 PARSER.add_argument("--token", action="store",
                     help="Use this token")
 PARSER.add_argument("--url", action="store",

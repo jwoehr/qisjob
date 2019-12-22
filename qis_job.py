@@ -128,7 +128,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         elif self.jobs_status or self.job_id or self.job_result:
             if not self.backend_name:
                 print("--jobs or --job_id or --job_result also require --backend")
-                sys.exit(12)
+                sys.exit(1)
 
             self.account_fu()
             self.backend = self.provider.get_backend(self.backend_name)
@@ -397,7 +397,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         except IBMQJobFailureError:
             print(job_exp.error_message())
-            sys.exit(111)
+            sys.exit(100)
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -466,7 +466,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         except IBMQJobFailureError:
             print(job_exp.error_message())
-            sys.exit(111)
+            sys.exit(100)
 
         if ofh is not sys.stdout:
             ofh.close()
