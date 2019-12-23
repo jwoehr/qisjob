@@ -229,7 +229,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.backend = QCGPUProvider().get_backend(local_sim_type)
 
         elif self.qvm:
-            self.backend = ForestBackend.get_backend(self.backend_name, True)
+            self.backend = ForestBackend.get_backend(self.backend_name, False)
             self.verbosity('qvm provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
         else:
