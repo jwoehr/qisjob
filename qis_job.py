@@ -229,20 +229,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.backend = QCGPUProvider().get_backend(local_sim_type)
 
         elif self.qvm:
-            self.backend = ForestBackend.get_backend(self.backend, True)
+            self.backend = ForestBackend.get_backend(self.backend_name, True)
+            self.verbosity('qvm provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
         else:
             self.account_fu()
-            self.verbosity("Provider is " + str(self.provider), 3)
-            self.verbosity("Provider.backends is " + str(self.provider.backends()), 3)
+            self.verbosity("Provider is {}".format(str(self.provider)), 3)
+            self.verbosity("Provider.backends is {}".format(str(self.provider.backends())), 3)
 
             if self.backend_name:
                 self.backend = self.provider.get_backend(self.backend_name)
-                self.verbosity('provider.get_backend() returns ' + str(self.backend), 3)
+                self.verbosity('provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
             elif self.use_sim:
                 self.backend = self.provider.get_backend('ibmq_qasm_simulator')
-                self.verbosity('sim provider.get_backend() returns ' + str(self.backend), 3)
+                self.verbosity('sim provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
             else:
                 from qiskit.providers.ibmq import least_busy  # pylint: disable-msg=import-outside-toplevel, line-too-long
@@ -250,8 +251,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                     filters=lambda x: x.configuration().n_qubits >= self.num_qubits
                     and not x.configuration().simulator)
                 self.backend = least_busy(large_enough_devices)
-                self.verbosity("The best backend is " + self.backend.name(), 2)
-                self.verbosity("Backend is " + str(self.backend), 1)
+                self.verbosity("The best backend is {}".format(self.backend.name()), 2)
+                self.verbosity("Backend is {}".format(str(self.backend)), 1)
 
     @staticmethod
     def csv_str(description, sort_keys, sort_counts):
@@ -360,7 +361,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             sys.exit(100)
 
         self.verbosity("File path is " + ("stdin" if ifh is sys.stdin else filepath_name), 2)
-        self.verbosity("File handle is " + str(ifh), 3)
+        self.verbosity("File handle is {}".format(str(ifh)), 3)
 
         # Read source
         the_source = ifh.read()
@@ -427,15 +428,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             ofh = open(self.outfile_path, 'w')
 
         self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
-        self.verbosity("File handle is " + str(ofh), 3)
+        self.verbosity("File handle is {}".format(str(ofh)), 3)
 
         circs = []
 
         for fpath in self.filepaths:
             # Get file
-            self.verbosity("File path is " + fpath, 2)
+            self.verbosity("File path is {}".format(fpath), 2)
             ifh = open(fpath, "r")
-            self.verbosity("File handle is " + str(ifh), 3)
+            self.verbosity("File handle is {}".format(str(ifh)), 3)
 
             # Read source
             the_source = ifh.read()
