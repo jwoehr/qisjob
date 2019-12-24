@@ -38,7 +38,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  num_qubits=5, shots=1024, max_credits=3,
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
-                 qcgpu=False, use_sim=False, qvm=False,
+                 qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
                  qc_name=None, xpile=False,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
@@ -66,6 +66,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.qcgpu = qcgpu
         self.use_sim = use_sim
         self.qvm = qvm
+        self.qvm_as = qvm_as
         self.qc_name = qc_name
         self.xpile = xpile
         self.print_job = print_job
@@ -228,8 +229,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             from qiskit_qcgpu_provider import QCGPUProvider  # pylint: disable-msg=import-outside-toplevel, line-too-long
             self.backend = QCGPUProvider().get_backend(local_sim_type)
 
-        elif self.qvm:
-            self.backend = ForestBackend.get_backend(self.backend_name, False)
+        elif self.qvm or self.qvm_as:
+            self.backend = ForestBackend.get_backend(self.backend_name, self.qvm_as)
             self.verbosity('qvm provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
         else:

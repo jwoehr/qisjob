@@ -49,7 +49,15 @@ PARSER.add_argument("--api_provider", action="store",
                     currently supported are [IBMQ | QI | Forest].
                     Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("--qvm", action="store_true",
-                    help="Use Forest local qvm simulator for -b backend")
+                    help="""Use Forest local qvm simulator described by
+                    -b backend, generally one of qasm_simulator or
+                    statevector_simulator. Use --qvm_as to instruct the
+                    simulator to emulate a specific Rigetti QPU""")
+PARSER.add_argument("--qvm_as", action="store_true",
+                    help="""Use Forest local qvm simulator to emulate the
+                    specific Rigetti QPU described by -b backend. Use --qvm
+                    to run the Forest local qvm simulator described by
+                    -b backend.""")
 PARSER.add_argument("--backends", action="store_true",
                     help="Print list of backends to stdout and exit 0")
 PARSER.add_argument("-1", "--one_job", action="store_true",
@@ -146,6 +154,7 @@ QCGPU = ARGS.qcgpu
 QISKIT_VERSION = ARGS.qiskit_version
 QUBITS = ARGS.qubits
 QVM = ARGS.qvm
+QVM_AS = ARGS.qvm_as
 RESULT = ARGS.result
 SHOTS = ARGS.shots
 SIM = ARGS.sim
@@ -163,7 +172,7 @@ QJ = QisJob(filepaths=FILEPATH,
             num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,
             outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
             use_aer=AER, use_qasm_simulator=QASM_SIMULATOR, use_unitary_simulator=UNITARY_SIMULATOR,
-            qcgpu=QCGPU, use_sim=SIM, qvm=QVM,
+            qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE,
             print_job=JOB, memory=MEMORY, show_result=RESULT,
             jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
