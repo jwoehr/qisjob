@@ -18,11 +18,11 @@ etc.
   * Examples are found in the `qasm_examples` subdirectory of the project.
 * a Qiskit Terra `QuantumCircuit` Python code snippet.
   * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
-  * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qasm_job.py`
+  * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
     * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
   * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
   
-You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qasm_job.py` script.
+You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qis_job.py` script.
 
 For this project you will need to install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
@@ -62,7 +62,7 @@ usage: qis_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                   [--status] [--token TOKEN] [--url URL]
                   [filepath [filepath ...]]
 
-qasm_job.py : Loads from one or more qasm source files or from a file
+qis_job.py : Loads from one or more qasm source files or from a file
 containing a Qiskit QuantumCircuit definition in Python and runs as
 experiments with reporting in CSV form. Can graph results as histogram or
 state-city plot. Also can give info on backend properties, qiskit version,
