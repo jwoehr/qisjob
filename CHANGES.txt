@@ -1,8 +1,9 @@
 Changes by revision to QisJob
 
-v2.7.2:
+v2.8:
+	- Main is now `qis_job` ... `qasm_job` is gone.
 	- Warn, don't fail, if QuantumInspire not installed.
-	- Added guarded import for Rigetti Forest
+	- Support for Rigetti Forest
 	- IBMQJobFailureError now prints job.error_mssage() and exits 100
 	- Regularized exit codes and explanation
 

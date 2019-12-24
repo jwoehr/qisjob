@@ -1,9 +1,7 @@
 # qis_job
 QISKit Job Control
 
-**`qis_job`** is the name of this project. It provides a script called `qasm_job.py`.
-
-The `qasm_job.py` script loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
+The `qis_job.py` script loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
 computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
 The script also provides some utility functions such as:
@@ -14,7 +12,7 @@ The script also provides some utility functions such as:
 
 etc.
 
-`qasm_job.py` can run Qiskit experiments expressed as either:
+`qis_job.py` can run Qiskit experiments expressed as either:
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
   * Use a well-formed OPENQASM2 file.
   * Examples are found in the `qasm_examples` subdirectory of the project.
@@ -30,35 +28,50 @@ For this project you will need to install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
 * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
-  * If you choose the IBMQ provider, you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account)
-  * If you choose the QI provider you will need to install QuTech-Delft/quantuminspire either from [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire) or with the command `pip install quantuminspire`. You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
-* **Note**: Currently only IBMQ and QI are supported as providers.
-* To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
+* Currently supported backend providers are:
+  * IBMQ
+    * For the local Aer simulator you only need qiskit-aer installed.
+    * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
+  * Forest
+    * For local simulator you need
+      * [Rigetti qvm](https://github.com/rigetti/qvm)
+    * For simulator or Rigetti QPU
+      * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
+      * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
+    * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
+  * QI
+    * Install QuTech-Delft/quantuminspire from either
+      * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
+      * `pip install quantuminspire`.
+    * You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
+  * qcgpu
+    * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
 
 
 ```
-$ python qasm_job.py --help
-usage: qasm_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
-                   [--qasm_simulator | --unitary_simulator]
-                   [--api_provider API_PROVIDER] [--backends] [-1]
-                   [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
-                   [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
-                   [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r]
-                   [-t SHOTS] [-v] [-x] [--histogram]
-                   [--plot_state_city PLOT_STATE_CITY]
-                   [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
-                   [--status] [--token TOKEN] [--url URL]
-                   [filepath [filepath ...]]
+$ python qis_job.py -h
+usage: qis_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
+                  [--qasm_simulator | --unitary_simulator]
+                  [--api_provider API_PROVIDER] [--qvm] [--qvm_as]
+                  [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j]
+                  [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT]
+                  [-m] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r]
+                  [-t SHOTS] [-v] [-x] [--histogram]
+                  [--plot_state_city PLOT_STATE_CITY]
+                  [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
+                  [--status] [--token TOKEN] [--url URL]
+                  [filepath [filepath ...]]
 
 qasm_job.py : Loads from one or more qasm source files or from a file
 containing a Qiskit QuantumCircuit definition in Python and runs as
 experiments with reporting in CSV form. Can graph results as histogram or
 state-city plot. Also can give info on backend properties, qiskit version,
 show circuit transpilation, etc. Can run as multiple jobs or all as one job.
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO
-80402-0051. BSD-3 license -- See LICENSE which you should have received with
-this code. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+Exits 0 on success, 1 on argument error, 100 on runtime error. Copyright 2019
+Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. BSD-3
+license -- See LICENSE which you should have received with this code. THIS
+SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 
 positional arguments:
   filepath              Filepath(s) to 0 or more .qasm files, default is stdin
@@ -82,8 +95,16 @@ optional arguments:
                         simulator
   --api_provider API_PROVIDER
                         Backend remote api provider, currently supported are
-                        [IBMQ | QI]. Default is IBMQ.
-  --backends            Print list of backends to stdout and exit
+                        [IBMQ | QI | Forest]. Default is IBMQ.
+  --qvm                 Use Forest local qvm simulator described by -b
+                        backend, generally one of qasm_simulator or
+                        statevector_simulator. Use --qvm_as to instruct the
+                        simulator to emulate a specific Rigetti QPU
+  --qvm_as              Use Forest local qvm simulator to emulate the specific
+                        Rigetti QPU described by -b backend. Use --qvm to run
+                        the Forest local qvm simulator described by -b
+                        backend.
+  --backends            Print list of backends to stdout and exit 0
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
                         Max credits to expend on each job, default is 3
@@ -93,11 +114,11 @@ optional arguments:
   -g, --configuration   Print configuration for backend specified by -b to
                         stdout and exit 0
   -j, --job             Print your job's dictionary
-  --jobs JOBS           Print JOBS jobs and status for -b backend and exit
-  --job_id JOB_ID       Print job number JOB_ID for -b backend and exit
+  --jobs JOBS           Print JOBS jobs and status for -b backend and exit 0
+  --job_id JOB_ID       Print job number JOB_ID for -b backend and exit 0
   --job_result JOB_RESULT
-                        Print result of job number JOB_RESULT for -b backend
-                        and exit
+                        "Print result of job number JOB_RESULT for -b backend
+                        and exit 0
   -m, --memory          Print individual results of multishot experiment
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout
@@ -125,7 +146,7 @@ optional arguments:
   --qc QC               Indicate circuit name of python-coded QuantumCircuit
   --status              Print status of chosen --backend to stdout (default
                         all backends) of --api_provider (default IBMQ) and
-                        exit
+                        exit 0
   --token TOKEN         Use this token
   --url URL             Use this url
 ```
@@ -134,4 +155,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2019-11-29
+Jack Woehr 2019-12-23
