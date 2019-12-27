@@ -33,9 +33,8 @@ For this project you will need to install
     * For the local Aer simulator you only need qiskit-aer installed.
     * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
   * Forest
-    * For local simulator you need
+    * For local simulator or Rigetti QPU you will need
       * [Rigetti qvm](https://github.com/rigetti/qvm)
-    * For simulator or Rigetti QPU
       * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
       * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
     * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
