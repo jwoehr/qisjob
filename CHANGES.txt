@@ -1,5 +1,10 @@
 Changes by revision to QisJob
 
+v3.0:
+	- Now installable with `setup.py`
+	- Command once installed is `qisjob`
+	- Added --circuit_layout
+
 v2.8:
 	- Main is now `qis_job` ... `qasm_job` is gone.
 	- Warn, don't fail, if QuantumInspire not installed.

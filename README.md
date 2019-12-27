@@ -1,10 +1,10 @@
 # qis_job
 QISKit Job Control
 
-The `qis_job.py` script loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
-computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
+The `qis_job.py` script (or, if the setup is run, the `qisjob` command) loads and executes [Qiskit](https://qiskit.org)
+experiments on simulators or on genuine quantum computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
-The script also provides some utility functions such as:
+The script/command also provides some utility functions such as:
 
 * enumerating backend platforms
 * checking on status of backend platforms
@@ -12,7 +12,7 @@ The script also provides some utility functions such as:
 
 etc.
 
-`qis_job.py` can run Qiskit experiments expressed as either:
+`qis_job.py`/`qisjob` can run Qiskit experiments expressed as either:
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
   * Use a well-formed OPENQASM2 file.
   * Examples are found in the `qasm_examples` subdirectory of the project.
@@ -49,18 +49,18 @@ For this project you will need to install
 
 
 ```
-$ python qis_job.py -h
-usage: qis_job.py [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
-                  [--qasm_simulator | --unitary_simulator]
-                  [--api_provider API_PROVIDER] [--qvm] [--qvm_as]
-                  [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j]
-                  [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT]
-                  [-m] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r]
-                  [-t SHOTS] [-v] [-x] [--histogram]
-                  [--plot_state_city PLOT_STATE_CITY]
-                  [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
-                  [--status] [--token TOKEN] [--url URL]
-                  [filepath [filepath ...]]
+$ qisjob -h
+usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
+              [--qasm_simulator | --unitary_simulator]
+              [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends]
+              [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
+              [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-o OUTFILE]
+              [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
+              [--circuit_layout] [--histogram]
+              [--plot_state_city PLOT_STATE_CITY]
+              [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
+              [--status] [--token TOKEN] [--url URL]
+              [filepath [filepath ...]]
 
 qis_job.py : Loads from one or more qasm source files or from a file
 containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -134,10 +134,13 @@ optional arguments:
   -v, --verbose         Increase verbosity each -v up to 3
   -x, --transpile       Print circuit transpiled for chosen backend to stdout
                         before running job
+  --circuit_layout      With -x, write image file of circuit layout after
+                        transpile (see --figure_basename)
   --histogram           Write image file of histogram of experiment results
+                        (see --figure_basename)
   --plot_state_city PLOT_STATE_CITY
                         Write image file of state city plot of statevector to
-                        PLOT_STATE_CITY decimal points
+                        PLOT_STATE_CITY decimal points (see --figure_basename)
   --figure_basename FIGURE_BASENAME
                         basename including path (if any) for figure output,
                         default='figout', backend name, figure type, and
@@ -155,4 +158,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2019-12-23
+Jack Woehr 2019-12-26

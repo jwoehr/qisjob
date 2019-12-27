@@ -5,7 +5,8 @@ Created on Wed Dec 25 12:04:26 2019
 
 @author: jax
 """
-from setuptools import setup  # , find_packages
+from setuptools import setup # , find_packages
+from distutils.dir_util import copy_tree
 setup(
     name="qis_job",
     version="3.0",
@@ -21,3 +22,5 @@ setup(
     zip_safe=False
 )
 
+copy_tree('share/qasm_examples', '/share/qis_job')
+copy_tree('share/qc_examples', '/share/qis_job')
