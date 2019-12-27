@@ -101,11 +101,15 @@ PARSER.add_argument("-v", "--verbose", action="count", default=0,
 PARSER.add_argument("-x", "--transpile", action="store_true",
                     help="""Print circuit transpiled for chosen backend to stdout
                     before running job""")
+PARSER.add_argument("--circuit_layout", action="store_true",
+                    help="""With -x, write image file of circuit layout
+                    after transpile (see --figure_basename)""")
 PARSER.add_argument("--histogram", action="store_true",
-                    help="""Write image file of histogram of experiment results""")
+                    help="""Write image file of histogram of experiment
+                    results (see --figure_basename)""")
 PARSER.add_argument("--plot_state_city", type=int, action="store",
                     help="""Write image file of state city plot of statevector to
-                    PLOT_STATE_CITY decimal points""")
+                    PLOT_STATE_CITY decimal points (see --figure_basename)""")
 PARSER.add_argument("--figure_basename", type=str, action="store",
                     default='figout',
                     help="""basename including path (if any) for figure output,
@@ -134,6 +138,7 @@ API_PROVIDER = ARGS.api_provider.upper()
 ARGS = PARSER.parse_args()
 BACKEND_NAME = ARGS.backend
 BACKENDS = ARGS.backends
+CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
 FIGURE_BASENAME = ARGS.figure_basename
@@ -178,6 +183,7 @@ QJ = QisJob(filepaths=FILEPATH,
             use_unitary_simulator=UNITARY_SIMULATOR,
             qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE,
+            circuit_layout=CIRCUIT_LAYOUT,
             print_job=JOB, memory=MEMORY, show_result=RESULT,
             jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
             show_backends=BACKENDS, show_configuration=CONFIGURATION,
