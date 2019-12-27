@@ -18,6 +18,7 @@ from qiskit import execute
 from qiskit.compiler import transpile
 from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
 from qiskit.tools.monitor import job_monitor
+from qiskit.visualization import plot_circuit_layout
 try:
     from quantuminspire.api import QuantumInspireAPI
     from quantuminspire.qiskit import QI
@@ -39,7 +40,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
                  qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
-                 qc_name=None, xpile=False,
+                 qc_name=None, xpile=False, circuit_layout=False,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
@@ -69,6 +70,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.qvm_as = qvm_as
         self.qc_name = qc_name
         self.xpile = xpile
+        self.circuit_layout = circuit_layout
         self.print_job = print_job
         self.memory = memory
         self.show_result = show_result
@@ -382,7 +384,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbosity(circ.draw(), 2)
 
         if self.xpile:
-            print(transpile(circ, backend=self.backend))
+            new_circ = transpile(circ, backend=self.backend)
+            print(new_circ)
+            if self.circuit_layout:
+                fig = plot_circuit_layout(new_circ, self.backend)
+                QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
 
         try:
             job_exp = execute(circ, backend=self.backend, shots=self.shots,
@@ -457,7 +463,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.verbosity(circ.draw(), 2)
 
             if self.xpile:
-                print(transpile(circ, backend=self.backend))
+                new_circ = transpile(circ, backend=self.backend)
+                print(new_circ)
+                if self.circuit_layout:
+                    fig = plot_circuit_layout(new_circ, self.backend)
+                    QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
 
             circs.append(circ)
 
@@ -493,6 +503,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             for b_e in self.provider.backends():
                 stat += str(b_e.status())
         return stat
+
 
 if __name__ == '__main__':
 
@@ -586,11 +597,18 @@ if __name__ == '__main__':
     PARSER.add_argument("-x", "--transpile", action="store_true",
                         help="""Print circuit transpiled for chosen backend to stdout
                         before running job""")
-    PARSER.add_argument("--histogram", action="store_true",
-                        help="""Write image file of histogram of experiment results""")
+    PARSER.add_argument("--circuit_layout", action="store_true",
+                        help="""With -x, write image file of circuit layout
+                        after transpile (see --figure_basename)""")
     PARSER.add_argument("--plot_state_city", type=int, action="store",
                         help="""Write image file of state city plot of statevector to
                         PLOT_STATE_CITY decimal points""")
+    PARSER.add_argument("--histogram", action="store_true",
+                        help="""Write image file of histogram of experiment
+                        results (see --figure_basename)""")
+    PARSER.add_argument("--plot_state_city", type=int, action="store",
+                        help="""Write image file of state city plot of statevector to
+                        PLOT_STATE_CITY decimal points (see --figure_basename)""")
     PARSER.add_argument("--figure_basename", type=str, action="store",
                         default='figout',
                         help="""basename including path (if any) for figure output,
@@ -619,6 +637,7 @@ if __name__ == '__main__':
     ARGS = PARSER.parse_args()
     BACKEND_NAME = ARGS.backend
     BACKENDS = ARGS.backends
+    CIRCUIT_LAYOUT = ARGS.circuit_layout
     CONFIGURATION = ARGS.configuration
     DATETIME = ARGS.datetime
     FIGURE_BASENAME = ARGS.figure_basename
@@ -663,6 +682,7 @@ if __name__ == '__main__':
                 use_unitary_simulator=UNITARY_SIMULATOR,
                 qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
                 qc_name=QC_NAME, xpile=TRANSPILE,
+                circuit_layout=CIRCUIT_LAYOUT,
                 print_job=JOB, memory=MEMORY, show_result=RESULT,
                 jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
                 show_backends=BACKENDS, show_configuration=CONFIGURATION,
