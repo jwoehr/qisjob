@@ -9,7 +9,7 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
 import argparse
 import sys
-from qis_job.qis_job import QisJob
+from qis_job import QisJob
 
 EXPLANATION = """qis_job.py : Loads from one or more qasm source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
