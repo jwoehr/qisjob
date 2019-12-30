@@ -5,9 +5,16 @@ Created on Wed Dec 25 12:04:26 2019
 
 @author: jax
 """
+import sys
 from setuptools import setup  # , find_packages
-from distutils.dir_util import copy_tree
-from Cython.Build import cythonize
+# from distutils.dir_util import copy_tree
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    import subprocess
+    subprocess.call([sys.executable, '-m', 'pip', 'install', 'Cython>=0.27.1'])
+    from Cython.Build import cythonize
 
 setup(
     name="qis_job",
