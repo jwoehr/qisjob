@@ -25,13 +25,23 @@ setup(
     author_email="jwoehr@softwoehr.com",
     license="Apache 2.0",
     packages=['qis_job'],
-    include_package_data=True,
-    package_data={'qis_job': ['share/*examples']},
+    data_files=[('share/qisjob/qasm_examples',
+                 ['share/qasm_examples/ghzstate3q.qasm',
+                  'share/qasm_examples/ghzyxy.qasm',
+                  'share/qasm_examples/mermin_inequality_c.qasm',
+                  'share/qasm_examples/ghzxxx.qasm',
+                  'share/qasm_examples/ghzyyx.qasm',
+                  'share/qasm_examples/mermin_inequality_d.qasm',
+                  'share/qasm_examples/ghzxyx.qasm',
+                  'share/qasm_examples/mermin_inequality_a.qasm',
+                  'share/qasm_examples/yiqing.qasm',
+                  'share/qasm_examples/ghzxyy.qasm',
+                  'share/qasm_examples/mermin_inequality_b.qasm',
+                  'share/qasm_examples/yiqing_simple.qasm']),
+                ('share/qisjob/qc_examples',
+                 ['share/qc_examples/google_quantum_supremacy.py'])],
     scripts=['scripts/qisjob'],
     zip_safe=False,
     ext_modules=cythonize("qis_job/qis_job.pyx",
                           compiler_directives={'language_level': "3"})
 )
-
-# copy_tree('share/qasm_examples', '/share/qis_job')
-# copy_tree('share/qc_examples', '/share/qis_job')
