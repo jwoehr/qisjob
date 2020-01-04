@@ -7,8 +7,6 @@ Created on Wed Dec 25 12:04:26 2019
 """
 import sys
 from setuptools import setup  # , find_packages
-# from distutils.dir_util import copy_tree
-
 try:
     from Cython.Build import cythonize
 except ImportError:
