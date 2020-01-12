@@ -604,10 +604,6 @@ if __name__ == '__main__':
     PARSER.add_argument("--circuit_layout", action="store_true",
                         help="""With -x, write image file of circuit layout
                         after transpile (see --figure_basename)""")
-    PARSER.add_argument("--circuit_layout", action="store",
-                        help="""With -x, write image file of circuit layout
-                        after transpile to generated filename using CIRCUIT_LAYOUT
-                        as a basename""")
     PARSER.add_argument("--histogram", action="store_true",
                         help="""Write image file of histogram of experiment
                         results (see --figure_basename)""")
