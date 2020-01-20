@@ -124,10 +124,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         elif self.show_statuses:
             self.account_fu()
-            if not self.backend_name:
-                print("Error, need --backend for --status")
-                sys.exit(1)
-            self.backend = self.provider.get_backend(self.backend_name)
+            if self.backend_name:
+                self.backend = self.provider.get_backend(self.backend_name)
             self._pp.pprint(self.get_statuses())
 
         elif self.jobs_status or self.job_id or self.job_result:
