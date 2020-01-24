@@ -39,6 +39,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  num_qubits=5, shots=1024, max_credits=3,
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
+                 use_statevector_gpu=False,
                  qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
                  qc_name=None, xpile=False, circuit_layout=False,
                  print_job=False, memory=False, show_result=False,
@@ -62,6 +63,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.one_job = one_job
         self.qasm = qasm
         self.use_aer = use_aer
+        self.use_statevector_gpu = use_statevector_gpu
         self.use_qasm_simulator = use_qasm_simulator
         self.use_unitary_simulator = use_unitary_simulator
         self.qcgpu = qcgpu
@@ -216,14 +218,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
+        if self.use_statevector_gpu:
+            self.local_simulator_type = 'statevector_gpu'
         if self.use_qasm_simulator:
             self.local_simulator_type = 'qasm_simulator'
         elif self.use_unitary_simulator:
             self.local_simulator_type = 'unitary_simulator'
 
         if self.use_aer:
-            from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
-            self.backend = BasicAer.get_backend(self.local_simulator_type)
+            if self.use_statevector_gpu:
+                 from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
+                 print("self.local_simulator_type is '{}'".format(self.local_simulator_type))
+                 self.backend = Aer.get_backend(self.local_simulator_type)
+            else:
+                from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
+                self.backend = BasicAer.get_backend(self.local_simulator_type)
 
         elif self.qcgpu:
             from qiskit_qcgpu_provider import QCGPUProvider  # pylint: disable-msg=import-outside-toplevel, line-too-long
@@ -538,6 +547,9 @@ if __name__ == '__main__':
                        Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
     GROUP.add_argument("-b", "--backend", action="store",
                        help="Use specified IBMQ backend")
+    GROUPB.add_argument("--statevector_gpu",  action="store_true",
+                        help="""With -a use gpu statevector simulator
+                        instead of cpu statevector simulator""")
     GROUPB.add_argument("--qasm_simulator", action="store_true",
                         help="""With -a or --qcgpu use qasm simulator
                         instead of statevector simulator""")
@@ -663,6 +675,7 @@ if __name__ == '__main__':
     RESULT = ARGS.result
     SHOTS = ARGS.shots
     SIM = ARGS.sim
+    STATEVECTOR_GPU = ARGS.statevector_gpu
     STATUS = ARGS.status
     TOKEN = ARGS.token
     TRANSPILE = ARGS.transpile
@@ -679,6 +692,7 @@ if __name__ == '__main__':
                 use_aer=AER,
                 use_qasm_simulator=QASM_SIMULATOR,
                 use_unitary_simulator=UNITARY_SIMULATOR,
+                use_statevector_gpu=STATEVECTOR_GPU,
                 qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
                 qc_name=QC_NAME, xpile=TRANSPILE,
                 circuit_layout=CIRCUIT_LAYOUT,

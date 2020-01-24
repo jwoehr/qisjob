@@ -40,6 +40,9 @@ GROUP.add_argument("--qcgpu", action="store_true",
                    Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
+GROUPB.add_argument("--statevector_gpu",  action="store_true",
+                    help="""With -a use gpu statevector simulator
+                    instead of cpu statevector simulator""")
 GROUPB.add_argument("--qasm_simulator", action="store_true",
                     help="""With -a or --qcgpu use qasm simulator
                     instead of statevector simulator""")
@@ -165,6 +168,7 @@ QVM_AS = ARGS.qvm_as
 RESULT = ARGS.result
 SHOTS = ARGS.shots
 SIM = ARGS.sim
+STATEVECTOR_GPU = ARGS.statevector_gpu
 STATUS = ARGS.status
 TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
@@ -181,6 +185,7 @@ QJ = QisJob(filepaths=FILEPATH,
             use_aer=AER,
             use_qasm_simulator=QASM_SIMULATOR,
             use_unitary_simulator=UNITARY_SIMULATOR,
+            use_statevector_gpu=STATEVECTOR_GPU,
             qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE,
             circuit_layout=CIRCUIT_LAYOUT,
@@ -192,6 +197,7 @@ QJ = QisJob(filepaths=FILEPATH,
             print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
             figure_basename=FIGURE_BASENAME,
             show_q_version=QISKIT_VERSION, verbose=VERBOSE)
+
 
 QJ.do_it()
 
