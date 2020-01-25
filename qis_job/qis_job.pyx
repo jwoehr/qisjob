@@ -218,8 +218,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
-        if self.use_statevector_gpu:
-            self.local_simulator_type = 'statevector_gpu'
+#        if self.use_statevector_gpu:
+#            self.local_simulator_type = 'statevector_gpu'
         if self.use_qasm_simulator:
             self.local_simulator_type = 'qasm_simulator'
         elif self.use_unitary_simulator:
@@ -227,9 +227,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         if self.use_aer:
             if self.use_statevector_gpu:
-                 from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
-                 print("self.local_simulator_type is '{}'".format(self.local_simulator_type))
-                 self.backend = Aer.get_backend(self.local_simulator_type)
+                from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
+                print("self.local_simulator_type is '{}'".format(self.local_simulator_type))
+                self.backend = Aer.get_backend(self.local_simulator_type)
             else:
                 from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
                 self.backend = BasicAer.get_backend(self.local_simulator_type)
@@ -401,9 +401,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 fig = plot_circuit_layout(new_circ, self.backend)
                 QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
 
+        if self.use_statevector_gpu:
+            backend_options = {"method": "statevector_gpu"}
+        else:
+            backend_options = {}
+
         try:
-            job_exp = execute(circ, backend=self.backend, shots=self.shots,
-                              max_credits=self.max_credits, memory=self.memory)
+            job_exp = execute(circ, backend=self.backend,
+                              backend_options=backend_options,
+                              shots=self.shots, max_credits=self.max_credits,
+                              memory=self.memory)
 
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
@@ -432,7 +439,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if ofh is not sys.stdout:
             ofh.close()
 
-    def multi_exps(self): # pylint: disable-msg=too-many-branches, too-many-statements
+    def multi_exps(self):  # pylint: disable-msg=too-many-branches, too-many-statements
         """Load qasms and run all as one the job,
         print csvs and other selected output
         """
@@ -482,9 +489,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             circs.append(circ)
 
+        if self.use_statevector_gpu:
+            backend_options = {"method": "statevector_gpu"}
+        else:
+            backend_options = {}
+
         try:
-            job_exp = execute(circs, backend=self.backend, shots=self.shots,
-                              max_credits=self.max_credits, memory=self.memory)
+            job_exp = execute(circs, backend=self.backend,
+                              backend_options=backend_options,
+                              shots=self.shots, max_credits=self.max_credits,
+                              memory=self.memory)
 
             if self.print_job:
                 self._pp.pprint(job_exp.to_dict())
@@ -547,7 +561,7 @@ if __name__ == '__main__':
                        Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
     GROUP.add_argument("-b", "--backend", action="store",
                        help="Use specified IBMQ backend")
-    GROUPB.add_argument("--statevector_gpu",  action="store_true",
+    GROUPB.add_argument("--statevector_gpu", action="store_true",
                         help="""With -a use gpu statevector simulator
                         instead of cpu statevector simulator""")
     GROUPB.add_argument("--qasm_simulator", action="store_true",

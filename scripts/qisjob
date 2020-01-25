@@ -9,7 +9,7 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
 import argparse
 import sys
-from qis_job import QisJob
+from qis_job import QisJob  # pylint: disable-msg=no-name-in-module
 
 EXPLANATION = """qis_job.py : Loads from one or more qasm source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -40,7 +40,7 @@ GROUP.add_argument("--qcgpu", action="store_true",
                    Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
-GROUPB.add_argument("--statevector_gpu",  action="store_true",
+GROUPB.add_argument("--statevector_gpu", action="store_true",
                     help="""With -a use gpu statevector simulator
                     instead of cpu statevector simulator""")
 GROUPB.add_argument("--qasm_simulator", action="store_true",
