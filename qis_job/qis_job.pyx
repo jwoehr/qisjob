@@ -402,6 +402,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
 
         if self.use_statevector_gpu:
+            self.verbosity("Using gpu", 2)
             backend_options = {"method": "statevector_gpu"}
         else:
             backend_options = {}
@@ -421,6 +422,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             job_monitor(job_exp)
             result_exp = job_exp.result()
+
+            exp_result_exp = result_exp.results[0]
+            print("Method: {}".format(exp_result_exp.metadata.get('method')))
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
@@ -490,6 +494,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             circs.append(circ)
 
         if self.use_statevector_gpu:
+            self.verbosity("Using gpu", 2)
             backend_options = {"method": "statevector_gpu"}
         else:
             backend_options = {}
@@ -505,6 +510,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             job_monitor(job_exp)
             result_exp = job_exp.result()
+
+            exp_result_exp = result_exp.results[0]
+            print("Meethod: {}".format(exp_result_exp.metadata.get('method')))
+
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
