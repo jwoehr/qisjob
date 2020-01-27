@@ -424,7 +424,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             result_exp = job_exp.result()
 
             exp_result_exp = result_exp.results[0]
-            print("Method: {}".format(exp_result_exp.metadata.get('method')))
+            self.verbosity("Method: {}".format(exp_result_exp.metadata.get('method')), 2)
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
@@ -512,8 +512,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             result_exp = job_exp.result()
 
             exp_result_exp = result_exp.results[0]
-            print("Meethod: {}".format(exp_result_exp.metadata.get('method')))
-
+            self.verbosity("Method: {}".format(exp_result_exp.metadata.get('method')), 2)
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
