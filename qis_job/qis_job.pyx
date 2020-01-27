@@ -332,7 +332,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         # Print statevector ... this doesn't handle Forest qvm yet
         if self.use_aer and self.local_simulator_type == 'statevector_simulator':
-            self._pp.pprint(result_exp.get_statevector())
+            self._pp.pprint(result_exp.get_statevector(circ))
 
         # Print counts if any measurment was taken
         if 'counts' in result_exp.data(circ):
@@ -423,8 +423,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             job_monitor(job_exp)
             result_exp = job_exp.result()
 
-            exp_result_exp = result_exp.results[0]
-            self.verbosity("Method: {}".format(exp_result_exp.metadata.get('method')), 2)
+            if self.use_statevector_gpu:
+                self.verbosity("Method: {}".format(result_exp.data(circ).metadata.get('method')), 2)
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
@@ -511,13 +511,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             job_monitor(job_exp)
             result_exp = job_exp.result()
 
-            exp_result_exp = result_exp.results[0]
-            self.verbosity("Method: {}".format(exp_result_exp.metadata.get('method')), 2)
+            result_exp_dict = result_exp.to_dict()
 
             if self.show_result:
-                self._pp.pprint(result_exp.to_dict())
+                self._pp.pprint(result_exp_dict)
 
+            # my_index = 0
             for circ in circs:
+                # if self.use_statevector_gpu:
+                #     self.verbosity("Method: {}"
+                #                    .format(result_exp_dict['results']
+                #                            [my_index]['metadata']
+                #                            .get('method')), 2)
+                #     my_index += 1
                 self.process_result(result_exp, circ, ofh)
 
         except IBMQJobFailureError:
