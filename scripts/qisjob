@@ -104,6 +104,9 @@ PARSER.add_argument("-v", "--verbose", action="count", default=0,
 PARSER.add_argument("-x", "--transpile", action="store_true",
                     help="""Print circuit transpiled for chosen backend to stdout
                     before running job""")
+PARSER.add_argument("--showsched", action="store_true",
+                    help="""In conjuction with -x, show schedule for transpiled
+                    circuit for chosen backend to stdout before running job""")
 PARSER.add_argument("--circuit_layout", action="store_true",
                     help="""With -x, write image file of circuit layout
                     after transpile (see --figure_basename)""")
@@ -172,6 +175,7 @@ STATEVECTOR_GPU = ARGS.statevector_gpu
 STATUS = ARGS.status
 TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
+SHOWSCHED = ARGS.showsched
 UNITARY_SIMULATOR = ARGS.unitary_simulator
 URL = ARGS.url
 VERBOSE = ARGS.verbose
@@ -187,7 +191,7 @@ QJ = QisJob(filepaths=FILEPATH,
             use_unitary_simulator=UNITARY_SIMULATOR,
             use_statevector_gpu=STATEVECTOR_GPU,
             qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
-            qc_name=QC_NAME, xpile=TRANSPILE,
+            qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
             circuit_layout=CIRCUIT_LAYOUT,
             print_job=JOB, memory=MEMORY, show_result=RESULT,
             jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,

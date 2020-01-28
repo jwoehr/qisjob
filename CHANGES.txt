@@ -3,7 +3,12 @@ Changes by revision to QisJob
 v3.0:
 	- Now installable with `setup.py`
 	- Command once installed is `qisjob`
-	- Added --circuit_layout
+	- Support for new Aer GPU simulator
+	- Added switches:
+		`--circuit_layout`
+		`--statevector_gpu`
+		`--showsched`
+	- Fixed bug in returning results of multiple experiment job
 
 v2.8:
 	- Main is now `qis_job` ... `qasm_job` is gone.

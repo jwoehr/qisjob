@@ -15,6 +15,7 @@ import warnings
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
+from qiskit import schedule
 from qiskit.compiler import transpile
 from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
 from qiskit.tools.monitor import job_monitor
@@ -41,7 +42,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
                  use_statevector_gpu=False,
                  qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
-                 qc_name=None, xpile=False, circuit_layout=False,
+                 qc_name=None, xpile=False, showsched=False, circuit_layout=False,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
@@ -72,6 +73,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.qvm_as = qvm_as
         self.qc_name = qc_name
         self.xpile = xpile
+        self.showsched = showsched
         self.circuit_layout = circuit_layout
         self.print_job = print_job
         self.memory = memory
@@ -218,8 +220,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
-#        if self.use_statevector_gpu:
-#            self.local_simulator_type = 'statevector_gpu'
         if self.use_qasm_simulator:
             self.local_simulator_type = 'qasm_simulator'
         elif self.use_unitary_simulator:
@@ -399,19 +399,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             print(new_circ)
             if self.circuit_layout:
                 fig = plot_circuit_layout(new_circ, self.backend)
-                QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
+                QisJob.save_fig(fig,
+                                self.figure_basename,
+                                self.backend,
+                                'plot_circuit.png')
 
-        if self.use_statevector_gpu:
-            self.verbosity("Using gpu", 2)
-            backend_options = {"method": "statevector_gpu"}
-        else:
-            backend_options = {}
+            if self.showsched:
+                self._pp.pprint(schedule(new_circ, self.backend))
 
         try:
-            job_exp = execute(circ, backend=self.backend,
-                              backend_options=backend_options,
-                              shots=self.shots, max_credits=self.max_credits,
-                              memory=self.memory)
+            if self.use_statevector_gpu:
+                self.verbosity("Using gpu", 2)
+                backend_options = {"method": "statevector_gpu"}
+                job_exp = execute(circ, backend=self.backend,
+                                  backend_options=backend_options,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
+            else:
+                job_exp = execute(circ, backend=self.backend,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
 
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
@@ -424,7 +431,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             result_exp = job_exp.result()
 
             if self.use_statevector_gpu:
-                self.verbosity("Method: {}".format(result_exp.data(circ).metadata.get('method')), 2)
+                try:
+                    self.verbosity("Method: {}"
+                                   .format(result_exp.data(circ).metadata.get('method')), 2)
+                except AttributeError as err:
+                    print("AttributeError error: {0}".format(err))
 
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
@@ -477,7 +488,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 my_glob = {}
                 my_loc = {}
                 exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
-                # self._pp.pprint(my_loc)
                 circ = my_loc[self.qc_name]
             else:
                 circ = QuantumCircuit.from_qasm_str(the_source)
@@ -489,21 +499,28 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 print(new_circ)
                 if self.circuit_layout:
                     fig = plot_circuit_layout(new_circ, self.backend)
-                    QisJob.save_fig(fig, self.figure_basename, self.backend, 'plot_circuit.png')
+                    QisJob.save_fig(fig,
+                                    self.figure_basename,
+                                    self.backend,
+                                    'plot_circuit.png')
+                if self.showsched:
+                    self._pp.pprint(schedule(new_circ, self.backend))
 
             circs.append(circ)
 
-        if self.use_statevector_gpu:
-            self.verbosity("Using gpu", 2)
-            backend_options = {"method": "statevector_gpu"}
-        else:
-            backend_options = {}
-
         try:
-            job_exp = execute(circs, backend=self.backend,
-                              backend_options=backend_options,
-                              shots=self.shots, max_credits=self.max_credits,
-                              memory=self.memory)
+
+            if self.use_statevector_gpu:
+                self.verbosity("Using gpu", 2)
+                backend_options = {"method": "statevector_gpu"}
+                job_exp = execute(circs, backend=self.backend,
+                                  backend_options=backend_options,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
+            else:
+                job_exp = execute(circs, backend=self.backend,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
 
             if self.print_job:
                 self._pp.pprint(job_exp.to_dict())
@@ -518,12 +535,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
             # my_index = 0
             for circ in circs:
-                # if self.use_statevector_gpu:
-                #     self.verbosity("Method: {}"
-                #                    .format(result_exp_dict['results']
-                #                            [my_index]['metadata']
-                #                            .get('method')), 2)
-                #     my_index += 1
                 self.process_result(result_exp, circ, ofh)
 
         except IBMQJobFailureError:
@@ -639,6 +650,9 @@ if __name__ == '__main__':
     PARSER.add_argument("-x", "--transpile", action="store_true",
                         help="""Print circuit transpiled for chosen backend to stdout
                         before running job""")
+    PARSER.add_argument("--showsched", action="store_true",
+                        help="""In conjuction with -x, show schedule for transpiled
+                        circuit for chosen backend to stdout before running job""")
     PARSER.add_argument("--circuit_layout", action="store_true",
                         help="""With -x, write image file of circuit layout
                         after transpile (see --figure_basename)""")
@@ -707,6 +721,7 @@ if __name__ == '__main__':
     STATUS = ARGS.status
     TOKEN = ARGS.token
     TRANSPILE = ARGS.transpile
+    SHOWSCHED = ARGS.showsched
     UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
     VERBOSE = ARGS.verbose
@@ -722,7 +737,7 @@ if __name__ == '__main__':
                 use_unitary_simulator=UNITARY_SIMULATOR,
                 use_statevector_gpu=STATEVECTOR_GPU,
                 qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
-                qc_name=QC_NAME, xpile=TRANSPILE,
+                qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
                 circuit_layout=CIRCUIT_LAYOUT,
                 print_job=JOB, memory=MEMORY, show_result=RESULT,
                 jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,

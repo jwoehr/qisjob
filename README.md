@@ -50,12 +50,12 @@ For this project you will need to install
 ```
 $ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
-              [--qasm_simulator | --unitary_simulator]
+              [--statevector_gpu | --qasm_simulator | --unitary_simulator]
               [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends]
               [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
               [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-o OUTFILE]
               [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
-              [--circuit_layout] [--histogram]
+              [--showsched] [--circuit_layout] [--histogram]
               [--plot_state_city PLOT_STATE_CITY]
               [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
               [--status] [--token TOKEN] [--url URL]
@@ -88,6 +88,8 @@ optional arguments:
                         simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
+  --statevector_gpu     With -a use gpu statevector simulator instead of cpu
+                        statevector simulator
   --qasm_simulator      With -a or --qcgpu use qasm simulator instead of
                         statevector simulator
   --unitary_simulator   With -a use unitary simulator instead of statevector
@@ -133,6 +135,9 @@ optional arguments:
   -v, --verbose         Increase verbosity each -v up to 3
   -x, --transpile       Print circuit transpiled for chosen backend to stdout
                         before running job
+  --showsched           In conjuction with -x, show schedule for transpiled
+                        circuit for chosen backend to stdout before running
+                        job
   --circuit_layout      With -x, write image file of circuit layout after
                         transpile (see --figure_basename)
   --histogram           Write image file of histogram of experiment results
