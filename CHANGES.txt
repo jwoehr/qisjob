@@ -9,6 +9,7 @@ v3.0:
 		`--statevector_gpu`
 		`--showsched`
 	- Fixed bug in returning results of multiple experiment job
+	- More exception catching
 
 v2.8:
 	- Main is now `qis_job` ... `qasm_job` is gone.
