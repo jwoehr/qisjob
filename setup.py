@@ -34,6 +34,7 @@ setup(
                   'share/qasm_examples/mermin_inequality_b.qasm',
                   'share/qasm_examples/mermin_inequality_c.qasm',
                   'share/qasm_examples/mermin_inequality_d.qasm',
+                  'share/qasm_examples/onebit.qasm',
                   'share/qasm_examples/yiqing.qasm',
                   'share/qasm_examples/yiqing_simple.qasm']),
                 ('share/qisjob/qc_examples',
