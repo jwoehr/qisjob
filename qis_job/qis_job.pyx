@@ -16,7 +16,9 @@ from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit import schedule
+from qiskit import QiskitError
 from qiskit.compiler import transpile
+from qiskit.providers.exceptions import QiskitBackendNotFoundError
 from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout
@@ -116,7 +118,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         elif self.show_properties:
             self.account_fu()
-            self.backend = self.provider.get_backend(self.backend_name)
+
+            try:
+                self.backend = self.provider.get_backend(self.backend_name)
+            except QiskitBackendNotFoundError as err:
+                print("Backend {} not found: {}".format(self.backend_name, err))
+                sys.exit(100)
+
             the_date_time = QisJob.gen_datetime(self.date_time) if self.date_time else None
             self._pp.pprint(self.backend.properties(datetime=the_date_time).to_dict())
             sys.exit(0)
@@ -128,8 +136,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         elif self.show_statuses:
             self.account_fu()
+
             if self.backend_name:
-                self.backend = self.provider.get_backend(self.backend_name)
+                try:
+                    self.backend = self.provider.get_backend(self.backend_name)
+                except QiskitBackendNotFoundError as err:
+                    print("Backend {} not found: {}".format(self.backend_name, err))
+                    sys.exit(100)
+
             self._pp.pprint(self.get_statuses())
 
         elif self.jobs_status or self.job_id or self.job_result:
@@ -138,7 +152,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 sys.exit(1)
 
             self.account_fu()
-            self.backend = self.provider.get_backend(self.backend_name)
+
+            try:
+                self.backend = self.provider.get_backend(self.backend_name)
+            except QiskitBackendNotFoundError as err:
+                print("Backend not found: {}".format(err))
+                sys.exit(100)
+
             f_string = "Job {} {}"
 
             if self.jobs_status:
@@ -216,7 +236,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         elif self.provider_name == "Forest":
             self.forest_account_fu()
 
-    def choose_backend(self):
+    def choose_backend(self):  # pylint: disable-msg=too-many-branches
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
@@ -248,7 +268,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.verbosity("Provider.backends is {}".format(str(self.provider.backends())), 3)
 
             if self.backend_name:
-                self.backend = self.provider.get_backend(self.backend_name)
+                try:
+                    self.backend = self.provider.get_backend(self.backend_name)
+                except QiskitBackendNotFoundError as err:
+                    print("Backend not found: {}".format(err))
+                    sys.exit(100)
                 self.verbosity('provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
             elif self.use_sim:
@@ -260,7 +284,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 large_enough_devices = self.provider.backends(
                     filters=lambda x: x.configuration().n_qubits >= self.num_qubits
                     and not x.configuration().simulator)
-                self.backend = least_busy(large_enough_devices)
+                try:
+                    self.backend = least_busy(large_enough_devices)
+                except QiskitError as err:
+                    print("""QiskitError no device found for criteria (large enough?) {}"""
+                          .format(err))
+                    sys.exit(100)
                 self.verbosity("The best backend is {}".format(self.backend.name()), 2)
                 self.verbosity("Backend is {}".format(str(self.backend)), 1)
 
