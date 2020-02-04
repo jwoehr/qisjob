@@ -18,8 +18,9 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.compiler import transpile
-from qiskit.providers.exceptions import QiskitBackendNotFoundError
+from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
 from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
+from qiskit.providers.exceptions import QiskitBackendNotFoundError
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout
 try:
@@ -214,7 +215,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if self.token:
             self.provider = IBMQ.enable_account(self.token, url=self.url)
         else:
-            self.provider = IBMQ.load_account()
+            try:
+                self.provider = IBMQ.load_account()
+            except IBMQAccountCredentialsNotFound as err:
+                print("Error loading IBMQ Account: {}".format(err))
+                sys.exit(100)
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and return provider"""
