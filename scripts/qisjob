@@ -86,6 +86,9 @@ PARSER.add_argument("--job_result", type=str, action="store",
                     -b backend and exit 0""")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
+PARSER.add_argument("-n", "--nuqasm2", action="store",
+                        help=""""Use nuqasm2 to translate OPENQASM2 source,
+                        providing include path for any include directives""")
 PARSER.add_argument("-o", "--outfile", action="store",
                     help="Write appending CSV to outfile, default is stdout")
 PARSER.add_argument("-p", "--properties", action="store_true",
@@ -156,6 +159,7 @@ JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
 MAX_CREDITS = ARGS.credits
 MEMORY = ARGS.memory
+NUQASM2 = ARGS.nuqasm2
 ONE_JOB = ARGS.one_job
 OUTFILE = ARGS.outfile
 PLOT_STATE_CITY = ARGS.plot_state_city
@@ -184,6 +188,7 @@ QJ = QisJob(filepaths=FILEPATH,
             provider_name=API_PROVIDER,
             backend_name=BACKEND_NAME,
             token=TOKEN, url=URL,
+            nuqasm2=NUQASM2,
             num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,
             outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
             use_aer=AER,
@@ -201,7 +206,6 @@ QJ = QisJob(filepaths=FILEPATH,
             print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
             figure_basename=FIGURE_BASENAME,
             show_q_version=QISKIT_VERSION, verbose=VERBOSE)
-
 
 QJ.do_it()
 

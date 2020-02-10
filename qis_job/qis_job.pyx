@@ -40,6 +40,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
     def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals
                  provider_name="IBMQ", backend_name=None,
                  token=None, url=None,
+                 nuqasm2=None,
                  num_qubits=5, shots=1024, max_credits=3,
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
@@ -60,6 +61,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.backend = None
         self.token = token
         self.url = url
+        self.nuqasm2 = nuqasm2
         self.num_qubits = num_qubits
         self.shots = shots
         self.max_credits = max_credits
@@ -391,8 +393,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.print_histogram:
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-    def one_exp(self, filepath_name=None):  # pylint: disable-msg=too-many-branches, too-many-statements, line-too-long
+    def one_exp(self, filepath_name=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Load qasm and run the job, print csv and other selected output"""
+
+        circ = None
 
         if filepath_name is None:
             ifh = sys.stdin
@@ -412,9 +416,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbosity("File handle is {}".format(str(ifh)), 3)
 
         # Read source
-        the_source = ifh.read()
+        the_source_list = []
+        for line in ifh:
+            the_source_list.append(line.strip())
         if ifh is not sys.stdin:
             ifh.close()
+            the_source = "\n".join(the_source_list)
         self.verbosity("source:\n" + the_source, 1)
 
         if self.qc_name:
@@ -424,7 +431,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
-            circ = QuantumCircuit.from_qasm_str(the_source)
+            if self.nuqasm2:
+                from nuqasm2 import Ast2Circ, Qasm_Exception  # pylint: disable-msg=import-outside-toplevel, line-too-long
+                try:
+                    circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+                except Qasm_Exception as err:
+                    self._pp.pprint("Error: " + filepath_name)
+                    x = err.errpacket()  # pylint: disable-msg=invalid-name
+                    self._pp.pprint(x)
+                    sys.exit(x['errcode'])
+            else:
+                circ = QuantumCircuit.from_qasm_str(the_source)
 
         self.verbosity(circ.draw(), 2)
 
@@ -488,7 +505,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         if ofh is not sys.stdout:
             ofh.close()
 
-    def multi_exps(self):  # pylint: disable-msg=too-many-branches, too-many-statements
+    def multi_exps(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Load qasms and run all as one the job,
         print csvs and other selected output
         """
@@ -513,8 +530,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.verbosity("File handle is {}".format(str(ifh)), 3)
 
             # Read source
-            the_source = ifh.read()
-            ifh.close()
+            the_source_list = []
+            for line in ifh:
+                the_source_list.append(line.strip())
+            if ifh is not sys.stdin:
+                ifh.close()
+            the_source = "\n".join(the_source_list)
             self.verbosity("source:\n" + the_source, 1)
 
             # Create circuit
@@ -524,7 +545,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
                 circ = my_loc[self.qc_name]
             else:
-                circ = QuantumCircuit.from_qasm_str(the_source)
+                if self.nuqasm2:
+                    from nuqasm2 import Ast2Circ  # pylint: disable-msg=import-outside-toplevel
+                    circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+                else:
+                    circ = QuantumCircuit.from_qasm_str(the_source)
 
             self.verbosity(circ.draw(), 2)
 
@@ -666,6 +691,9 @@ if __name__ == '__main__':
                         -b backend and exit 0""")
     PARSER.add_argument("-m", "--memory", action="store_true",
                         help="Print individual results of multishot experiment")
+    PARSER.add_argument("-n", "--nuqasm2", action="store",
+                        help=""""Use nuqasm2 to translate OPENQASM2 source,
+                        providing include path for any include directives""")
     PARSER.add_argument("-o", "--outfile", action="store",
                         help="Write appending CSV to outfile, default is stdout")
     PARSER.add_argument("-p", "--properties", action="store_true",
@@ -736,6 +764,7 @@ if __name__ == '__main__':
     JOBS = ARGS.jobs
     MAX_CREDITS = ARGS.credits
     MEMORY = ARGS.memory
+    NUQASM2 = ARGS.nuqasm2
     ONE_JOB = ARGS.one_job
     OUTFILE = ARGS.outfile
     PLOT_STATE_CITY = ARGS.plot_state_city
@@ -764,6 +793,7 @@ if __name__ == '__main__':
                 provider_name=API_PROVIDER,
                 backend_name=BACKEND_NAME,
                 token=TOKEN, url=URL,
+                nuqasm2=NUQASM2,
                 num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,
                 outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
                 use_aer=AER,
