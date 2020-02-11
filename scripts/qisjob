@@ -82,12 +82,12 @@ PARSER.add_argument("--jobs", type=int, action="store",
 PARSER.add_argument("--job_id", type=str, action="store",
                     help="Print job number JOB_ID for -b backend and exit 0")
 PARSER.add_argument("--job_result", type=str, action="store",
-                    help=""""Print result of job number JOB_RESULT for
+                    help="""Print result of job number JOB_RESULT for
                     -b backend and exit 0""")
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-n", "--nuqasm2", action="store",
-                        help=""""Use nuqasm2 to translate OPENQASM2 source,
+                        help="""Use nuqasm2 to translate OPENQASM2 source,
                         providing include path for any include directives""")
 PARSER.add_argument("-o", "--outfile", action="store",
                     help="Write appending CSV to outfile, default is stdout")
