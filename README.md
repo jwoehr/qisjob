@@ -1,18 +1,21 @@
 # qis_job
 QISKit Job Control
 
-The `qis_job.py` script (or, if the setup is run, the `qisjob` command) loads and executes [Qiskit](https://qiskit.org)
-experiments on simulators or on genuine quantum computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
+The `qisjob` command) loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
-The script/command also provides some utility functions such as:
+The command also provides some utility functions such as:
 
 * enumerating backend platforms
 * checking on status of backend platforms
 * checking on status of jobs
 
-etc.
+and other useful operations for Qiskit experimentation.
 
-`qis_job.py`/`qisjob` can run Qiskit experiments expressed as either:
+**Install** (preferably in a Python virtual environment set up for Qiskit) via `setup.py`.
+
+**`qis_job` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
+
+`qisjob` can run Qiskit experiments expressed as either:
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
   * Use a well-formed OPENQASM2 file.
   * Examples are found in the `qasm_examples` subdirectory of the project.
@@ -22,7 +25,9 @@ etc.
     * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
   * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
   
-You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qis_job.py` script.
+You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
+
+You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile your OPENQASM2.0 source code and run it if you first install that project and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
 For this project you will need to install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
@@ -165,4 +170,4 @@ It is recommended you download or clone the most recent [release](https://github
 
 Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
-Jack Woehr 2020-02-10
+Jack Woehr 2020-02-11
