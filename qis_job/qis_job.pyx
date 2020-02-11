@@ -730,7 +730,7 @@ if __name__ == '__main__':
                         default='figout', backend name, figure type, and timestamp
                         will be appended""")
     PARSER.add_argument("--qasm", action="store_true",
-                        help="Print qasm file to stdout before running job")
+                        help="Print qasm file to stdout after running job")
     PARSER.add_argument("--qc", action="store",
                         help="Indicate circuit name of python-coded QuantumCircuit")
     PARSER.add_argument("--status", action="store_true",
