@@ -2,6 +2,7 @@ Changes by revision to QisJob
 
 v3.0:
 	- Now installable with `setup.py`
+	- with `-n` switch, uses nuqasm2 to assemble qasm code 
 	- Command once installed is `qisjob`
 	- Support for new Aer GPU simulator
 	- Added switches:
