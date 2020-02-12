@@ -18,9 +18,12 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.compiler import transpile
-from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
-from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
-from qiskit.providers.exceptions import QiskitBackendNotFoundError
+try:
+    from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
+    from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
+    from qiskit.providers.exceptions import QiskitBackendNotFoundError
+except ImportError:
+    warnings.warn("Qiskit IBMQ provider not installed.")
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout
 try:
