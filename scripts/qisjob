@@ -49,6 +49,8 @@ GROUPB.add_argument("--qasm_simulator", action="store_true",
 GROUPB.add_argument("--unitary_simulator", action="store_true",
                     help="""With -a use unitary simulator
                     instead of statevector simulator""")
+PARSER.add_argument("--qisjob_version", action="store_true",
+                    help="""Announce QisJob version""")
 PARSER.add_argument("--api_provider", action="store",
                     help="""Backend remote api provider,
                     currently supported are [IBMQ | QI | Forest].
@@ -87,8 +89,8 @@ PARSER.add_argument("--job_result", type=str, action="store",
 PARSER.add_argument("-m", "--memory", action="store_true",
                     help="Print individual results of multishot experiment")
 PARSER.add_argument("-n", "--nuqasm2", action="store",
-                        help="""Use nuqasm2 to translate OPENQASM2 source,
-                        providing include path for any include directives""")
+                    help="""Use nuqasm2 to translate OPENQASM2 source,
+                    providing include path for any include directives""")
 PARSER.add_argument("-o", "--outfile", action="store",
                     help="Write appending CSV to outfile, default is stdout")
 PARSER.add_argument("-p", "--properties", action="store_true",
@@ -183,6 +185,7 @@ SHOWSCHED = ARGS.showsched
 UNITARY_SIMULATOR = ARGS.unitary_simulator
 URL = ARGS.url
 VERBOSE = ARGS.verbose
+QISJOB_VERSION = ARGS.qisjob_version
 
 QJ = QisJob(filepaths=FILEPATH,
             provider_name=API_PROVIDER,
@@ -205,7 +208,8 @@ QJ = QisJob(filepaths=FILEPATH,
             show_statuses=STATUS, date_time=DATETIME,
             print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
             figure_basename=FIGURE_BASENAME,
-            show_q_version=QISKIT_VERSION, verbose=VERBOSE)
+            show_q_version=QISKIT_VERSION, verbose=VERBOSE,
+            show_qisjob_version=QISJOB_VERSION)
 
 QJ.do_it()
 

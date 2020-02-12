@@ -3,6 +3,7 @@ Changes by revision to QisJob
 v3.1:
 	- Minor typos
 	- Protect import of IBMQ Provider with try/except
+	- Now reports own version with --qisjob_version
 
 v3.0:
 	- Now installable with `setup.py`

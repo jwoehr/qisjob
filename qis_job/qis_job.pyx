@@ -55,7 +55,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  show_backends=False, show_configuration=False, show_properties=False,
                  show_statuses=False, date_time=None,
                  print_histogram=False, print_state_city=0, figure_basename='figout',
-                 show_q_version=False, verbose=0):
+                 show_q_version=False, verbose=0,
+                 show_qisjob_version=False):
         """Initialize factors from commandline options"""
         self.provider_name = provider_name.upper()
         self.provider = None
@@ -101,9 +102,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
         self.local_simulator_type = 'statevector_simulator'
+        self.show_qisjob_version = show_qisjob_version
+        self.my_version = "3.0+master"
+
+    def qisjob_version(self):
+        """Return version of qis_job"""
+        return self.my_version
 
     def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements
         """Run the whole program given ctor args from the driver script"""
+
+        if self.show_qisjob_version:
+            print(self.my_version)
+            sys.exit(0)
 
         if self.show_q_version:
             from qiskit import __qiskit_version__  # pylint: disable-msg=import-outside-toplevel
@@ -657,6 +668,8 @@ if __name__ == '__main__':
     GROUPB.add_argument("--unitary_simulator", action="store_true",
                         help="""With -a use unitary simulator
                         instead of statevector simulator""")
+    PARSER.add_argument("--qisjob_version", action="store_true",
+                        help="""Announce QisJob version""")
     PARSER.add_argument("--api_provider", action="store",
                         help="""Backend remote api provider,
                         currently supported are [IBMQ | QI | Forest].
@@ -791,6 +804,7 @@ if __name__ == '__main__':
     UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
     VERBOSE = ARGS.verbose
+    QISJOB_VERSION = ARGS.qisjob_version
 
     QJ = QisJob(filepaths=FILEPATH,
                 provider_name=API_PROVIDER,
@@ -813,7 +827,8 @@ if __name__ == '__main__':
                 show_statuses=STATUS, date_time=DATETIME,
                 print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
                 figure_basename=FIGURE_BASENAME,
-                show_q_version=QISKIT_VERSION, verbose=VERBOSE)
+                show_q_version=QISKIT_VERSION, verbose=VERBOSE,
+                show_qisjob_version=QISJOB_VERSION)
 
     QJ.do_it()
 
