@@ -448,16 +448,22 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             if self.nuqasm2:
                 from nuqasm2 import Ast2Circ, Qasm_Exception  # pylint: disable-msg=import-outside-toplevel, line-too-long
                 try:
-                    circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+                    circ = Ast2Circ.from_qasm_str(the_source_list,
+                                                  include_path=self.nuqasm2)
+
                 except Qasm_Exception as err:
                     self._pp.pprint("Error: " + filepath_name)
                     x = err.errpacket()  # pylint: disable-msg=invalid-name
                     self._pp.pprint(x)
                     sys.exit(x['errcode'])
+
+                self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
+                               .format(circ.qasm()), 3)
+
             else:
                 circ = QuantumCircuit.from_qasm_str(the_source)
 
-        self.verbosity(circ.draw(), 2)
+            self.verbosity(circ.draw(), 2)
 
         if self.xpile:
             new_circ = transpile(circ, backend=self.backend)
@@ -535,6 +541,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
         self.verbosity("File handle is {}".format(str(ofh)), 3)
 
+        if self.nuqasm2:
+            from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                                 Qasm_Exception)
+
         circs = []
 
         for fpath in self.filepaths:
@@ -560,8 +570,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 circ = my_loc[self.qc_name]
             else:
                 if self.nuqasm2:
-                    from nuqasm2 import Ast2Circ  # pylint: disable-msg=import-outside-toplevel
-                    circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+                    try:
+                        circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+
+                    except Qasm_Exception as err:
+                        self._pp.pprint("Error: " + fpath)
+                        x = err.errpacket()  # pylint: disable-msg=invalid-name
+                        self._pp.pprint(x)
+                        sys.exit(x['errcode'])
+
+                    self.verbosity("\nUnrolled circuit's OPENQASM 2.0 source code\n{}"
+                                   .format(circ.qasm()), 3)
+
                 else:
                     circ = QuantumCircuit.from_qasm_str(the_source)
 
