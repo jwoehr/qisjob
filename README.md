@@ -29,26 +29,26 @@ You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit
 
 You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile your OPENQASM2.0 source code and run it if you first install that project and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
-For this project you will need to install
+For this project you must install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
 * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
 * Currently supported backend providers are:
-  * IBMQ
+  * IBMQ (required)
     * For the local Aer simulator you only need qiskit-aer installed.
     * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
-  * Forest
+  * Forest (optional; a warning message may appear if absent)
     * For local simulator or Rigetti QPU you will need
       * [Rigetti qvm](https://github.com/rigetti/qvm)
       * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
       * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
     * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
-  * QI
+  * QI  (optional; a warning message may appear if absent)
     * Install QuTech-Delft/quantuminspire from either
       * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
       * `pip install quantuminspire`.
     * You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
-  * qcgpu
+  * qcgpu (optional; a warning message may appear if absent)
     * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
 
 
@@ -123,7 +123,7 @@ optional arguments:
   --jobs JOBS           Print JOBS jobs and status for -b backend and exit 0
   --job_id JOB_ID       Print job number JOB_ID for -b backend and exit 0
   --job_result JOB_RESULT
-                        "Print result of job number JOB_RESULT for -b backend
+                        Print result of job number JOB_RESULT for -b backend
                         and exit 0
   -m, --memory          Print individual results of multishot experiment
   -n NUQASM2, --nuqasm2 NUQASM2
