@@ -1,9 +1,10 @@
 Changes by revision to QisJob
 
 v3.1:
-	- Minor typos
+	- Minor typos and more error handling
 	- Protect import of IBMQ Provider with try/except
 	- Now reports own version with --qisjob_version
+	- If `-n` then `-v -v -v` verbosity will print unrolled circuit
 
 v3.0:
 	- Now installable with `setup.py`
