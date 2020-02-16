@@ -449,7 +449,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 from nuqasm2 import Ast2Circ, Qasm_Exception  # pylint: disable-msg=import-outside-toplevel, line-too-long
                 try:
                     circ = Ast2Circ.from_qasm_str(the_source_list,
-                                                  include_path=self.nuqasm2)
+                                                  include_path=self.nuqasm2,
+                                                  no_unknown=True)
 
                 except Qasm_Exception as err:
                     self._pp.pprint("Error: " + filepath_name)
@@ -571,7 +572,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             else:
                 if self.nuqasm2:
                     try:
-                        circ = Ast2Circ.from_qasm_str(the_source_list, include_path=self.nuqasm2)
+                        circ = Ast2Circ.from_qasm_str(the_source_list,
+                                                      include_path=self.nuqasm2,
+                                                      no_unknown=True)
 
                     except Qasm_Exception as err:
                         self._pp.pprint("Error: " + fpath)

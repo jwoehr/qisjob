@@ -5,6 +5,7 @@ v3.1:
 	- Protect import of IBMQ Provider with try/except
 	- Now reports own version with --qisjob_version
 	- If `-n` then `-v -v -v` verbosity will print unrolled circuit
+	- Added `no_unknown=True` so will except on unparseable
 
 v3.0:
 	- Now installable with `setup.py`
