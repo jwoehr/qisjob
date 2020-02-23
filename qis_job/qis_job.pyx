@@ -446,13 +446,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             circ = my_loc[self.qc_name]
         else:
             if self.nuqasm2:
-                from nuqasm2 import Ast2Circ, Qasm_Exception  # pylint: disable-msg=import-outside-toplevel, line-too-long
+                from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                                     Qasm_Exception,
+                                     Ast2CircException)
                 try:
                     circ = Ast2Circ.from_qasm_str(the_source_list,
                                                   include_path=self.nuqasm2,
                                                   no_unknown=True)
 
-                except Qasm_Exception as err:
+                except (Qasm_Exception, Ast2CircException) as err:
                     self._pp.pprint("Error: " + filepath_name)
                     x = err.errpacket()  # pylint: disable-msg=invalid-name
                     self._pp.pprint(x)
@@ -544,7 +546,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         if self.nuqasm2:
             from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
-                                 Qasm_Exception)
+                                 Qasm_Exception,
+                                 Ast2CircException)
 
         circs = []
 
@@ -576,7 +579,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                                                       include_path=self.nuqasm2,
                                                       no_unknown=True)
 
-                    except Qasm_Exception as err:
+                    except (Qasm_Exception, Ast2CircException) as err:
                         self._pp.pprint("Error: " + fpath)
                         x = err.errpacket()  # pylint: disable-msg=invalid-name
                         self._pp.pprint(x)
