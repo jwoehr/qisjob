@@ -2,6 +2,8 @@ Changes by revision to QisJob
 
 v3.1:
 	- Created Makefile
+	- Check for `JobStatus.DONE` and print error if any
+	- Support qiskit-jku-provider
 	- Minor typos and more error handling
 	- Handle Ast2CircException
 	- Protect import of IBMQ Provider with try/except

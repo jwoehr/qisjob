@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""qis_job.py
+"""qisjob.pyx
 Load from qasm source or Qiskit QuantumCircuit sourceand run job with reporting.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 BSD-3 license -- See LICENSE which you should have received with this code.
@@ -18,6 +18,7 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.compiler import transpile
+from qiskit.providers import JobStatus
 try:
     from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
     from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
@@ -36,6 +37,10 @@ try:
     from quantastica.qiskit_forest import ForestBackend
 except ImportError:
     warnings.warn("Rigetti Forest not installed.")
+try:
+    from qiskit_jku_provider import JKUProvider
+except ImportError:
+    warnings.warn("qiskit-jku-provider not installed.")
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes
@@ -248,6 +253,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Load Rigetti Forest account appropriately and return provider"""
         self.provider = ForestBackend
 
+    def jku_account_fu(self):
+        """Load qiskit-jku-provider"""
+        self.provider = JKUProvider()
+
     def account_fu(self):
         """Load account from correct API provider"""
         if self.provider_name == "IBMQ":
@@ -256,6 +265,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             self.qi_account_fu()
         elif self.provider_name == "Forest":
             self.forest_account_fu()
+        elif self.provider_name == "JKU":
+            self.jku_account_fu()
 
     def choose_backend(self):  # pylint: disable-msg=too-many-branches
         """Return backend selected by user if account will activate and allow."""
@@ -502,7 +513,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                     self._pp.pprint(job_exp.__dict__)
 
             job_monitor(job_exp)
-            result_exp = job_exp.result()
+
+            if job_exp.status() == JobStatus.DONE:
+                result_exp = job_exp.result()
+            else:
+                print(job_exp.error_message())
 
             if self.use_statevector_gpu:
                 try:
@@ -625,7 +640,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 self._pp.pprint(job_exp.to_dict())
 
             job_monitor(job_exp)
-            result_exp = job_exp.result()
+
+            if job_exp.status() == JobStatus.DONE:
+                result_exp = job_exp.result()
+            else:
+                print(job_exp.error_message())
 
             result_exp_dict = result_exp.to_dict()
 
@@ -682,7 +701,7 @@ if __name__ == '__main__':
     GROUP.add_argument("--qcgpu", action="store_true",
                        help="""Use qcgpu simulator.
                        Default is statevector simulator.
-                       Use --qcgpu --qasm-simulator to get qcgpu qasm simulator.""")
+                       Use --qcgpu --qasm_simulator to get qcgpu qasm simulator.""")
     GROUP.add_argument("-b", "--backend", action="store",
                        help="Use specified IBMQ backend")
     GROUPB.add_argument("--statevector_gpu", action="store_true",
@@ -698,7 +717,7 @@ if __name__ == '__main__':
                         help="""Announce QisJob version""")
     PARSER.add_argument("--api_provider", action="store",
                         help="""Backend remote api provider,
-                        currently supported are [IBMQ | QI | Forest].
+                        currently supported are [IBMQ | QI | Forest | JKU].
                         Default is IBMQ.""", default="IBMQ")
     PARSER.add_argument("--qvm", action="store_true",
                         help="""Use Forest local qvm simulator described by

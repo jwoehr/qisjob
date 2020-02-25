@@ -37,6 +37,9 @@ For this project you must install
   * IBMQ (required)
     * For the local Aer simulator you only need qiskit-aer installed.
     * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
+  * JKU (optional; a warning message may appear if absent)
+  	* You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
+  	* At this writing 2020-02-25 you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
   * Forest (optional; a warning message may appear if absent)
     * For local simulator or Rigetti QPU you will need
       * [Rigetti qvm](https://github.com/rigetti/qvm)
@@ -56,11 +59,12 @@ For this project you must install
 $ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
               [--statevector_gpu | --qasm_simulator | --unitary_simulator]
-              [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends]
-              [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
-              [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2]
-              [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS]
-              [-v] [-x] [--showsched] [--circuit_layout] [--histogram]
+              [--qisjob_version] [--api_provider API_PROVIDER] [--qvm]
+              [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g]
+              [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT]
+              [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS]
+              [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched]
+              [--circuit_layout] [--histogram]
               [--plot_state_city PLOT_STATE_CITY]
               [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
               [--status] [--token TOKEN] [--url URL]
@@ -89,7 +93,7 @@ optional arguments:
                         simulator. Use -a --unitary-simulator to get Aer
                         unitary simulator.
   --qcgpu               Use qcgpu simulator. Default is statevector simulator.
-                        Use --qcgpu --qasm-simulator to get qcgpu qasm
+                        Use --qcgpu --qasm_simulator to get qcgpu qasm
                         simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
@@ -99,9 +103,10 @@ optional arguments:
                         statevector simulator
   --unitary_simulator   With -a use unitary simulator instead of statevector
                         simulator
+  --qisjob_version      Announce QisJob version
   --api_provider API_PROVIDER
                         Backend remote api provider, currently supported are
-                        [IBMQ | QI | Forest]. Default is IBMQ.
+                        [IBMQ | QI | Forest | JKU]. Default is IBMQ.
   --qvm                 Use Forest local qvm simulator described by -b
                         backend, generally one of qasm_simulator or
                         statevector_simulator. Use --qvm_as to instruct the
@@ -127,7 +132,7 @@ optional arguments:
                         and exit 0
   -m, --memory          Print individual results of multishot experiment
   -n NUQASM2, --nuqasm2 NUQASM2
-                        "Use nuqasm2 to translate OPENQASM2 source, providing
+                        Use nuqasm2 to translate OPENQASM2 source, providing
                         include path for any include directives
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout
@@ -157,7 +162,7 @@ optional arguments:
                         basename including path (if any) for figure output,
                         default='figout', backend name, figure type, and
                         timestamp will be appended
-  --qasm                Print qasm file to stdout before running job
+  --qasm                Print qasm file to stdout after running job
   --qc QC               Indicate circuit name of python-coded QuantumCircuit
   --status              Print status of chosen --backend to stdout (default
                         all backends) of --api_provider (default IBMQ) and
