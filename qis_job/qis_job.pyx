@@ -108,7 +108,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
         self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
-        self.my_version = "3.1"
+        self.my_version = "3.1+master"
 
     def qisjob_version(self):
         """Return version of qis_job"""
