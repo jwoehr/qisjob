@@ -1,5 +1,8 @@
 Changes by revision to QisJob
 
+v3.2:
+	- Remember to change version in `setup.py`
+
 v3.1:
 	- Created Makefile
 	- Check for `JobStatus.DONE` and print error if any
