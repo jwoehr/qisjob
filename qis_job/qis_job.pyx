@@ -52,7 +52,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  num_qubits=5, shots=1024, max_credits=3,
                  outfile_path=None, one_job=False, qasm=False,
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
-                 use_statevector_gpu=False,
+                 use_statevector_gpu=False, use_unitary_gpu=False,
+                 use_density_matrix_gpu=False,
                  qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
                  qc_name=None, xpile=False, showsched=False, circuit_layout=False,
                  print_job=False, memory=False, show_result=False,
@@ -78,9 +79,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.one_job = one_job
         self.qasm = qasm
         self.use_aer = use_aer
-        self.use_statevector_gpu = use_statevector_gpu
         self.use_qasm_simulator = use_qasm_simulator
         self.use_unitary_simulator = use_unitary_simulator
+        self.use_statevector_gpu = use_statevector_gpu
+        self.use_unitary_gpu = use_unitary_gpu
+        self.use_density_matrix_gpu = use_density_matrix_gpu
         self.qcgpu = qcgpu
         self.use_sim = use_sim
         self.qvm = qvm
@@ -106,8 +109,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.show_q_version = show_q_version
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = 'statevector_simulator'
+        self.local_simulator_type = 'statevector_simulator'  #default
         self.show_qisjob_version = show_qisjob_version
+        self.method = None # methods for simulators e.g., gpu
         self.my_version = "3.1+master"
 
     def qisjob_version(self):
@@ -272,15 +276,27 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
+        # Choose simulator. We defaulted in __init__() to statevector_simulator
         if self.use_qasm_simulator:
             self.local_simulator_type = 'qasm_simulator'
         elif self.use_unitary_simulator:
             self.local_simulator_type = 'unitary_simulator'
 
+        # Choose method kwarg for gpu etc if present
+        if self.use_statevector_gpu:
+            self.method = "statevector_gpu"
+        elif self.use_unitary_gpu:
+            self.method = "unitary_gpu"
+        elif self.use_density_matrix_gpu:
+            self.method = "density_matrix_gpu"
+
         if self.use_aer:
-            if self.use_statevector_gpu:
+            if self.method:
                 from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
-                print("self.local_simulator_type is '{}'".format(self.local_simulator_type))
+                self.verbosity("self.local_simulator_type is '{}' with method '{}'"
+                               .format(self.local_simulator_type,
+                                       self.method),
+                               2)
                 self.backend = Aer.get_backend(self.local_simulator_type)
             else:
                 from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
@@ -493,9 +509,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                 self._pp.pprint(schedule(new_circ, self.backend))
 
         try:
-            if self.use_statevector_gpu:
-                self.verbosity("Using gpu", 2)
-                backend_options = {"method": "statevector_gpu"}
+            if self.method:
+                self.verbosity("Using gpu method {}".format(self.method), 2)
+                backend_options = {"method": self.method}
                 job_exp = execute(circ, backend=self.backend,
                                   backend_options=backend_options,
                                   shots=self.shots, max_credits=self.max_credits,
@@ -689,6 +705,8 @@ if __name__ == '__main__':
     PARSER = argparse.ArgumentParser(description=EXPLANATION)
     GROUP = PARSER.add_mutually_exclusive_group()
     GROUPB = PARSER.add_mutually_exclusive_group()
+    GROUPC = PARSER.add_mutually_exclusive_group()
+
     GROUP.add_argument("-i", "--ibmq", action="store_true",
                        help="Use best genuine IBMQ processor (default)")
     GROUP.add_argument("-s", "--sim", action="store_true",
@@ -704,15 +722,21 @@ if __name__ == '__main__':
                        Use --qcgpu --qasm_simulator to get qcgpu qasm simulator.""")
     GROUP.add_argument("-b", "--backend", action="store",
                        help="Use specified IBMQ backend")
-    GROUPB.add_argument("--statevector_gpu", action="store_true",
-                        help="""With -a use gpu statevector simulator
-                        instead of cpu statevector simulator""")
     GROUPB.add_argument("--qasm_simulator", action="store_true",
                         help="""With -a or --qcgpu use qasm simulator
                         instead of statevector simulator""")
     GROUPB.add_argument("--unitary_simulator", action="store_true",
                         help="""With -a use unitary simulator
                         instead of statevector simulator""")
+    GROUPC.add_argument("--statevector_gpu", action="store_true",
+                        help="""With -a and --qasm_simulator
+                        use gpu statevector simulator""")
+    GROUPC.add_argument("--unitary_gpu", action="store_true",
+                        help="""With -a and --qasm_simulator
+                        use gpu unitary simulator""")
+    GROUPC.add_argument("--density_matrix_gpu", action="store_true",
+                        help="""With -a and --qasm_simulator
+                        use gpu density matrix simulator""")
     PARSER.add_argument("--qisjob_version", action="store_true",
                         help="""Announce QisJob version""")
     PARSER.add_argument("--api_provider", action="store",
@@ -842,6 +866,8 @@ if __name__ == '__main__':
     SHOTS = ARGS.shots
     SIM = ARGS.sim
     STATEVECTOR_GPU = ARGS.statevector_gpu
+    UNITARY_GPU = ARGS.unitary_gpu
+    DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
     STATUS = ARGS.status
     TOKEN = ARGS.token
     TRANSPILE = ARGS.transpile
@@ -862,6 +888,8 @@ if __name__ == '__main__':
                 use_qasm_simulator=QASM_SIMULATOR,
                 use_unitary_simulator=UNITARY_SIMULATOR,
                 use_statevector_gpu=STATEVECTOR_GPU,
+                use_unitary_gpu=UNITARY_GPU,
+                use_density_matrix_gpu=DENSITY_MATRIX_GPU,
                 qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
                 qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
                 circuit_layout=CIRCUIT_LAYOUT,

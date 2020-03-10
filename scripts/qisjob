@@ -25,6 +25,8 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 PARSER = argparse.ArgumentParser(description=EXPLANATION)
 GROUP = PARSER.add_mutually_exclusive_group()
 GROUPB = PARSER.add_mutually_exclusive_group()
+GROUPC = PARSER.add_mutually_exclusive_group()
+
 GROUP.add_argument("-i", "--ibmq", action="store_true",
                    help="Use best genuine IBMQ processor (default)")
 GROUP.add_argument("-s", "--sim", action="store_true",
@@ -40,15 +42,21 @@ GROUP.add_argument("--qcgpu", action="store_true",
                    Use --qcgpu --qasm_simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
-GROUPB.add_argument("--statevector_gpu", action="store_true",
-                    help="""With -a use gpu statevector simulator
-                    instead of cpu statevector simulator""")
 GROUPB.add_argument("--qasm_simulator", action="store_true",
                     help="""With -a or --qcgpu use qasm simulator
                     instead of statevector simulator""")
 GROUPB.add_argument("--unitary_simulator", action="store_true",
                     help="""With -a use unitary simulator
                     instead of statevector simulator""")
+GROUPC.add_argument("--statevector_gpu", action="store_true",
+                    help="""With -a and --qasm_simulator
+                    use gpu statevector simulator""")
+GROUPC.add_argument("--unitary_gpu", action="store_true",
+                    help="""With -a and --qasm_simulator
+                    use gpu unitary simulator""")
+GROUPC.add_argument("--density_matrix_gpu", action="store_true",
+                    help="""With -a and --qasm_simulator
+                    use gpu density matrix simulator""")
 PARSER.add_argument("--qisjob_version", action="store_true",
                     help="""Announce QisJob version""")
 PARSER.add_argument("--api_provider", action="store",
@@ -152,6 +160,7 @@ BACKENDS = ARGS.backends
 CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
+DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -168,24 +177,25 @@ PLOT_STATE_CITY = ARGS.plot_state_city
 PROPERTIES = ARGS.properties
 QASM = ARGS.qasm
 QASM_SIMULATOR = ARGS.qasm_simulator
-QC_NAME = ARGS.qc
 QCGPU = ARGS.qcgpu
+QC_NAME = ARGS.qc
+QISJOB_VERSION = ARGS.qisjob_version
 QISKIT_VERSION = ARGS.qiskit_version
 QUBITS = ARGS.qubits
 QVM = ARGS.qvm
 QVM_AS = ARGS.qvm_as
 RESULT = ARGS.result
 SHOTS = ARGS.shots
+SHOWSCHED = ARGS.showsched
 SIM = ARGS.sim
 STATEVECTOR_GPU = ARGS.statevector_gpu
 STATUS = ARGS.status
 TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
-SHOWSCHED = ARGS.showsched
+UNITARY_GPU = ARGS.unitary_gpu
 UNITARY_SIMULATOR = ARGS.unitary_simulator
 URL = ARGS.url
 VERBOSE = ARGS.verbose
-QISJOB_VERSION = ARGS.qisjob_version
 
 QJ = QisJob(filepaths=FILEPATH,
             provider_name=API_PROVIDER,
@@ -198,6 +208,8 @@ QJ = QisJob(filepaths=FILEPATH,
             use_qasm_simulator=QASM_SIMULATOR,
             use_unitary_simulator=UNITARY_SIMULATOR,
             use_statevector_gpu=STATEVECTOR_GPU,
+            use_unitary_gpu=UNITARY_GPU,
+            use_density_matrix_gpu=DENSITY_MATRIX_GPU,
             qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
             circuit_layout=CIRCUIT_LAYOUT,
