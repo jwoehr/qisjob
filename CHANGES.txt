@@ -2,6 +2,7 @@ Changes by revision to QisJob
 
 v3.2:
 	- Remember to change version in `setup.py`
+	- More support for Aer gpu
 
 v3.1:
 	- Created Makefile

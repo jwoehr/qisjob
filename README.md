@@ -58,7 +58,8 @@ For this project you must install
 ```
 $ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
-              [--statevector_gpu | --qasm_simulator | --unitary_simulator]
+              [--qasm_simulator | --unitary_simulator]
+              [--statevector_gpu | --unitary_gpu | --density_matrix_gpu]
               [--qisjob_version] [--api_provider API_PROVIDER] [--qvm]
               [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g]
               [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT]
@@ -97,11 +98,14 @@ optional arguments:
                         simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
-  --statevector_gpu     With -a use gpu statevector simulator instead of cpu
-                        statevector simulator
   --qasm_simulator      With -a or --qcgpu use qasm simulator instead of
                         statevector simulator
   --unitary_simulator   With -a use unitary simulator instead of statevector
+                        simulator
+  --statevector_gpu     With -a and --qasm_simulator use gpu statevector
+                        simulator
+  --unitary_gpu         With -a and --qasm_simulator use gpu unitary simulator
+  --density_matrix_gpu  With -a and --qasm_simulator use gpu density matrix
                         simulator
   --qisjob_version      Announce QisJob version
   --api_provider API_PROVIDER
