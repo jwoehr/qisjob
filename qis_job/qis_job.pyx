@@ -43,9 +43,10 @@ except ImportError:
     warnings.warn("qiskit-jku-provider not installed.")
 
 
-class QisJob:  # pylint: disable-msg=too-many-instance-attributes
+class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
     """Embody preparation, execution, display of Qiskit job or jobs"""
-    def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals
+    def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
+                 qasm_src=None,
                  provider_name="IBMQ", backend_name=None,
                  token=None, url=None,
                  nuqasm2=None,
@@ -63,7 +64,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
                  print_histogram=False, print_state_city=0, figure_basename='figout',
                  show_q_version=False, verbose=0,
                  show_qisjob_version=False):
-        """Initialize factors from commandline options"""
+        """Initialize member data"""
+        self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
         self.provider = None
         self.filepaths = filepaths
@@ -109,9 +111,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         self.show_q_version = show_q_version
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = 'statevector_simulator'  #default
+        self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
-        self.method = None # methods for simulators e.g., gpu
+        self.method = None  # methods for simulators e.g., gpu
         self.my_version = "3.1+master"
 
     def qisjob_version(self):
@@ -212,14 +214,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
         else:
             self.choose_backend()
-            if not self.filepaths:
-                self.one_exp()
+            if self.qasm_src:
+                self.qasm_exp()
+
             else:
-                if self.one_job:
-                    self.multi_exps()
+                if not self.filepaths:
+                    self.one_exp()
                 else:
-                    for f_path in self.filepaths:
-                        self.one_exp(f_path)
+                    if self.one_job:
+                        self.multi_exps()
+                    else:
+                        for f_path in self.filepaths:
+                            self.one_exp(f_path)
 
     def verbosity(self, text, count):
         """Print text if count exceeds verbose level"""
@@ -393,14 +399,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         fig = plot_histogram(outputstate)
         QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
 
-    def process_result(self, result_exp, circ, ofh):
-        """Process the result of one circuit circ
-        from result result_exp
-        printing to output file handle ofh
-        passing original qasm filepath for figure output filename generation
+    def formulate_result(self, result_exp, circ, ofh):
+        """Forumulate the result of one circuit circ
+        from result result_exp returning output as string
         """
         # Write qasm if requested
-        if self.qasm:
+        if self.qasm and ofh:
             ofh.write(circ.qasm() + '\n')
 
         # Raw data if requested
@@ -410,6 +414,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
         # Print statevector ... this doesn't handle Forest qvm yet
         if self.use_aer and self.local_simulator_type == 'statevector_simulator':
             self._pp.pprint(result_exp.get_statevector(circ))
+
+        output = None
 
         # Print counts if any measurment was taken
         if 'counts' in result_exp.data(circ):
@@ -423,7 +429,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             # Generate CSV
             output = QisJob.csv_str(str(self.backend) + ' ' + datetime.datetime.now().isoformat(),
                                     sorted_keys, sorted_counts)
+        return output
 
+    def process_result(self, result_exp, circ, ofh):
+        """Process the result of one circuit circ
+        from result result_exp
+        printing to output file handle ofh
+        passing original qasm filepath for figure output filename generation
+        """
+        output = self.formulate_result(result_exp, circ, ofh)
+
+        if output:
             # Write CSV
             for line in output:
                 ofh.write(line + '\n')
@@ -436,7 +452,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
 
     def one_exp(self, filepath_name=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Load qasm and run the job, print csv and other selected output"""
-
         circ = None
 
         if filepath_name is None:
@@ -687,6 +702,94 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes
             for b_e in self.provider.backends():
                 stat += str(b_e.status())
         return stat
+
+    def qasm_exp(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+        """Given qasm source, run the job
+        and return in a string csv and other selected output
+        """
+        the_source = self.qasm_src
+        self.verbosity("source:\n" + the_source, 1)
+
+        circ = None
+
+        if self.nuqasm2:
+            from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                                 Qasm_Exception,
+                                 Ast2CircException)
+            try:
+                circ = Ast2Circ.from_qasm_str(the_source,
+                                              include_path=self.nuqasm2,
+                                              no_unknown=True)
+
+            except (Qasm_Exception, Ast2CircException) as err:
+                self._pp.pprint("Error: " + the_source)
+                x = err.errpacket()  # pylint: disable-msg=invalid-name
+                self._pp.pprint(x)
+                sys.exit(x['errcode'])
+
+            self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
+                           .format(circ.qasm()), 3)
+
+        else:
+            circ = QuantumCircuit.from_qasm_str(the_source)
+
+        self.verbosity(circ.draw(), 2)
+
+        if self.xpile:
+            new_circ = transpile(circ, backend=self.backend)
+            print(new_circ)
+            if self.circuit_layout:
+                fig = plot_circuit_layout(new_circ, self.backend)
+                QisJob.save_fig(fig,
+                                self.figure_basename,
+                                self.backend,
+                                'plot_circuit.png')
+
+            if self.showsched:
+                self._pp.pprint(schedule(new_circ, self.backend))
+
+        try:
+            if self.method:
+                self.verbosity("Using gpu method {}".format(self.method), 2)
+                backend_options = {"method": self.method}
+                job_exp = execute(circ, backend=self.backend,
+                                  backend_options=backend_options,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
+            else:
+                job_exp = execute(circ, backend=self.backend,
+                                  shots=self.shots, max_credits=self.max_credits,
+                                  memory=self.memory)
+
+            if self.print_job:
+                _op = getattr(job_exp, 'to_dict', None)
+                if _op and callable(_op):
+                    self._pp.pprint(job_exp.to_dict())
+                else:
+                    self._pp.pprint(job_exp.__dict__)
+
+            job_monitor(job_exp)
+
+            if job_exp.status() == JobStatus.DONE:
+                result_exp = job_exp.result()
+            else:
+                print(job_exp.error_message())
+
+            if self.use_statevector_gpu:
+                try:
+                    self.verbosity("Method: {}"
+                                   .format(result_exp.data(circ).metadata.get('method')), 2)
+                except AttributeError as err:
+                    print("AttributeError error: {0}".format(err))
+
+            if self.show_result:
+                self._pp.pprint(result_exp.to_dict())
+
+            return self.formulate_result(result_exp, circ, None)
+
+        except IBMQJobFailureError:
+            print(job_exp.error_message())
+            sys.exit(100)
 
 
 if __name__ == '__main__':
