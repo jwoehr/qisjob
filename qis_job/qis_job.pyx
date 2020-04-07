@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3  # pylint: disable-msg=too-many-lines
 # -*- coding: utf-8 -*-
 """qisjob.pyx
 Load from qasm source or Qiskit QuantumCircuit sourceand run job with reporting.
@@ -18,7 +18,6 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.compiler import transpile
-from qiskit.providers import JobStatus
 try:
     from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
     from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
@@ -63,7 +62,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  show_statuses=False, date_time=None,
                  print_histogram=False, print_state_city=0, figure_basename='figout',
                  show_q_version=False, verbose=0,
-                 show_qisjob_version=False):
+                 show_qisjob_version=False,
+                 use_job_monitor=False):
         """Initialize member data"""
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -115,6 +115,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
         self.my_version = "3.1+master"
+        self.qasm_result = None
+        self.use_job_monitor = use_job_monitor
 
     def qisjob_version(self):
         """Return version of qis_job"""
@@ -215,8 +217,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         else:
             self.choose_backend()
             if self.qasm_src:
-                self.qasm_exp()
-
+                self.qasm_result = self.qasm_exp()
             else:
                 if not self.filepaths:
                     self.one_exp()
@@ -543,12 +544,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 else:
                     self._pp.pprint(job_exp.__dict__)
 
-            job_monitor(job_exp)
+            if self.use_job_monitor:
+                job_monitor(job_exp)
 
-            if job_exp.status() == JobStatus.DONE:
-                result_exp = job_exp.result()
-            else:
-                print(job_exp.error_message())
+            result_exp = job_exp.result()
 
             if self.use_statevector_gpu:
                 try:
@@ -670,12 +669,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 self._pp.pprint(job_exp.to_dict())
 
-            job_monitor(job_exp)
+            if self.use_job_monitor:
+                job_monitor(job_exp)
 
-            if job_exp.status() == JobStatus.DONE:
-                result_exp = job_exp.result()
-            else:
-                print(job_exp.error_message())
+            result_exp = job_exp.result()
 
             result_exp_dict = result_exp.to_dict()
 
@@ -768,12 +765,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 else:
                     self._pp.pprint(job_exp.__dict__)
 
-            job_monitor(job_exp)
+            if self.use_job_monitor:
+                job_monitor(job_exp)
 
-            if job_exp.status() == JobStatus.DONE:
-                result_exp = job_exp.result()
-            else:
-                print(job_exp.error_message())
+            result_exp = job_exp.result()
 
             if self.use_statevector_gpu:
                 try:
@@ -930,6 +925,9 @@ if __name__ == '__main__':
                         help="Use this token")
     PARSER.add_argument("--url", action="store",
                         help="Use this url")
+    PARSER.add_argument("--use_job_monitor", action="store_true",
+                        help="""Display job monitor instead of just waiting for
+                        job result""")
     PARSER.add_argument("filepath", nargs='*',
                         help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
@@ -977,6 +975,7 @@ if __name__ == '__main__':
     SHOWSCHED = ARGS.showsched
     UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
+    USE_JM = ARGS.use_job_monitor
     VERBOSE = ARGS.verbose
     QISJOB_VERSION = ARGS.qisjob_version
 
@@ -1004,7 +1003,8 @@ if __name__ == '__main__':
                 print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
                 figure_basename=FIGURE_BASENAME,
                 show_q_version=QISKIT_VERSION, verbose=VERBOSE,
-                show_qisjob_version=QISJOB_VERSION)
+                show_qisjob_version=QISJOB_VERSION,
+                use_job_monitor=USE_JM)
 
     QJ.do_it()
 
