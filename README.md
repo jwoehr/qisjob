@@ -29,6 +29,8 @@ You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit
 
 You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile your OPENQASM2.0 source code and run it if you first install that project and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
+You can use the class `QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
+
 For this project you must install
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
@@ -68,7 +70,7 @@ usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
               [--circuit_layout] [--histogram]
               [--plot_state_city PLOT_STATE_CITY]
               [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
-              [--status] [--token TOKEN] [--url URL]
+              [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
               [filepath [filepath ...]]
 
 qis_job.py : Loads from one or more qasm source files or from a file
@@ -173,6 +175,8 @@ optional arguments:
                         exit 0
   --token TOKEN         Use this token
   --url URL             Use this url
+  --use_job_monitor     Display job monitor instead of just waiting for job
+                        result
 ```
 
 It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).

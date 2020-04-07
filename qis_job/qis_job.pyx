@@ -114,7 +114,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "3.1+master"
+        self.my_version = "3.2"
         self.qasm_result = None
         self.use_job_monitor = use_job_monitor
 
