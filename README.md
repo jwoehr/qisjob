@@ -6,9 +6,9 @@ The `qisjob` command) loads and executes [Qiskit](https://qiskit.org) experiment
 
 The command also provides some utility functions such as:
 
-* enumerating backend platforms
-* checking on status of backend platforms
-* checking on status of jobs
+-   enumerating backend platforms
+-   checking on status of backend platforms
+-   checking on status of jobs
 
 and other useful operations for Qiskit experimentation.
 
@@ -18,6 +18,7 @@ and other useful operations for Qiskit experimentation.
 
 `qisjob` can run Qiskit experiments expressed as either:
 
+<<<<<<< HEAD
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
     * Examples are found in the `qasm_examples` subdirectory of the project.
@@ -27,6 +28,17 @@ and other useful operations for Qiskit experimentation.
     * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
     * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
+=======
+-   [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
+    -   Use a well-formed OPENQASM2 file.
+    -   Examples are found in the `qasm_examples` subdirectory of the project.
+-   a Qiskit Terra `QuantumCircuit` Python code snippet.
+
+    -   To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
+    -   Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
+        -   If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
+    -   An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
+>>>>>>> 04f1a1270f9da254b5a719f9bd525ee97007b34e
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
@@ -36,6 +48,7 @@ You can use the class `QisJob` in your own program and feed it a string of OPENQ
 
 For this project you must install
 
+<<<<<<< HEAD
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
 * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
@@ -59,6 +72,31 @@ For this project you must install
         * You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
     * qcgpu (optional; a warning message may appear if absent)
         * To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
+=======
+-   [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
+-   [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
+-   A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
+-   Currently supported backend providers are:
+    -   IBMQ (required)
+        -   For the local Aer simulator you only need qiskit-aer installed.
+        -   For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
+    -   JKU (optional; a warning message may appear if absent)
+        		- You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
+        		- At this writing 2020-02-25 you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
+    -   Forest (optional; a warning message may appear if absent)
+        -   For local simulator or Rigetti QPU you will need
+            -   [Rigetti qvm](https://github.com/rigetti/qvm)
+            -   [Rigetti pyQuil](https://github.com/rigetti/pyquil)
+            -   [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
+        -   For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
+    -   QI  (optional; a warning message may appear if absent)
+        -   Install QuTech-Delft/quantuminspire from either
+            -   [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
+            -   `pip install quantuminspire`.
+        -   You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
+    -   qcgpu (optional; a warning message may appear if absent)
+        -   To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
+>>>>>>> 04f1a1270f9da254b5a719f9bd525ee97007b34e
 
 ```
     $ qisjob -h
