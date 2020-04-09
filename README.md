@@ -60,7 +60,7 @@ For this project you must install
     -   qcgpu (optional; a warning message may appear if absent)
         -   To use the qcgpu simulator, install [qiskit-community/qiskit-qcgpu-provider](https://github.com/qiskit-community/qiskit-qcgpu-provider)
 
-
+```
     $ qisjob -h
     usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
                   [--qasm_simulator | --unitary_simulator]
@@ -180,6 +180,7 @@ For this project you must install
       --url URL             Use this url
       --use_job_monitor     Display job monitor instead of just waiting for job
                             result
+```
 
 It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
 
