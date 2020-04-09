@@ -1,8 +1,9 @@
 Changes by revision to QisJob
 
 v3.2:
-	- Remember to change version in `setup.py`
+	- QisJob can be instanced with qasm source using `qasm_src=` a string
 	- More support for Aer gpu
+	- Job monitor no longer default, if desired, `--use_job_monitor`
 
 v3.1:
 	- Created Makefile

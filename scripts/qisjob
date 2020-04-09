@@ -147,6 +147,9 @@ PARSER.add_argument("--token", action="store",
                     help="Use this token")
 PARSER.add_argument("--url", action="store",
                     help="Use this url")
+PARSER.add_argument("--use_job_monitor", action="store_true",
+                     help="""Display job monitor instead of just waiting for
+                     job result""")
 PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
@@ -195,6 +198,7 @@ TRANSPILE = ARGS.transpile
 UNITARY_GPU = ARGS.unitary_gpu
 UNITARY_SIMULATOR = ARGS.unitary_simulator
 URL = ARGS.url
+USE_JM = ARGS.use_job_monitor
 VERBOSE = ARGS.verbose
 
 QJ = QisJob(filepaths=FILEPATH,
@@ -221,7 +225,8 @@ QJ = QisJob(filepaths=FILEPATH,
             print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
             figure_basename=FIGURE_BASENAME,
             show_q_version=QISKIT_VERSION, verbose=VERBOSE,
-            show_qisjob_version=QISJOB_VERSION)
+            show_qisjob_version=QISJOB_VERSION,
+            use_job_monitor=USE_JM)
 
 QJ.do_it()
 
