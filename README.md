@@ -44,8 +44,8 @@ For this project you must install
         -   For the local Aer simulator you only need qiskit-aer installed.
         -   For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
     -   JKU (optional; a warning message may appear if absent)
-        		_ You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
-        		_ At this writing 2020-02-25 you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
+        		- You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
+        		- At this writing 2020-02-25 you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
     -   Forest (optional; a warning message may appear if absent)
         -   For local simulator or Rigetti QPU you will need
             -   [Rigetti qvm](https://github.com/rigetti/qvm)
