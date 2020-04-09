@@ -18,7 +18,6 @@ and other useful operations for Qiskit experimentation.
 
 `qisjob` can run Qiskit experiments expressed as either:
 
-<<<<<<< HEAD
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
     * Examples are found in the `qasm_examples` subdirectory of the project.
@@ -28,17 +27,6 @@ and other useful operations for Qiskit experimentation.
     * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
     * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
-=======
--   [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
-    -   Use a well-formed OPENQASM2 file.
-    -   Examples are found in the `qasm_examples` subdirectory of the project.
--   a Qiskit Terra `QuantumCircuit` Python code snippet.
-
-    -   To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
-    -   Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
-        -   If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
-    -   An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
->>>>>>> 04f1a1270f9da254b5a719f9bd525ee97007b34e
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
