@@ -40,18 +40,18 @@ For this project you must install
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
 * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
 * Currently supported backend providers are:
-    * IBMQ (required)
-        * For the local Aer simulator you only need qiskit-aer installed.
-        * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
-    * JKU (optional; a warning message may appear if absent)
-        		* You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
-        		* At this writing 2020-02-25 you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
+   * IBMQ (required)
+      * For the local Aer simulator you only need qiskit-aer installed.
+      * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
+   * JKU (optional; a warning message may appear if absent)
+      * You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
+      * At this writing you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
     * Forest (optional; a warning message may appear if absent)
-        * For local simulator or Rigetti QPU you will need
-            * [Rigetti qvm](https://github.com/rigetti/qvm)
-            * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
-            * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
-        * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
+       * For local simulator or Rigetti QPU you will need
+         * [Rigetti qvm](https://github.com/rigetti/qvm)
+         * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
+         * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
+       * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
     * QI  (optional; a warning message may appear if absent)
         * Install QuTech-Delft/quantuminspire from either
             * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
