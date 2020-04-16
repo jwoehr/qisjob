@@ -114,8 +114,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "3.2"
+        self.my_version = "3.3 (3.2+)"
         self.qasm_result = None
+        self.result_exp_dict = None
         self.use_job_monitor = use_job_monitor
 
     def qisjob_version(self):
@@ -279,7 +280,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         elif self.provider_name == "JKU":
             self.jku_account_fu()
 
-    def choose_backend(self):  # pylint: disable-msg=too-many-branches
+    def choose_backend(self):  # pylint: disable-msg=too-many-branches, too-many-statements
         """Return backend selected by user if account will activate and allow."""
         self.backend = None
 
@@ -305,6 +306,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                        self.method),
                                2)
                 self.backend = Aer.get_backend(self.local_simulator_type)
+                self.verbosity("Aer backend is {}".format(self.backend), 2)
             else:
                 from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
                 self.backend = BasicAer.get_backend(self.local_simulator_type)
@@ -540,14 +542,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
                 if _op and callable(_op):
+                    print("Before run:")
                     self._pp.pprint(job_exp.to_dict())
                 else:
+                    print("Before run:")
                     self._pp.pprint(job_exp.__dict__)
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
+            if self.print_job:
+                _op = getattr(job_exp, 'to_dict', None)
+                if _op and callable(_op):
+                    print("After run:")
+                    self._pp.pprint(job_exp.to_dict())
+                else:
+                    print("After run:")
+                    self._pp.pprint(job_exp.__dict__)
+
             result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
 
             if self.use_statevector_gpu:
                 try:
@@ -557,7 +571,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     print("AttributeError error: {0}".format(err))
 
             if self.show_result:
-                self._pp.pprint(result_exp.to_dict())
+                self._pp.pprint(self.result_exp_dict)
 
             # Open outfile
             self.verbosity("Outfile is {}"
@@ -667,17 +681,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                   memory=self.memory)
 
             if self.print_job:
+                print("Before run:")
                 self._pp.pprint(job_exp.to_dict())
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
-            result_exp = job_exp.result()
+            if self.print_job:
+                print("After run:")
+                self._pp.pprint(job_exp.to_dict())
 
-            result_exp_dict = result_exp.to_dict()
+            result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
 
             if self.show_result:
-                self._pp.pprint(result_exp_dict)
+                self._pp.pprint(self.result_exp_dict)
 
             # my_index = 0
             for circ in circs:
@@ -761,14 +779,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
                 if _op and callable(_op):
+                    print("Before run:")
                     self._pp.pprint(job_exp.to_dict())
                 else:
+                    print("Before run:")
                     self._pp.pprint(job_exp.__dict__)
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
+            if self.print_job:
+                _op = getattr(job_exp, 'to_dict', None)
+                if _op and callable(_op):
+                    print("After run:")
+                    self._pp.pprint(job_exp.to_dict())
+                else:
+                    print("After run:")
+                    self._pp.pprint(job_exp.__dict__)
+
             result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
 
             if self.use_statevector_gpu:
                 try:
