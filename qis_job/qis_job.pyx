@@ -175,7 +175,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     print("Backend {} not found: {}".format(self.backend_name, err))
                     sys.exit(100)
 
-            self._pp.pprint(self.get_statuses())
+            for stat in self.get_statuses():
+                self._pp.pprint(stat)
 
         elif self.jobs_status or self.job_id or self.job_result:
             if not self.backend_name:
@@ -710,12 +711,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def get_statuses(self):
         """Return backend status tuple(s)"""
-        stat = ''
+        stat = []
         if self.backend:
-            stat = self.backend.status()
+            stat.append(self.backend.status().to_dict())
         else:
             for b_e in self.provider.backends():
-                stat += str(b_e.status())
+                stat.append(b_e.status().to_dict())
         return stat
 
     def qasm_exp(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
