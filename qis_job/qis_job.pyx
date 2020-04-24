@@ -552,6 +552,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
+            result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
+
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
                 if _op and callable(_op):
@@ -560,9 +563,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 else:
                     print("After run:")
                     self._pp.pprint(job_exp.__dict__)
-
-            result_exp = job_exp.result()
-            self.result_exp_dict = result_exp.to_dict()
 
             if self.use_statevector_gpu:
                 try:
@@ -688,12 +688,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
+            result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
+
             if self.print_job:
                 print("After run:")
                 self._pp.pprint(job_exp.to_dict())
-
-            result_exp = job_exp.result()
-            self.result_exp_dict = result_exp.to_dict()
 
             if self.show_result:
                 self._pp.pprint(self.result_exp_dict)
@@ -789,6 +789,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.use_job_monitor:
                 job_monitor(job_exp)
 
+            result_exp = job_exp.result()
+            self.result_exp_dict = result_exp.to_dict()
+
             if self.print_job:
                 _op = getattr(job_exp, 'to_dict', None)
                 if _op and callable(_op):
@@ -797,9 +800,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 else:
                     print("After run:")
                     self._pp.pprint(job_exp.__dict__)
-
-            result_exp = job_exp.result()
-            self.result_exp_dict = result_exp.to_dict()
 
             if self.use_statevector_gpu:
                 try:
