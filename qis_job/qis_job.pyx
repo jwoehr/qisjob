@@ -29,7 +29,7 @@ from qiskit.visualization import plot_circuit_layout
 try:
     from quantuminspire.api import QuantumInspireAPI
     from quantuminspire.qiskit import QI
-    from quantuminspire.credentials import enable_account
+    from quantuminspire.credentials import enable_account as qi_enable_account
 except ImportError:
     warnings.warn("QuantumInspire not installed.")
 try:
@@ -258,7 +258,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and return provider"""
         if self.token:
-            enable_account(self.token)
+            qi_enable_account(self.token)
         QI.set_authentication()
         self.provider = QI
 
