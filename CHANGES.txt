@@ -1,10 +1,11 @@
 Changes by revision to QisJob
 
 v3.3:
+	- QI API changed, qisjob now automatically picks a QI backend if none named
 	- Remember to change QisJob.my_version
 	- `BackendStatus` changed in Qiskit so changed `--status` code
 	- Save result_exp as QisJob.result_exp
-	- If -j print job both before and after run
+	- If -j then print job both before and after run
 	- More verbosity info on Aer jobs (gpu)
 
 v3.2:
