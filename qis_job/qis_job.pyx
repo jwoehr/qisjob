@@ -337,7 +337,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.backend = self.provider.get_backend('ibmq_qasm_simulator')
                 self.verbosity('sim provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
-            elif self.provider == QI:
+            elif self.provider_name == 'QI':
                 for b_e in self.provider.backends():
                     if b_e.__dict__['_QuantumInspireBackend__backend']['number_of_qubits'] >= self.num_qubits:  # pylint: disable-msg=line-too-long
                         self.backend = b_e
