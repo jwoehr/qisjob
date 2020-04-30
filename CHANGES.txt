@@ -7,6 +7,7 @@ v3.3:
 	- Save result_exp as QisJob.result_exp
 	- If -j then print job both before and after run
 	- More verbosity info on Aer jobs (gpu)
+	- Add `yiqing_5.qasm` to test QuantumInspire Starmon-5
 
 v3.2:
 	- QisJob can be instanced with qasm source using `qasm_src=` a string
