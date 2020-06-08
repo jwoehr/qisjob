@@ -840,7 +840,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
 if __name__ == '__main__':
 
-    EXPLANATION = """qis_job.py : Loads from one or more qasm source files or
+    EXPLANATION = """Qisjob loads from one or more qasm source files or
     from a file containing a Qiskit QuantumCircuit definition in Python and runs as
     experiments with reporting in CSV form. Can graph results as histogram or
     state-city plot. Also can give info on backend properties, qiskit version,
