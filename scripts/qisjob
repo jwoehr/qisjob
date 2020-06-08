@@ -123,6 +123,10 @@ PARSER.add_argument("--showsched", action="store_true",
 PARSER.add_argument("--circuit_layout", action="store_true",
                     help="""With -x, write image file of circuit layout
                     after transpile (see --figure_basename)""")
+PARSER.add_argument("--optimization_level", type=int, action="store",
+                    default=1, help="""Set optimization level for
+                    transpilation before run, valid values 0-3,
+                    default is 1""")
 PARSER.add_argument("--histogram", action="store_true",
                     help="""Write image file of histogram of experiment
                     results (see --figure_basename)""")
@@ -135,7 +139,7 @@ PARSER.add_argument("--figure_basename", type=str, action="store",
                     default='figout', backend name, figure type, and timestamp
                     will be appended""")
 PARSER.add_argument("--qasm", action="store_true",
-                    help="Print qasm file to stdout after running job")
+                    help="Print qasm file to stdout before running job")
 PARSER.add_argument("--qc", action="store",
                     help="Indicate circuit name of python-coded QuantumCircuit")
 PARSER.add_argument("--status", action="store_true",
@@ -175,6 +179,7 @@ MAX_CREDITS = ARGS.credits
 MEMORY = ARGS.memory
 NUQASM2 = ARGS.nuqasm2
 ONE_JOB = ARGS.one_job
+OPTIMIZATION_LEVEL = ARGS.optimization_level
 OUTFILE = ARGS.outfile
 PLOT_STATE_CITY = ARGS.plot_state_city
 PROPERTIES = ARGS.properties
@@ -217,6 +222,7 @@ QJ = QisJob(filepaths=FILEPATH,
             qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
             circuit_layout=CIRCUIT_LAYOUT,
+            optimization_level=OPTIMIZATION_LEVEL,
             print_job=JOB, memory=MEMORY, show_result=RESULT,
             jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
             show_backends=BACKENDS, show_configuration=CONFIGURATION,

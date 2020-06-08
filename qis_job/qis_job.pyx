@@ -56,6 +56,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  use_density_matrix_gpu=False,
                  qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
                  qc_name=None, xpile=False, showsched=False, circuit_layout=False,
+                 optimization_level=1,
                  print_job=False, memory=False, show_result=False,
                  jobs_status=None, job_id=None, job_result=None,
                  show_backends=False, show_configuration=False, show_properties=False,
@@ -94,6 +95,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.xpile = xpile
         self.showsched = showsched
         self.circuit_layout = circuit_layout
+        self.optimization_level=optimization_level
         self.print_job = print_job
         self.memory = memory
         self.show_result = show_result
@@ -524,7 +526,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
         if self.xpile:
-            new_circ = transpile(circ, backend=self.backend)
+            new_circ = transpile(circ, backend=self.backend,
+                                 optimization_level=self.optimization_level)
             print(new_circ)
             if self.circuit_layout:
                 fig = plot_circuit_layout(new_circ, self.backend)
@@ -542,10 +545,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 backend_options = {"method": self.method}
                 job_exp = execute(circ, backend=self.backend,
                                   backend_options=backend_options,
+                                  optimization_level=self.optimization_level,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
             else:
                 job_exp = execute(circ, backend=self.backend,
+                                  optimization_level=self.optimization_level,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
 
@@ -663,7 +668,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
             if self.xpile:
-                new_circ = transpile(circ, backend=self.backend)
+                new_circ = transpile(circ, backend=self.backend,
+                                     optimization_level=self.optimization_level)
                 print(new_circ)
                 if self.circuit_layout:
                     fig = plot_circuit_layout(new_circ, self.backend)
@@ -682,11 +688,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.verbosity("Using gpu", 2)
                 backend_options = {"method": "statevector_gpu"}
                 job_exp = execute(circs, backend=self.backend,
+                                  optimization_level=self.optimization_level,
                                   backend_options=backend_options,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
             else:
                 job_exp = execute(circs, backend=self.backend,
+                                  optimization_level=self.optimization_level,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
 
@@ -761,7 +769,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.verbosity(circ.draw(), 2)
 
         if self.xpile:
-            new_circ = transpile(circ, backend=self.backend)
+            new_circ = transpile(circ, backend=self.backend,
+                                 optimization_level=self.optimization_level)
             print(new_circ)
             if self.circuit_layout:
                 fig = plot_circuit_layout(new_circ, self.backend)
@@ -778,11 +787,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.verbosity("Using gpu method {}".format(self.method), 2)
                 backend_options = {"method": self.method}
                 job_exp = execute(circ, backend=self.backend,
+                                  optimization_level=self.optimization_level,
                                   backend_options=backend_options,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
             else:
                 job_exp = execute(circ, backend=self.backend,
+                                  optimization_level=self.optimization_level,
                                   shots=self.shots, max_credits=self.max_credits,
                                   memory=self.memory)
 
@@ -941,6 +952,10 @@ if __name__ == '__main__':
     PARSER.add_argument("--circuit_layout", action="store_true",
                         help="""With -x, write image file of circuit layout
                         after transpile (see --figure_basename)""")
+    PARSER.add_argument("--optimization_level", type=int, action="store",
+                        default=1, help="""Set optimization level for
+                        transpilation before run, valid values 0-3,
+                        default is 1""")
     PARSER.add_argument("--histogram", action="store_true",
                         help="""Write image file of histogram of experiment
                         results (see --figure_basename)""")
@@ -953,7 +968,7 @@ if __name__ == '__main__':
                         default='figout', backend name, figure type, and timestamp
                         will be appended""")
     PARSER.add_argument("--qasm", action="store_true",
-                        help="Print qasm file to stdout after running job")
+                        help="Print qasm file to stdout before running job")
     PARSER.add_argument("--qc", action="store",
                         help="Indicate circuit name of python-coded QuantumCircuit")
     PARSER.add_argument("--status", action="store_true",
@@ -992,6 +1007,7 @@ if __name__ == '__main__':
     MEMORY = ARGS.memory
     NUQASM2 = ARGS.nuqasm2
     ONE_JOB = ARGS.one_job
+    OPTIMIZATION_LEVEL = ARGS.optimization_level
     OUTFILE = ARGS.outfile
     PLOT_STATE_CITY = ARGS.plot_state_city
     PROPERTIES = ARGS.properties
@@ -1035,6 +1051,7 @@ if __name__ == '__main__':
                 qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
                 qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
                 circuit_layout=CIRCUIT_LAYOUT,
+                optimization_level=OPTIMIZATION_LEVEL,
                 print_job=JOB, memory=MEMORY, show_result=RESULT,
                 jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
                 show_backends=BACKENDS, show_configuration=CONFIGURATION,

@@ -1,6 +1,7 @@
 Changes by revision to QisJob
 
 v3.3:
+    - `--optimization_level` argument
 	- QI API changed, qisjob now automatically picks a QI backend if none named
 	- Remember to change QisJob.my_version
 	- `BackendStatus` changed in Qiskit so changed `--status` code
