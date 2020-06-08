@@ -76,16 +76,16 @@ usage: qisjob [-h] [-i | -s | -a | --qcgpu | -b BACKEND]
               [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
               [filepath [filepath ...]]
 
-qis_job.py : Loads from one or more qasm source files or from a file
-containing a Qiskit QuantumCircuit definition in Python and runs as
-experiments with reporting in CSV form. Can graph results as histogram or
-state-city plot. Also can give info on backend properties, qiskit version,
-show circuit transpilation, etc. Can run as multiple jobs or all as one job.
-Exits 0 on success, 1 on argument error, 100 on runtime error. Copyright 2019
-Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. BSD-3
-license -- See LICENSE which you should have received with this code. THIS
-SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+Qisjob loads from one or more qasm source files or from a file containing a
+Qiskit QuantumCircuit definition in Python and runs as experiments with
+reporting in CSV form. Can graph results as histogram or state-city plot. Also
+can give info on backend properties, qiskit version, show circuit
+transpilation, etc. Can run as multiple jobs or all as one job. Exits 0 on
+success, 1 on argument error, 100 on runtime error. Copyright 2019 Jack Woehr
+jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. BSD-3 license -- See
+LICENSE which you should have received with this code. THIS SOFTWARE IS
+PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND WITHOUT ANY
+EXPRESS OR IMPLIED WARRANTIES.
 
 positional arguments:
   filepath              Filepath(s) to 0 or more .qasm files, default is stdin
