@@ -20,9 +20,6 @@ The command also provides some utility functions such as:
 
 and other useful operations for Qiskit experimentation.
 
-*Note* this document always reflects the latest and may be ahead of the release versions. See the README.md in the
-release version itself for contemporary information.
-
 **`qis_job` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
 
 `qisjob` can run Qiskit experiments expressed as either:
@@ -161,6 +158,8 @@ optional arguments:
 ## Notes
 
 * It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
+* This document always reflects the latest checkins and may be ahead of the release versions.
+** See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
 Jack Woehr 2020-10-10
