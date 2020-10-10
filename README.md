@@ -159,7 +159,7 @@ optional arguments:
 
 * It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
 * This document always reflects the latest checkins and may be ahead of the release versions.
-** See the README.md in the release version itself for contemporary information.
+  * See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
 Jack Woehr 2020-10-10
