@@ -1,10 +1,11 @@
 # qis_job
 
 **QISKit Job Control**
-* [The `qisjob` command](#The_qisjob_command)
+* [The `qisjob` command](#The-qisjob-command)
 * [Prerequisites](#Prerequisites)
 * [Install](#Install)
 * [Usage](#Usage)
+* [Notes](#Notes)
 
 ## The `qisjob` command
 
