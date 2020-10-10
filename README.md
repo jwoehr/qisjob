@@ -2,7 +2,8 @@
 
 QISKit Job Control
 
-The `qisjob` command) loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
+The `qisjob` command) loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
+computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
 The command also provides some utility functions such as:
 
@@ -11,6 +12,9 @@ The command also provides some utility functions such as:
 -   checking on status of jobs
 
 and other useful operations for Qiskit experimentation.
+
+*Note* this document always reflects the latest and may be ahead of the release versions. See the README.md in the
+release version itself for contemporary information.
 
 **Install** Do one of the following (preferably in a Python virtual environment set up for Qiskit)
 * `./setup.py`
