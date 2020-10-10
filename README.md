@@ -1,8 +1,14 @@
 # qis_job
 
-QISKit Job Control
+**QISKit Job Control**
+* [The `qisjob` command](#The_qisjob_command)
+* [Prerequisites](#Prerequisites)
+* [Install](#Install)
+* [Usage](#Usage)
 
-The `qisjob` command) loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
+## The `qisjob` command
+
+The `qisjob` command loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
 computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
 
 The command also provides some utility functions such as:
@@ -151,7 +157,7 @@ optional arguments:
   --use_job_monitor     Display job monitor instead of just waiting for job result
 ```
 
-# Notes
+## Notes
 
 * It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
 * Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
