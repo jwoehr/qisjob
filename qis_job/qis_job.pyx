@@ -17,6 +17,7 @@ from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
+from qiskit.providers.ibmq import IBMQJob
 from qiskit.compiler import transpile
 try:
     from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
@@ -40,6 +41,62 @@ try:
     from qiskit_jku_provider import JKUProvider
 except ImportError:
     warnings.warn("qiskit-jku-provider not installed.")
+
+def ibmqjob_to_dict(job: IBMQJob) -> dict:
+    """
+
+
+    Parameters
+    ----------
+    job : IBMQJob
+        Return a dict as if there were a to_dict method
+
+    Returns
+    -------
+    dict
+        Job info from the IBMQ server
+
+    """
+    my_dict = {}
+    # Return the backend where this job was executed.
+    my_dict["backend"] = job.backend()
+    # Return whether the job has been cancelled.
+    my_dict["cancelled"] = job.cancelled()
+    # Return job creation date, in local time.
+    my_dict["creation_date"] = job.creation_date()
+    # Return whether the job has successfully run.
+    my_dict["done"] = job.done()
+    # Provide details about the reason of failure.
+    my_dict["error_message"] = job.error_message()
+    # Return whether the job is in a final job state.
+    my_dict["in_final_state"] = job.in_final_state()
+    # Return the job ID assigned by the server.
+    my_dict["job_id"] = job.job_id()
+    # Return the name assigned to this job.
+    my_dict["name"] = job.name()
+    # Return the backend properties for this job.
+    my_dict["properties"] = job.properties()
+    # Return the Qobj for this job.
+    my_dict["qobj"] = job.qobj()
+    # Return queue information for this job.
+    my_dict["queue_info"] = job.queue_info()
+    # Return the position of the job in the server queue.
+    my_dict["queue_position"] = job.queue_position()
+    # Return whether the job is actively running.
+    my_dict["result"] = job.result().to_dict()
+    # Return whether the job is actively running.
+    my_dict["running"] = job.running()
+    # Return the scheduling mode the job is in.
+    my_dict["scheduling_mode"] = job.scheduling_mode()
+    # Return the share level of the job.
+    my_dict["share_level"] = job.share_level()
+    # Query the server for the latest job status.
+    my_dict["status"] = job.status()
+    # Return the tags assigned to this job.
+    my_dict["tags"] = job.tags()
+    # Return the date and time information on each step of the job processing.
+    my_dict["time_per_step"] = job.time_per_step()
+    return my_dict
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
@@ -195,6 +252,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             f_string = "Job {} {}"
 
             if self.jobs_status:
+                # debug
+                # print(f"Provider is {self.provider_name} and jobs_status is {self.jobs_status}.")
                 be_jobs = []
                 if self.provider_name == "QI":
                     be_jobs = QuantumInspireAPI().get_jobs()
@@ -202,13 +261,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     be_jobs = self.backend.jobs(limit=self.jobs_status)
                 for a_job in be_jobs:
                     if self.provider_name != "QI":
-                        a_job = a_job.to_dict()
+                        if self.provider_name == "IBMQ":
+                            a_job = ibmqjob_to_dict(a_job)
+                        else:
+                            a_job = a_job.to_dict()
                     self._pp.pprint(a_job)
                     sys.exit(0)
 
             elif self.job_id:
                 a_job = self.backend.retrieve_job(self.job_id)
-                self._pp.pprint(a_job.to_dict())
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(a_job)
+                    else:
+                        a_job = a_job.to_dict()
+                self._pp.pprint(a_job)
                 sys.exit(0)
 
             elif self.job_result:
@@ -550,13 +617,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                   memory=self.memory)
 
             if self.print_job:
-                _op = getattr(job_exp, 'to_dict', None)
-                if _op and callable(_op):
-                    print("Before run:")
-                    self._pp.pprint(job_exp.to_dict())
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
                 else:
-                    print("Before run:")
-                    self._pp.pprint(job_exp.__dict__)
+                    a_job = job_exp
+                print("Before run:")
+                self._pp.pprint(a_job)
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
@@ -565,13 +634,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
-                _op = getattr(job_exp, 'to_dict', None)
-                if _op and callable(_op):
-                    print("After run:")
-                    self._pp.pprint(job_exp.to_dict())
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
                 else:
-                    print("After run:")
-                    self._pp.pprint(job_exp.__dict__)
+                    a_job = job_exp
+                print("After run:")
+                self._pp.pprint(a_job)
 
             if self.use_statevector_gpu:
                 try:
@@ -694,8 +765,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                   memory=self.memory)
 
             if self.print_job:
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
+                else:
+                    a_job = job_exp
                 print("Before run:")
-                self._pp.pprint(job_exp.to_dict())
+                self._pp.pprint(a_job)
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
@@ -704,8 +782,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
+                else:
+                    a_job = job_exp
                 print("After run:")
-                self._pp.pprint(job_exp.to_dict())
+                self._pp.pprint(a_job)
 
             if self.show_result:
                 self._pp.pprint(self.result_exp_dict)
@@ -793,13 +878,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                   memory=self.memory)
 
             if self.print_job:
-                _op = getattr(job_exp, 'to_dict', None)
-                if _op and callable(_op):
-                    print("Before run:")
-                    self._pp.pprint(job_exp.to_dict())
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
                 else:
-                    print("Before run:")
-                    self._pp.pprint(job_exp.__dict__)
+                    a_job = job_exp
+                print("Before run:")
+                self._pp.pprint(a_job)
 
             if self.use_job_monitor:
                 job_monitor(job_exp)
@@ -808,13 +895,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
-                _op = getattr(job_exp, 'to_dict', None)
-                if _op and callable(_op):
-                    print("After run:")
-                    self._pp.pprint(job_exp.to_dict())
+                if self.provider_name != "QI":
+                    if self.provider_name == "IBMQ":
+                        a_job = ibmqjob_to_dict(job_exp)
+                    else:
+                        a_job = job_exp.to_dict()
                 else:
-                    print("After run:")
-                    self._pp.pprint(job_exp.__dict__)
+                    a_job = job_exp
+                print("After run:")
+                self._pp.pprint(a_job)
 
             if self.use_statevector_gpu:
                 try:
