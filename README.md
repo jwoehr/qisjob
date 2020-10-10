@@ -16,10 +16,6 @@ and other useful operations for Qiskit experimentation.
 *Note* this document always reflects the latest and may be ahead of the release versions. See the README.md in the
 release version itself for contemporary information.
 
-**Install** Do one of the following (preferably in a Python virtual environment set up for Qiskit)
-* `./setup.py`
-* `pip3 install .` 
-
 **`qis_job` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
 
 `qisjob` can run Qiskit experiments expressed as either:
@@ -40,7 +36,7 @@ You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to com
 
 You can use the class `QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
 
-For this project you must install
+## Prerequisites
 
 * [Qiskit/qiskit-terra](https://github.com/Qiskit/qiskit-terra)
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
@@ -66,6 +62,15 @@ For this project you must install
 
 The older `qiskit-community` project `qcgpu` is no longer supported. It has not been updated and does not work with
 current Qiskit.
+
+## Install
+
+Do one of the following (preferably in a Python virtual environment set up for Qiskit)
+
+* `./setup.py`
+* `pip3 install .` 
+
+## Usage
 
 ```
 $ qisjob -h
@@ -146,8 +151,9 @@ optional arguments:
   --use_job_monitor     Display job monitor instead of just waiting for job result
 ```
 
-It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
+# Notes
 
-Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
+* It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
+* Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
 
 Jack Woehr 2020-10-10
