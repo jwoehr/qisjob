@@ -54,7 +54,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
                  use_statevector_gpu=False, use_unitary_gpu=False,
                  use_density_matrix_gpu=False,
-                 qcgpu=False, use_sim=False, qvm=False, qvm_as=False,
+                 use_sim=False, qvm=False, qvm_as=False,
                  qc_name=None, xpile=False, showsched=False, circuit_layout=False,
                  optimization_level=1,
                  print_job=False, memory=False, show_result=False,
@@ -87,7 +87,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_statevector_gpu = use_statevector_gpu
         self.use_unitary_gpu = use_unitary_gpu
         self.use_density_matrix_gpu = use_density_matrix_gpu
-        self.qcgpu = qcgpu
         self.use_sim = use_sim
         self.qvm = qvm
         self.qvm_as = qvm_as
@@ -95,7 +94,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.xpile = xpile
         self.showsched = showsched
         self.circuit_layout = circuit_layout
-        self.optimization_level=optimization_level
+        self.optimization_level = optimization_level
         self.print_job = print_job
         self.memory = memory
         self.show_result = show_result
@@ -313,10 +312,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             else:
                 from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
                 self.backend = BasicAer.get_backend(self.local_simulator_type)
-
-        elif self.qcgpu:
-            from qiskit_qcgpu_provider import QCGPUProvider  # pylint: disable-msg=import-outside-toplevel, line-too-long
-            self.backend = QCGPUProvider().get_backend(self.local_simulator_type)
 
         elif self.qvm or self.qvm_as:
             self.backend = ForestBackend.get_backend(self.backend_name, self.qvm_as)
@@ -837,6 +832,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             print(job_exp.error_message())
             sys.exit(100)
 
+    # def job_dicts()
+
 
 if __name__ == '__main__':
 
@@ -865,14 +862,10 @@ if __name__ == '__main__':
                        Default is Aer statevector simulator.
                        Use -a --qasm-simulator to get Aer qasm simulator.
                        Use -a --unitary-simulator to get Aer unitary simulator.""")
-    GROUP.add_argument("--qcgpu", action="store_true",
-                       help="""Use qcgpu simulator.
-                       Default is statevector simulator.
-                       Use --qcgpu --qasm_simulator to get qcgpu qasm simulator.""")
     GROUP.add_argument("-b", "--backend", action="store",
                        help="Use specified IBMQ backend")
     GROUPB.add_argument("--qasm_simulator", action="store_true",
-                        help="""With -a or --qcgpu use qasm simulator
+                        help="""With -a use qasm simulator
                         instead of statevector simulator""")
     GROUPB.add_argument("--unitary_simulator", action="store_true",
                         help="""With -a use unitary simulator
@@ -917,7 +910,8 @@ if __name__ == '__main__':
     PARSER.add_argument("-j", "--job", action="store_true",
                         help="Print your job's dictionary")
     PARSER.add_argument("--jobs", type=int, action="store",
-                        help="Print JOBS jobs and status for -b backend and exit 0")
+                        help="""Print JOBS number of jobs and status for -b
+                        backend and exit 0""")
     PARSER.add_argument("--job_id", type=str, action="store",
                         help="Print job number JOB_ID for -b backend and exit 0")
     PARSER.add_argument("--job_result", type=str, action="store",
@@ -1014,7 +1008,6 @@ if __name__ == '__main__':
     QASM = ARGS.qasm
     QASM_SIMULATOR = ARGS.qasm_simulator
     QC_NAME = ARGS.qc
-    QCGPU = ARGS.qcgpu
     QISKIT_VERSION = ARGS.qiskit_version
     QUBITS = ARGS.qubits
     QVM = ARGS.qvm
@@ -1048,7 +1041,7 @@ if __name__ == '__main__':
                 use_statevector_gpu=STATEVECTOR_GPU,
                 use_unitary_gpu=UNITARY_GPU,
                 use_density_matrix_gpu=DENSITY_MATRIX_GPU,
-                qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
+                use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
                 qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
                 circuit_layout=CIRCUIT_LAYOUT,
                 optimization_level=OPTIMIZATION_LEVEL,

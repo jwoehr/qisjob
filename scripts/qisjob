@@ -36,14 +36,10 @@ GROUP.add_argument("-a", "--aer", action="store_true",
                    Default is Aer statevector simulator.
                    Use -a --qasm-simulator to get Aer qasm simulator.
                    Use -a --unitary-simulator to get Aer unitary simulator.""")
-GROUP.add_argument("--qcgpu", action="store_true",
-                   help="""Use qcgpu simulator.
-                   Default is statevector simulator.
-                   Use --qcgpu --qasm_simulator to get qcgpu qasm simulator.""")
 GROUP.add_argument("-b", "--backend", action="store",
                    help="Use specified IBMQ backend")
 GROUPB.add_argument("--qasm_simulator", action="store_true",
-                    help="""With -a or --qcgpu use qasm simulator
+                    help="""With -a use qasm simulator
                     instead of statevector simulator""")
 GROUPB.add_argument("--unitary_simulator", action="store_true",
                     help="""With -a use unitary simulator
@@ -88,7 +84,8 @@ PARSER.add_argument("-g", "--configuration", action="store_true",
 PARSER.add_argument("-j", "--job", action="store_true",
                     help="Print your job's dictionary")
 PARSER.add_argument("--jobs", type=int, action="store",
-                    help="Print JOBS jobs and status for -b backend and exit 0")
+                    help="""Print JOBS number of jobs and status for -b
+                    backend and exit 0""")
 PARSER.add_argument("--job_id", type=str, action="store",
                     help="Print job number JOB_ID for -b backend and exit 0")
 PARSER.add_argument("--job_result", type=str, action="store",
@@ -152,8 +149,8 @@ PARSER.add_argument("--token", action="store",
 PARSER.add_argument("--url", action="store",
                     help="Use this url")
 PARSER.add_argument("--use_job_monitor", action="store_true",
-                     help="""Display job monitor instead of just waiting for
-                     job result""")
+                    help="""Display job monitor instead of just waiting for
+                    job result""")
 PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 
@@ -185,7 +182,6 @@ PLOT_STATE_CITY = ARGS.plot_state_city
 PROPERTIES = ARGS.properties
 QASM = ARGS.qasm
 QASM_SIMULATOR = ARGS.qasm_simulator
-QCGPU = ARGS.qcgpu
 QC_NAME = ARGS.qc
 QISJOB_VERSION = ARGS.qisjob_version
 QISKIT_VERSION = ARGS.qiskit_version
@@ -219,7 +215,7 @@ QJ = QisJob(filepaths=FILEPATH,
             use_statevector_gpu=STATEVECTOR_GPU,
             use_unitary_gpu=UNITARY_GPU,
             use_density_matrix_gpu=DENSITY_MATRIX_GPU,
-            qcgpu=QCGPU, use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
+            use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
             qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
             circuit_layout=CIRCUIT_LAYOUT,
             optimization_level=OPTIMIZATION_LEVEL,
