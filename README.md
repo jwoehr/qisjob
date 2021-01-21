@@ -51,14 +51,14 @@ You can use the class `QisJob` in your own program and feed it a string of OPENQ
       * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
    * JKU (optional; a warning message may appear if absent)
       * You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
-      * At this writing you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
+      * At the time of this writing, you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
     * Forest (optional; a warning message may appear if absent)
        * For local simulator or Rigetti QPU you will need
          * [Rigetti qvm](https://github.com/rigetti/qvm)
          * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
          * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
        * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
-    * QI  (optional; a warning message may appear if absent)
+    * QI (optional; a warning message may appear if absent)
         * Install QuTech-Delft/quantuminspire from either
             * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
             * `pip install quantuminspire`.
