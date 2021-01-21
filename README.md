@@ -26,7 +26,7 @@ and other useful operations for Qiskit experimentation.
 
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
-    * Examples are found in the `qasm_examples` subdirectory of the project.
+    * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qasm_examples) of the project.
 * a Qiskit Terra `QuantumCircuit` Python code snippet.
 
     * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
