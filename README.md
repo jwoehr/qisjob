@@ -36,7 +36,7 @@ and other useful operations for Qiskit experimentation.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
-You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile your OPENQASM2.0 source code and run it if you first install that project and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
+You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile and run your OPENQASM2.0 source code, given that you have that project  installed, and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
 You can use the class `QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
 
