@@ -32,7 +32,7 @@ and other useful operations for Qiskit experimentation.
     * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
     * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
-    * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
+    * An example circuit (very long execution!) is found in the `qc_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qc_examples) of the project.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
