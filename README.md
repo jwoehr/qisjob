@@ -26,17 +26,17 @@ and other useful operations for Qiskit experimentation.
 
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
-    * Examples are found in the `qasm_examples` subdirectory of the project.
+    * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qasm_examples) of the project.
 * a Qiskit Terra `QuantumCircuit` Python code snippet.
 
     * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
     * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
-    * An example circuit (very long execution!) is found in the `qc_examples` subdirectory of the project.
+    * An example circuit (very long execution!) is found in the `qc_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qc_examples) of the project.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
-You can use the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) to compile your OPENQASM2.0 source code and run it if you first install that project and then use `qisjob`'s `-n` _include-path:include-path:..._ switch
+`QisJob` is compatible with the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) project, that you can use to compile and run your OPENQASM2.0 source code. Given that you have `NuQasm2` installed, you can use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
 You can use the class `QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
 
@@ -51,14 +51,14 @@ You can use the class `QisJob` in your own program and feed it a string of OPENQ
       * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
    * JKU (optional; a warning message may appear if absent)
       * You need [Qiskit/qiskit-jku-provider](https://github.com/Qiskit/qiskit-jku-provider)
-      * At this writing you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
+      * At the time of this writing, you need to clone from a [fork's pull request](https://github.com/HartwigB/qiskit-jku-provider/tree/clean_history)
     * Forest (optional; a warning message may appear if absent)
        * For local simulator or Rigetti QPU you will need
          * [Rigetti qvm](https://github.com/rigetti/qvm)
          * [Rigetti pyQuil](https://github.com/rigetti/pyquil)
          * [quantastica/qiskit-forest](https://github.com/quantastica/qiskit-forest)
        * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
-    * QI  (optional; a warning message may appear if absent)
+    * QI (optional; a warning message may appear if absent)
         * Install QuTech-Delft/quantuminspire from either
             * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
             * `pip install quantuminspire`.
@@ -161,5 +161,7 @@ optional arguments:
 * This document always reflects the latest checkins and may be ahead of the release versions.
   * See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
+* If Python complains about the certs, you could try setting an env variable, like this:
+   `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
 Jack Woehr 2020-10-10
