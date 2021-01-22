@@ -161,5 +161,7 @@ optional arguments:
 * This document always reflects the latest checkins and may be ahead of the release versions.
   * See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
+* If Python complains about the certs, you could try setting an env variable, like this:
+   `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
 Jack Woehr 2020-10-10
