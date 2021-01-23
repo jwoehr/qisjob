@@ -968,7 +968,7 @@ if __name__ == '__main__':
     GROUPC.add_argument("--density_matrix_gpu", action="store_true",
                         help="""With -a and --qasm_simulator
                         use gpu density matrix simulator""")
-    PARSER.add_argument("-version", "--qisjob_version", action="store_true",
+    PARSER.add_argument("--version", action="store_true",
                         help="""Announce QisJob version""")
     PARSER.add_argument("--api_provider", action="store",
                         help="""Backend remote api provider,
