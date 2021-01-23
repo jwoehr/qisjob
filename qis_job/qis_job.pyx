@@ -1115,7 +1115,7 @@ if __name__ == '__main__':
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     VERBOSE = ARGS.verbose
-    QISJOB_VERSION = ARGS.qisjob_version
+    QISJOB_VERSION = ARGS.version
 
     QJ = QisJob(filepaths=FILEPATH,
                 provider_name=API_PROVIDER,
