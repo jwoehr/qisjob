@@ -10,7 +10,8 @@
 ## The `qisjob` command
 
 The `qisjob` command loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
-computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com).
+computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com). Input is from one or
+more OpenQASM 2 source files or from OpenQASM 2 source code provided via standard input (in the absence of file arguments).
 
 The command also provides some utility functions such as:
 
