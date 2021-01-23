@@ -155,6 +155,7 @@ optional arguments:
   --token TOKEN         Use this token
   --url URL             Use this url
   --use_job_monitor     Display job monitor instead of just waiting for job result
+  -w, --warnings        Don't print warnings on missing optional modules
 ```
 
 ## Notes

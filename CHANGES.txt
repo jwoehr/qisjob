@@ -12,6 +12,8 @@ v3.3:
 	- Change `--qisjob_version` to `--version`
 	- Change "master" branch to "main"
 	- Update readme to make it clearer that qisjob can take input from stdin
+	- `-w, --warnings` suppress warnings of missing optional modules
+
 v3.2:
 	- QisJob can be instanced with qasm source using `qasm_src=` a string
 	- More support for Aer gpu
