@@ -53,7 +53,7 @@ GROUPC.add_argument("--unitary_gpu", action="store_true",
 GROUPC.add_argument("--density_matrix_gpu", action="store_true",
                     help="""With -a and --qasm_simulator
                     use gpu density matrix simulator""")
-PARSER.add_argument("--qisjob_version", action="store_true",
+PARSER.add_argument("--version", action="store_true",
                     help="""Announce QisJob version""")
 PARSER.add_argument("--api_provider", action="store",
                     help="""Backend remote api provider,
@@ -183,7 +183,7 @@ PROPERTIES = ARGS.properties
 QASM = ARGS.qasm
 QASM_SIMULATOR = ARGS.qasm_simulator
 QC_NAME = ARGS.qc
-QISJOB_VERSION = ARGS.qisjob_version
+QISJOB_VERSION = ARGS.version
 QISKIT_VERSION = ARGS.qiskit_version
 QUBITS = ARGS.qubits
 QVM = ARGS.qvm
