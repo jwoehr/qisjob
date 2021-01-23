@@ -9,7 +9,9 @@ v3.3:
 	- If -j then print job both before and after run
 	- More verbosity info on Aer jobs (gpu)
 	- Add `yiqing_5.qasm` to test QuantumInspire Starmon-5
-
+	- Change `--qisjob_version` to `--version`
+	- Change "master" branch to "main"
+	- Update readme to make it clearer that qisjob can take input from stdin
 v3.2:
 	- QisJob can be instanced with qasm source using `qasm_src=` a string
 	- More support for Aer gpu
