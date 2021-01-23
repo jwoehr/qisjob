@@ -1,9 +1,11 @@
 Changes by revision to QisJob
 
+v3.4
+- Change year date on .md!
+
 v3.3:
-    - `--optimization_level` argument
+	- `--optimization_level` argument
 	- QI API changed, qisjob now automatically picks a QI backend if none named
-	- Remember to change QisJob.my_version
 	- `BackendStatus` changed in Qiskit so changed `--status` code
 	- Save result_exp as QisJob.result_exp
 	- If -j then print job both before and after run
@@ -61,33 +63,33 @@ v2.7:
    - --job* commands work better with QI now
 
 v2.6.2:
-    - --job_id now dumps the whole job
-    - Cleanup of job display
+- --job_id now dumps the whole job
+- Cleanup of job display
 
 v2.6.1:
-    - Cleanup of output from -j flag.
+- Cleanup of output from -j flag.
 
 v2.6:
-    - --jobs gets joblist from --backend
-    - --job_id gets status of specific job from --backend
-    - --job_result prints results of specific job from --backend
+- --jobs gets joblist from --backend
+- --job_id gets status of specific job from --backend
+- --job_result prints results of specific job from --backend
 
 v2.5:
-    - more sample files
-    - --properties now does to_dict() before pretty printing
-    - -g --configuration prints backend configuration
-    - -p and -g take backend name from -b switch
-    - various bug fixes
+- more sample files
+- --properties now does to_dict() before pretty printing
+- -g --configuration prints backend configuration
+- -p and -g take backend name from -b switch
+- various bug fixes
 
 v2.4:
-    - support qiskit-qcgpu-simulator
-    - support aer unitary_simulator
-    - check for counts before trying to print
+- support qiskit-qcgpu-simulator
+- support aer unitary_simulator
+- check for counts before trying to print
 
 v2.3:
-    - refactor result handling
-    - plotting state city
-    - plotting histogram
-    - choose specific Aer simulator
-    - --status to show status
-    - --backends to list backends
+- refactor result handling
+- plotting state city
+- plotting histogram
+- choose specific Aer simulator
+- --status to show status
+- --backends to list backends
