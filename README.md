@@ -105,8 +105,7 @@ optional arguments:
   --statevector_gpu     With -a and --qasm_simulator use gpu statevector simulator
   --unitary_gpu         With -a and --qasm_simulator use gpu unitary simulator
   --density_matrix_gpu  With -a and --qasm_simulator use gpu density matrix simulator
-  -version, --qisjob_version      
-                        Announce QisJob version
+  --version             Announce QisJob version
   --api_provider API_PROVIDER
                         Backend remote api provider, currently supported are [IBMQ | QI | Forest | JKU]. Default is IBMQ.
   --qvm                 Use Forest local qvm simulator described by -b backend, generally one of qasm_simulator or statevector_simulator. Use --qvm_as to instruct the simulator to
