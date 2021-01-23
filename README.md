@@ -72,7 +72,8 @@ current Qiskit.
 
 Do one of the following (preferably in a Python virtual environment set up for Qiskit)
 
-* `./setup.py`
+* `make # gnu make, we have provided a Makefile`
+* `./setup.py install`
 * `pip3 install .` 
 
 ## Usage
