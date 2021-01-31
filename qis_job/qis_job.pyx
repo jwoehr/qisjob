@@ -42,6 +42,7 @@ try:
 except ImportError:
     warnings.warn("qiskit-jku-provider not installed.")
 
+
 def ibmqjob_to_dict(job: IBMQJob) -> dict:
     """
 
@@ -633,7 +634,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 if self.job_monitor_filepath:
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
-                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    j_m_file = open(self.job_monitor_filepath, 'w')
                     job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
@@ -788,7 +789,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 if self.job_monitor_filepath:
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
-                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    j_m_file = open(self.job_monitor_filepath, 'w')
                     job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
@@ -908,7 +909,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 if self.job_monitor_filepath:
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
-                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    j_m_file = open(self.job_monitor_filepath, 'w')
                     job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:

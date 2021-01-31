@@ -9,7 +9,6 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
 import argparse
 import sys
-from qis_job import QisJob  # pylint: disable-msg=no-name-in-module
 
 EXPLANATION = """Qisjob loads from one or more qasm source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -164,6 +163,8 @@ ARGS = PARSER.parse_args()
 if ARGS.warnings:
     import warnings
     warnings.filterwarnings('ignore')
+
+from qis_job import QisJob  # pylint: disable-msg=no-name-in-module, wrong-import-position
 
 AER = ARGS.aer
 API_PROVIDER = ARGS.api_provider.upper()
