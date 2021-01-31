@@ -3,7 +3,8 @@ Changes by revision to QisJob
 v3.4
 - Change year date on .md!
 - Change version to 3.4
-- Add `--job_monitor_file`
+- Add `--job_monitor_filepath`
+- Fix bug in `-w` switch
 
 v3.3:
 	- `--optimization_level` argument
