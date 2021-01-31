@@ -80,16 +80,19 @@ Do one of the following (preferably in a Python virtual environment set up for Q
 
 ```
 $ qisjob -h
-usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version]
-              [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
-              [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
-              [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor] [-w]
+usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu]
+              [--version] [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
+              [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v]
+              [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY]
+              [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
+              [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
               [filepath [filepath ...]]
 
-Qisjob loads from one or more qasm source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with reporting in CSV form. Can graph
-results as histogram or state-city plot. Also can give info on backend properties, qiskit version, show circuit transpilation, etc. Can run as multiple jobs or all as one job. Exits 0
-on success, 1 on argument error, 100 on runtime error. Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. BSD-3 license -- See LICENSE which you should
-have received with this code. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+Qisjob loads from one or more qasm source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with
+reporting in CSV form. Can graph results as histogram or state-city plot. Also can give info on backend properties, qiskit version, show circuit
+transpilation, etc. Can run as multiple jobs or all as one job. Exits 0 on success, 1 on argument error, 100 on runtime error. Copyright 2019 Jack
+Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. BSD-3 license -- See LICENSE which you should have received with this code. THIS
+SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
 
 positional arguments:
   filepath              Filepath(s) to 0 or more .qasm files, default is stdin
@@ -98,8 +101,8 @@ optional arguments:
   -h, --help            show this help message and exit
   -i, --ibmq            Use best genuine IBMQ processor (default)
   -s, --sim             Use IBMQ qasm simulator
-  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector simulator. Use -a --qasm-simulator to get Aer qasm simulator. Use -a --unitary-simulator to get Aer
-                        unitary simulator.
+  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector simulator. Use -a --qasm-simulator to get Aer qasm simulator. Use -a
+                        --unitary-simulator to get Aer unitary simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
   --qasm_simulator      With -a use qasm simulator instead of statevector simulator
@@ -110,10 +113,10 @@ optional arguments:
   --version             Announce QisJob version
   --api_provider API_PROVIDER
                         Backend remote api provider, currently supported are [IBMQ | QI | Forest | JKU]. Default is IBMQ.
-  --qvm                 Use Forest local qvm simulator described by -b backend, generally one of qasm_simulator or statevector_simulator. Use --qvm_as to instruct the simulator to
-                        emulate a specific Rigetti QPU
-  --qvm_as              Use Forest local qvm simulator to emulate the specific Rigetti QPU described by -b backend. Use --qvm to run the Forest local qvm simulator described by -b
-                        backend.
+  --qvm                 Use Forest local qvm simulator described by -b backend, generally one of qasm_simulator or statevector_simulator. Use
+                        --qvm_as to instruct the simulator to emulate a specific Rigetti QPU
+  --qvm_as              Use Forest local qvm simulator to emulate the specific Rigetti QPU described by -b backend. Use --qvm to run the Forest
+                        local qvm simulator described by -b backend.
   --backends            Print list of backends to stdout and exit 0
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
@@ -148,13 +151,16 @@ optional arguments:
   --plot_state_city PLOT_STATE_CITY
                         Write image file of state city plot of statevector to PLOT_STATE_CITY decimal points (see --figure_basename)
   --figure_basename FIGURE_BASENAME
-                        basename including path (if any) for figure output, default='figout', backend name, figure type, and timestamp will be appended
+                        basename including path (if any) for figure output, default='figout', backend name, figure type, and timestamp will be
+                        appended
   --qasm                Print qasm file to stdout before running job
   --qc QC               Indicate circuit name of python-coded QuantumCircuit
   --status              Print status of chosen --backend to stdout (default all backends) of --api_provider (default IBMQ) and exit 0
   --token TOKEN         Use this token
   --url URL             Use this url
   --use_job_monitor     Display job monitor instead of just waiting for job result
+  --job_monitor_filepath JOB_MONITOR_FILEPATH
+                        Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor,default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
 ```
 
@@ -167,4 +173,4 @@ optional arguments:
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2021-01-23
+Jack Woehr 2021-01-30

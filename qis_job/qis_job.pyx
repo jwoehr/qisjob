@@ -121,7 +121,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  print_histogram=False, print_state_city=0, figure_basename='figout',
                  show_q_version=False, verbose=0,
                  show_qisjob_version=False,
-                 use_job_monitor=False):
+                 use_job_monitor=False,
+                 job_monitor_filepath=None):
         """Initialize member data"""
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -176,6 +177,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.qasm_result = None
         self.result_exp_dict = None
         self.use_job_monitor = use_job_monitor
+        self.job_monitor_filepath = job_monitor_filepath
 
     def qisjob_version(self):
         """Return version of qis_job"""
@@ -628,7 +630,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(a_job)
 
             if self.use_job_monitor:
-                job_monitor(job_exp)
+                if self.job_monitor_filepath:
+                    self.verbosity("File for job monitor output is {}"
+                                   .format(self.job_monitor_filepath), 1)
+                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    job_monitor(job_exp, output=j_m_file)
+                    j_m_file.close()
+                else:
+                    job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -776,7 +785,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(a_job)
 
             if self.use_job_monitor:
-                job_monitor(job_exp)
+                if self.job_monitor_filepath:
+                    self.verbosity("File for job monitor output is {}"
+                                   .format(self.job_monitor_filepath), 1)
+                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    job_monitor(job_exp, output=j_m_file)
+                    j_m_file.close()
+                else:
+                    job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -889,7 +905,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(a_job)
 
             if self.use_job_monitor:
-                job_monitor(job_exp)
+                if self.job_monitor_filepath:
+                    self.verbosity("File for job monitor output is {}"
+                                   .format(self.job_monitor_filepath), 1)
+                    j_m_file=open(self.job_monitor_filepath, 'w')
+                    job_monitor(job_exp, output=j_m_file)
+                    j_m_file.close()
+                else:
+                    job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -1068,8 +1091,17 @@ if __name__ == '__main__':
                         job result""")
     PARSER.add_argument("filepath", nargs='*',
                         help="Filepath(s) to 0 or more .qasm files, default is stdin")
+    PARSER.add_argument("--job_monitor_filepath", action="store", default=None,
+                        help="""Filepath for Job Monitor output if Job Monitor
+                        requested by --use_job_monitor,default is sys.stdout""")
+    PARSER.add_argument("-w", "--warnings", action="store_true",
+                        help="Don't print warnings on missing optional modules")
 
     ARGS = PARSER.parse_args()
+
+    if ARGS.warnings:
+        # import warnings # already imported
+        warnings.filterwarnings('ignore')
 
     AER = ARGS.aer
     API_PROVIDER = ARGS.api_provider.upper()
@@ -1084,6 +1116,7 @@ if __name__ == '__main__':
     HISTOGRAM = ARGS.histogram
     JOB = ARGS.job
     JOB_ID = ARGS.job_id
+    JOB_MONITOR_FILEPATH = ARGS.job_monitor_filepath
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
     MAX_CREDITS = ARGS.credits
@@ -1097,6 +1130,7 @@ if __name__ == '__main__':
     QASM = ARGS.qasm
     QASM_SIMULATOR = ARGS.qasm_simulator
     QC_NAME = ARGS.qc
+    QISJOB_VERSION = ARGS.version
     QISKIT_VERSION = ARGS.qiskit_version
     QUBITS = ARGS.qubits
     QVM = ARGS.qvm
@@ -1115,7 +1149,6 @@ if __name__ == '__main__':
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     VERBOSE = ARGS.verbose
-    QISJOB_VERSION = ARGS.version
 
     QJ = QisJob(filepaths=FILEPATH,
                 provider_name=API_PROVIDER,
@@ -1143,7 +1176,8 @@ if __name__ == '__main__':
                 figure_basename=FIGURE_BASENAME,
                 show_q_version=QISKIT_VERSION, verbose=VERBOSE,
                 show_qisjob_version=QISJOB_VERSION,
-                use_job_monitor=USE_JM)
+                use_job_monitor=USE_JM,
+                job_monitor_filepath=JOB_MONITOR_FILEPATH)
 
     QJ.do_it()
 
