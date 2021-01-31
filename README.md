@@ -160,7 +160,7 @@ optional arguments:
   --url URL             Use this url
   --use_job_monitor     Display job monitor instead of just waiting for job result
   --job_monitor_filepath JOB_MONITOR_FILEPATH
-                        Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor,default is sys.stdout
+                        Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
 ```
 
