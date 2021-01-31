@@ -154,7 +154,7 @@ PARSER.add_argument("filepath", nargs='*',
                     help="Filepath(s) to 0 or more .qasm files, default is stdin")
 PARSER.add_argument("--job_monitor_filepath", action="store", default=None,
                     help="""Filepath for Job Monitor output if Job Monitor
-                    requested by --use_job_monitor,default is sys.stdout""")
+                    requested by --use_job_monitor, default is sys.stdout""")
 PARSER.add_argument("-w", "--warnings", action="store_true",
                     help="Don't print warnings on missing optional modules")
 
