@@ -371,17 +371,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.method = "density_matrix_gpu"
 
         if self.use_aer:
+            from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
             if self.method:
-                from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
                 self.verbosity("self.local_simulator_type is '{}' with method '{}'"
                                .format(self.local_simulator_type,
                                        self.method),
                                2)
-                self.backend = Aer.get_backend(self.local_simulator_type)
-                self.verbosity("Aer backend is {}".format(self.backend), 2)
             else:
-                from qiskit import BasicAer  # pylint: disable-msg=import-outside-toplevel
-                self.backend = BasicAer.get_backend(self.local_simulator_type)
+                self.verbosity("Aer backend is {}".format(self.backend), 2)
+            self.backend = Aer.get_backend(self.local_simulator_type)
 
         elif self.qvm or self.qvm_as:
             self.backend = ForestBackend.get_backend(self.backend_name, self.qvm_as)
