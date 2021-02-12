@@ -557,7 +557,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             the_source_list.append(line.strip())
         if ifh is not sys.stdin:
             ifh.close()
-            the_source = "\n".join(the_source_list)
+        the_source = "\n".join(the_source_list)
         self.verbosity("source:\n" + the_source, 1)
 
         if self.qc_name:
