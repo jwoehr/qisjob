@@ -1,7 +1,9 @@
 # qisjob
 
 **QISKit Job Control**
+* [The `qisjob` module](#The-qisjob-module)
 * [The `qisjob` command](#The-qisjob-command)
+* [The `QisJob` class](#The-QisJob-class)
 * [Prerequisites](#Prerequisites)
 * [Install](#Install)
 * [Usage](#Usage)
@@ -10,6 +12,10 @@
 ## The `qisjob` module
 
 The module is `qisjob`. It was formerly named `qis_job`. I'm not sure why, but I have now changed it to `qisjob`.
+
+If you previously installed the module as `qis_job` you can uninstall that older version either by
+-  `pip3 uninstall qis_job`
+-  `make uninstall_oldname`
 
 ## The `qisjob` command
 
@@ -43,7 +49,7 @@ You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit
 
 `QisJob` is compatible with the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) project, that you can use to compile and run your OPENQASM2.0 source code. Given that you have `NuQasm2` installed, you can use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
-## The QisJob class
+## The `QisJob` class
 
 The `qisjob` script works by instancing an object of the class `qisjob.QisJob`.
 
@@ -85,6 +91,10 @@ Do one of the following in the source directory (preferably in a Python virtual 
 * `make # gnu make, we have provided a Makefile`
 * `./setup.py install`
 * `pip3 install .` 
+
+**Note** that the module name has recently (2021-10-16) changed from `qis_job` to `qisjob`. If you previously installed the module as `qis_job` you can uninstall that older version either by
+-  `pip3 uninstall qis_job`
+-  `make uninstall_oldname`
 
 ## Usage
 
