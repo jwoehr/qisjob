@@ -15,14 +15,14 @@ except ImportError:
     from Cython.Build import cythonize
 
 setup(
-    name="qis_job",
+    name="qisjob",
     version="3.4",
     description="Run Qiskit jobs from command line",
-    url="https://github.com/jwoehr/qis_job",
+    url="https://github.com/jwoehr/qisjob",
     author="Jack Woehr",
     author_email="jwoehr@softwoehr.com",
     license="Apache 2.0",
-    packages=['qis_job'],
+    packages=['qisjob'],
     data_files=[('share/qisjob/qasm_examples',
                  ['share/qasm_examples/ghzstate3q.qasm',
                   'share/qasm_examples/ghzxxx.qasm',
@@ -41,6 +41,6 @@ setup(
                  ['share/qc_examples/google_quantum_supremacy.py'])],
     scripts=['scripts/qisjob'],
     zip_safe=False,
-    ext_modules=cythonize("qis_job/qis_job.pyx",
+    ext_modules=cythonize("qisjob/qisjob.pyx",
                           compiler_directives={'language_level': "3"})
 )

@@ -6,7 +6,7 @@ https://quantum-circuit.com/app_details/about/3SQoZgKdJ6oqaX5gq
 https://quantum-circuit.com/api/get/circuit/GuavdH643Wbeusuww?format=qiskit
 Created on Sat Nov  2 05:39:58 2019
 
-Intended to be loaded and run from qis_job
+Intended to be loaded and run from qisjob
 @author: jax
 """
 import numpy as np

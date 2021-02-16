@@ -1,10 +1,20 @@
-Changes by revision to QisJob
+QisJob https://github.com/jwoehr/qisjob
+
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+BSD-3 license -- See LICENSE which you should have received with this code.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
+
+CHANGES by revision to QisJob
 
 v3.4
-- Change year date on .md!
-- Change version to 3.4
+- Renamed module to `qisjob` from `qis_job` (Issue #3)
+  - Add Makefile target `uninstall_oldname` to uninstall `qis_job`
+- Update README.md
 - Add `--job_monitor_filepath`
-- Fix bug in `-w` switch
+- Use `Aer` instead of `BasicAer` (Issue #15)
+- Fix bug in `-w` switch (Issue #17)
+- Better install instructions (Issue #5)
 
 v3.3:
 	- `--optimization_level` argument
@@ -48,7 +58,7 @@ v3.0:
 	- More exception catching
 
 v2.8:
-	- Main is now `qis_job` ... `qasm_job` is gone.
+	- Main is now `qisjob` ... `qasm_job` is gone.
 	- Warn, don't fail, if QuantumInspire not installed.
 	- Support for Rigetti Forest
 	- IBMQJobFailureError now prints job.error_mssage() and exits 100

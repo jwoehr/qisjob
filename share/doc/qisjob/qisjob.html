@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>qisjob.qisjob API documentation</title>
+<meta name="description" content="qisjob.pyx
+Load from qasm source or Qiskit QuantumCircuit sourceand run job with reporting.
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>qisjob.qisjob</code></h1>
+</header>
+<section id="section-intro">
+<p>qisjob.pyx
+Load from qasm source or Qiskit QuantumCircuit sourceand run job with reporting.
+Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+BSD-3 license &ndash; See LICENSE which you should have received with this code.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="qisjob.qisjob.ibmqjob_to_dict"><code class="name flex">
+<span>def <span class="ident">ibmqjob_to_dict</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>job</code></strong> :&ensp;<code>IBMQJob</code></dt>
+<dd>Return a dict as if there were a to_dict method</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>Job info from the IBMQ server</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="qisjob.qisjob.QisJob"><code class="flex name class">
+<span>class <span class="ident">QisJob</span></span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embody preparation, execution, display of Qiskit job or jobs</p>
+<p>Initialize member data</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="qisjob.qisjob.QisJob.csv_str"><code class="name flex">
+<span>def <span class="ident">csv_str</span></span>(<span>description, sort_keys, sort_counts)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a cvs as a string from sorted keys and sorted counts</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.do_histogram"><code class="name flex">
+<span>def <span class="ident">do_histogram</span></span>(<span>result_exp, circ, figure_basename, backend)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot histogram style the counts of
+result_exp - experiment result
+circ - the circuit
+figure_basename - base file name of output
+backend - backend run on</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.fig_name_str"><code class="name flex">
+<span>def <span class="ident">fig_name_str</span></span>(<span>filepath, backend)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create name consisting of filepath, backend and timestamp</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.gen_datetime"><code class="name flex">
+<span>def <span class="ident">gen_datetime</span></span>(<span>datetime_comma_string)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert comma-separated date elements to datetime.</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.save_fig"><code class="name flex">
+<span>def <span class="ident">save_fig</span></span>(<span>figure, filepath, backend, tail)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Write a figure to an algorithmically named destination file</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.state_city_plot"><code class="name flex">
+<span>def <span class="ident">state_city_plot</span></span>(<span>result_exp, circ, figure_basename, backend, decimals=3)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot state_city style the output state
+result_exp - experiment result
+circ - the circuit
+figure_basename - base file name of output
+backend - backend run on
+decimals - how many decimal places</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="qisjob.qisjob.QisJob.account_fu"><code class="name flex">
+<span>def <span class="ident">account_fu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load account from correct API provider</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.choose_backend"><code class="name flex">
+<span>def <span class="ident">choose_backend</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return backend selected by user if account will activate and allow.</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.do_it"><code class="name flex">
+<span>def <span class="ident">do_it</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run the whole program given ctor args from the driver script</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.forest_account_fu"><code class="name flex">
+<span>def <span class="ident">forest_account_fu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load Rigetti Forest account appropriately and return provider</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.formulate_result"><code class="name flex">
+<span>def <span class="ident">formulate_result</span></span>(<span>self, result_exp, circ, ofh)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Forumulate the result of one circuit circ
+from result result_exp returning output as string</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.get_statuses"><code class="name flex">
+<span>def <span class="ident">get_statuses</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return backend status tuple(s)</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.ibmq_account_fu"><code class="name flex">
+<span>def <span class="ident">ibmq_account_fu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load IBMQ account appropriately and return provider</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.jku_account_fu"><code class="name flex">
+<span>def <span class="ident">jku_account_fu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load qiskit-jku-provider</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.multi_exps"><code class="name flex">
+<span>def <span class="ident">multi_exps</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load qasms and run all as one the job,
+print csvs and other selected output</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.one_exp"><code class="name flex">
+<span>def <span class="ident">one_exp</span></span>(<span>self, filepath_name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load qasm and run the job, print csv and other selected output</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.process_result"><code class="name flex">
+<span>def <span class="ident">process_result</span></span>(<span>self, result_exp, circ, ofh)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process the result of one circuit circ
+from result result_exp
+printing to output file handle ofh
+passing original qasm filepath for figure output filename generation</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.qasm_exp"><code class="name flex">
+<span>def <span class="ident">qasm_exp</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given qasm source, run the job
+and return in a string csv and other selected output</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.qi_account_fu"><code class="name flex">
+<span>def <span class="ident">qi_account_fu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load Quantum Inspire account appropriately and return provider</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.qisjob_version"><code class="name flex">
+<span>def <span class="ident">qisjob_version</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return version of qisjob</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.verbosity"><code class="name flex">
+<span>def <span class="ident">verbosity</span></span>(<span>self, text, count)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print text if count exceeds verbose level</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="qisjob" href="index.html">qisjob</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="qisjob.qisjob.ibmqjob_to_dict" href="#qisjob.qisjob.ibmqjob_to_dict">ibmqjob_to_dict</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code></h4>
+<ul class="two-column">
+<li><code><a title="qisjob.qisjob.QisJob.account_fu" href="#qisjob.qisjob.QisJob.account_fu">account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.choose_backend" href="#qisjob.qisjob.QisJob.choose_backend">choose_backend</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.csv_str" href="#qisjob.qisjob.QisJob.csv_str">csv_str</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.do_histogram" href="#qisjob.qisjob.QisJob.do_histogram">do_histogram</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.do_it" href="#qisjob.qisjob.QisJob.do_it">do_it</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.fig_name_str" href="#qisjob.qisjob.QisJob.fig_name_str">fig_name_str</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.forest_account_fu" href="#qisjob.qisjob.QisJob.forest_account_fu">forest_account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.formulate_result" href="#qisjob.qisjob.QisJob.formulate_result">formulate_result</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.gen_datetime" href="#qisjob.qisjob.QisJob.gen_datetime">gen_datetime</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.get_statuses" href="#qisjob.qisjob.QisJob.get_statuses">get_statuses</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.ibmq_account_fu" href="#qisjob.qisjob.QisJob.ibmq_account_fu">ibmq_account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.jku_account_fu" href="#qisjob.qisjob.QisJob.jku_account_fu">jku_account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.multi_exps" href="#qisjob.qisjob.QisJob.multi_exps">multi_exps</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.one_exp" href="#qisjob.qisjob.QisJob.one_exp">one_exp</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.process_result" href="#qisjob.qisjob.QisJob.process_result">process_result</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.qasm_exp" href="#qisjob.qisjob.QisJob.qasm_exp">qasm_exp</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.qi_account_fu" href="#qisjob.qisjob.QisJob.qi_account_fu">qi_account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.qisjob_version" href="#qisjob.qisjob.QisJob.qisjob_version">qisjob_version</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.save_fig" href="#qisjob.qisjob.QisJob.save_fig">save_fig</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.state_city_plot" href="#qisjob.qisjob.QisJob.state_city_plot">state_city_plot</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.verbosity" href="#qisjob.qisjob.QisJob.verbosity">verbosity</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

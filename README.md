@@ -1,4 +1,4 @@
-# qis_job
+# qisjob
 
 **QISKit Job Control**
 * [The `qisjob` command](#The-qisjob-command)
@@ -6,6 +6,10 @@
 * [Install](#Install)
 * [Usage](#Usage)
 * [Notes](#Notes)
+
+## The `qisjob` module
+
+The module is `qisjob`. It was formerly named `qis_job`. I'm not sure why, but I have now changed it to `qisjob`.
 
 ## The `qisjob` command
 
@@ -21,25 +25,31 @@ The command also provides some utility functions such as:
 
 and other useful operations for Qiskit experimentation.
 
-**`qis_job` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
+**`qisjob` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
 
 `qisjob` can run Qiskit experiments expressed as either:
 
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
-    * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qasm_examples) of the project.
+    * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qasm_examples) of the project.
 * a Qiskit Terra `QuantumCircuit` Python code snippet.
 
     * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
-    * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qis_job.py`
+    * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qisjob.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
-    * An example circuit (very long execution!) is found in the `qc_examples` [subdirectory](https://github.com/jwoehr/qis_job/tree/master/share/qc_examples) of the project.
+    * An example circuit (very long execution!) is found in the `qc_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qc_examples) of the project.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
 `QisJob` is compatible with the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) project, that you can use to compile and run your OPENQASM2.0 source code. Given that you have `NuQasm2` installed, you can use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
-You can use the class `QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
+## The QisJob class
+
+The `qisjob` script works by instancing an object of the class `qisjob.QisJob`.
+
+You can use an object instance of the class `qisjob.QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
+
+`qisjob.QisJob` has many args/kwargs. The documentation is installed with the module in `share/doc`.
 
 ## Prerequisites
 
@@ -70,7 +80,7 @@ current Qiskit.
 
 ## Install
 
-Do one of the following (preferably in a Python virtual environment set up for Qiskit)
+Do one of the following in the source directory (preferably in a Python virtual environment set up for Qiskit)
 
 * `make # gnu make, we have provided a Makefile`
 * `./setup.py install`
@@ -166,11 +176,11 @@ optional arguments:
 
 ## Notes
 
-* It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qis_job/releases).
+* It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qisjob/releases).
 * This document always reflects the latest checkins and may be ahead of the release versions.
   * See the README.md in the release version itself for contemporary information.
-* Please use the [issue tracker](https://github.com/jwoehr/qis_job/issues) to report any issues or feature requests.
+* Please use the [issue tracker](https://github.com/jwoehr/qisjob/issues) to report any issues or feature requests.
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2021-01-30
+Jack Woehr 2021-02-16

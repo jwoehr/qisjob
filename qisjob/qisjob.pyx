@@ -181,7 +181,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.job_monitor_filepath = job_monitor_filepath
 
     def qisjob_version(self):
-        """Return version of qis_job"""
+        """Return version of qisjob"""
         return self.my_version
 
     def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements

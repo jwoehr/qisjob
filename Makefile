@@ -1,8 +1,8 @@
 # Makefile for QisJob
 #
-# This code is part of qis_job.
+# This code is part of qisjob.
 #
-# (C) Copyright Jack J. Woehr 2020.
+# (C) Copyright Jack J. Woehr 2021.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE file in the root directory
@@ -12,13 +12,18 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-.PHONY:	install uninstall test
+.PHONY:	install uninstall test clean uninstall_oldname
 
-install:
-	rm -rf build dist qis_job.egg-info
+install: clean
 	python3 ./setup.py install
 
 uninstall:
+	pip3 uninstall qisjob
+
+clean:
+	rm -rf build dist qisjob.egg-info
+
+uninstall_oldname:
 	pip3 uninstall qis_job
 
 test:

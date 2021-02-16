@@ -164,7 +164,7 @@ if ARGS.warnings:
     import warnings
     warnings.filterwarnings('ignore')
 
-from qis_job import QisJob  # pylint: disable-msg=no-name-in-module, wrong-import-position
+from qisjob import QisJob  # pylint: disable-msg=no-name-in-module, wrong-import-position
 
 AER = ARGS.aer
 API_PROVIDER = ARGS.api_provider.upper()
