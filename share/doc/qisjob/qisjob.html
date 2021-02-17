@@ -213,6 +213,72 @@ and return in a string csv and other selected output</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="qisjob.qisjob.QisJobArgumentException"><code class="flex name class">
+<span>class <span class="ident">QisJobArgumentException</span></span>
+<span>(</span><span>message: unicode)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Argument passed to QisJob ctor is invalid.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>DESCRIPTION.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="qisjob.qisjob.QisJobException" href="#qisjob.qisjob.QisJobException">QisJobException</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="qisjob.qisjob.QisJobException"><code class="flex name class">
+<span>class <span class="ident">QisJobException</span></span>
+<span>(</span><span>message: unicode, retval: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for QisJob exceptions</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>DESCRIPTION.</dd>
+<dt><strong><code>retval</code></strong> :&ensp;<code>int</code></dt>
+<dd>DESCRIPTION.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="qisjob.qisjob.QisJobArgumentException" href="#qisjob.qisjob.QisJobArgumentException">QisJobArgumentException</a></li>
+<li><a title="qisjob.qisjob.QisJobRuntimeException" href="#qisjob.qisjob.QisJobRuntimeException">QisJobRuntimeException</a></li>
+</ul>
+</dd>
+<dt id="qisjob.qisjob.QisJobRuntimeException"><code class="flex name class">
+<span>class <span class="ident">QisJobRuntimeException</span></span>
+<span>(</span><span>message: unicode)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>QisJob encountered an unrecoverable runtime error.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>DESCRIPTION.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="qisjob.qisjob.QisJobException" href="#qisjob.qisjob.QisJobException">QisJobException</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -259,6 +325,15 @@ and return in a string csv and other selected output</p></div>
 <li><code><a title="qisjob.qisjob.QisJob.state_city_plot" href="#qisjob.qisjob.QisJob.state_city_plot">state_city_plot</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.verbosity" href="#qisjob.qisjob.QisJob.verbosity">verbosity</a></code></li>
 </ul>
+</li>
+<li>
+<h4><code><a title="qisjob.qisjob.QisJobArgumentException" href="#qisjob.qisjob.QisJobArgumentException">QisJobArgumentException</a></code></h4>
+</li>
+<li>
+<h4><code><a title="qisjob.qisjob.QisJobException" href="#qisjob.qisjob.QisJobException">QisJobException</a></code></h4>
+</li>
+<li>
+<h4><code><a title="qisjob.qisjob.QisJobRuntimeException" href="#qisjob.qisjob.QisJobRuntimeException">QisJobRuntimeException</a></code></h4>
 </li>
 </ul>
 </li>

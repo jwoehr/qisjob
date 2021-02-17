@@ -242,6 +242,10 @@ QJ = QisJob(filepaths=FILEPATH,
             use_job_monitor=USE_JM,
             job_monitor_filepath=JOB_MONITOR_FILEPATH)
 
-QJ.do_it()
-
-sys.exit(0)
+retval = 0
+try:
+    QJ.do_it()
+except Exception as ex:
+    print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
+    retval = ex.retval
+    sys.exit(retval)
