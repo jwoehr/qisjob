@@ -12,7 +12,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-.PHONY:	install uninstall test clean uninstall_oldname
+DOCDIR = $(shell pwd)/share/doc
+
+.PHONY:	install uninstall clean uninstall_oldname doc test
 
 install: clean
 	python3 ./setup.py install
@@ -21,10 +23,14 @@ uninstall:
 	pip3 uninstall qisjob
 
 clean:
-	rm -rf build dist qisjob.egg-info
+	rm -rf build dist qisjob.egg-info qisjob/__pycache__/ qisjob/qisjob.c
 
 uninstall_oldname:
 	pip3 uninstall qis_job
+
+doc:
+	echo "DOCDIR is $(DOCDIR)"
+	cd /tmp && pdoc3 --skip-errors --html -f -o $(DOCDIR) qisjob
 
 test:
 ifeq ($(NUQASM2_INCLUDE_PATH),)
