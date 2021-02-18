@@ -2,8 +2,14 @@
 # -*- coding: utf-8 -*-
 r"""qisjob.pyx ..
 Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
+
+
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+
+
 BSD-3 license -- See LICENSE which you should have received with this code.
+
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
 
@@ -45,7 +51,8 @@ except ImportError:
 
 def ibmqjob_to_dict(job: IBMQJob) -> dict:
     """
-
+    Create a dict containing job factors for which there are methods.
+    Acts as a 'to_dict()'.
 
     Parameters
     ----------
@@ -124,61 +131,218 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  show_qisjob_version=False,
                  use_job_monitor=False,
                  job_monitor_filepath=None):
-        """Initialize member data"""
-        self.qasm_src = qasm_src
-        self.provider_name = provider_name.upper()
-        self.provider = None
-        self.filepaths = filepaths
-        self.backend_name = backend_name
-        self.backend = None
-        self.token = token
-        self.url = url
-        self.nuqasm2 = nuqasm2
-        self.num_qubits = num_qubits
-        self.shots = shots
-        self.max_credits = max_credits
-        self.outfile_path = outfile_path
-        self.one_job = one_job
-        self.qasm = qasm
-        self.use_aer = use_aer
-        self.use_qasm_simulator = use_qasm_simulator
-        self.use_unitary_simulator = use_unitary_simulator
-        self.use_statevector_gpu = use_statevector_gpu
-        self.use_unitary_gpu = use_unitary_gpu
-        self.use_density_matrix_gpu = use_density_matrix_gpu
-        self.use_sim = use_sim
-        self.qvm = qvm
-        self.qvm_as = qvm_as
-        self.qc_name = qc_name
-        self.xpile = xpile
-        self.showsched = showsched
-        self.circuit_layout = circuit_layout
-        self.optimization_level = optimization_level
-        self.print_job = print_job
-        self.memory = memory
-        self.show_result = show_result
-        self.jobs_status = jobs_status
-        self.job_id = job_id
-        self.job_result = job_result
-        self.show_backends = show_backends
-        self.show_configuration = show_configuration
-        self.show_properties = show_properties
-        self.show_statuses = show_statuses
-        self.date_time = date_time
-        self.print_histogram = print_histogram
-        self.print_state_city = print_state_city
-        self.figure_basename = figure_basename
-        self.show_q_version = show_q_version
-        self.verbose = verbose
-        self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = 'statevector_simulator'
-        self.show_qisjob_version = show_qisjob_version
-        self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "v3.4 (v3.3+)"
-        self.qasm_result = None
-        self.result_exp_dict = None
-        self.use_job_monitor = use_job_monitor
-        self.job_monitor_filepath = job_monitor_filepath
+
+        """
+
+
+        Initialize QisJob member data
+
+        Parameters
+        ----------
+
+        filepaths : str
+            The default is `None`.
+
+            List of fully qualified or relative filepaths for experiments.
+
+        qasm_src : str
+            The default is `None`.
+
+            A string of OpenQASM experiment source
+
+        provider_name : str
+            The default is "IBMQ".
+
+            The name of the backend provider. Currently supported are
+
+                * IBMQ
+                * QI
+                * Forest
+                * JKU
+
+        backend_name : str
+            The default is `None`.
+
+            Name of chosen backend for given provider.
+            If provider is IBMQ and backend_name is `None`, QisJob will
+            search for 'least_busy'.
+
+        token : str
+            The default is `None`.
+
+            Login token for provider. This is a string even if it looks
+            like a giant hexadecimal number
+
+        url : str
+            The default is `None`.
+
+            URL of backend provider gateway
+
+        nuqasm2 : str
+            The default is `None`.
+
+            An include path for OpenQASM include files that also serves
+            to indicate that nuqasm2 should be used as the OpenQASM compiler
+
+        num_qubits : int
+            The default is 5.
+
+            Number of qubits required for experiment(s)
+
+        shots : int
+            The default is 1024.
+
+
+        max_credits : int
+            The default is 3.
+
+
+        outfile_path : str
+            The default is `None`.
+
+
+        one_job : bool
+            The default is `False`.
+
+
+        qasm : bool
+            The default is `False`.
+
+
+        use_aer : bool
+            The default is `False`.
+
+
+        use_qasm_simulator : bool
+            The default is `False`.
+
+
+        use_unitary_simulator : bool
+            The default is `False`.
+
+
+        use_statevector_gpu : bool
+            The default is `False`.
+
+
+        use_unitary_gpu : bool
+            The default is `False`.
+
+
+        use_density_matrix_gpu : bool
+            The default is `False`.
+
+
+        use_sim : bool
+            The default is `False`.
+
+
+        qvm : bool
+            The default is `False`.
+
+
+        qvm_as : bool
+            The default is `False`.
+
+
+        qc_name : str
+            The default is `None`.
+
+
+        xpile : bool
+            The default is `False`.
+
+
+        showsched : bool
+            The default is `False`.
+
+
+        circuit_layout
+            The default is `False`.
+
+
+        optimization_level : int
+            The default is 1.
+
+
+        print_job : bool
+            The default is `False`.
+
+
+        memory : bool
+            The default is `False`.
+
+
+        show_result : bool
+            The default is `False`.
+
+
+        jobs_status : int
+            The default is `None`.
+
+
+        job_id : int
+            The default is `None`.
+
+
+        job_result : int
+            The default is `None`.
+
+
+        show_backends : bool
+            The default is `False`.
+
+
+        show_configuration : bool
+            The default is `False`.
+
+
+        show_properties : bool
+            The default is `False`.
+
+
+        show_statuses : bool
+            The default is `False`.
+
+
+        date_time : str
+            The default is `None`.
+
+
+        print_histogram : bool
+            The default is `False`.
+
+
+        print_state_city : int
+            The default is 0.
+
+
+        figure_basename : str
+            The default is 'figout'.
+
+
+        show_q_version : bool
+            The default is `False`.
+
+
+        verbose : int
+            The default is 0.
+
+
+        show_qisjob_version : bool
+            The default is `False`.
+
+
+        use_job_monitor : bool
+            The default is `False`.
+
+
+        job_monitor_filepath : str
+            The default is `None`.
+
+
+        """
+
 
     def qisjob_version(self) -> str:
         """
@@ -292,7 +456,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         a_job = ibmqjob_to_dict(a_job)
                     else:
                         a_job = a_job.to_dict()
-                self._pp.pprint(a_job)
                 return
 
             elif self.job_result:

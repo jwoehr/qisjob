@@ -6,8 +6,7 @@
 <meta name="generator" content="pdoc 0.9.2" />
 <title>qisjob.qisjob API documentation</title>
 <meta name="description" content="qisjob.pyx ..
-Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box …" />
+Load from qasm source or Qiskit QuantumCircuit source and run job with reporting …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -25,10 +24,10 @@ Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box …" />
 </header>
 <section id="section-intro">
 <p>qisjob.pyx ..
-Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
-BSD-3 license &ndash; See LICENSE which you should have received with this code.
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.</p>
+<p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
+<p>BSD-3 license &ndash; See LICENSE which you should have received with this code.</p>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.</p>
 </section>
 <section>
@@ -42,7 +41,9 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.</p>
 <span>def <span class="ident">ibmqjob_to_dict</span></span>(<span>...)</span>
 </code></dt>
 <dd>
-<div class="desc"><h2 id="parameters">Parameters</h2>
+<div class="desc"><p>Create a dict containing job factors for which there are methods.
+Acts as a 'to_dict()'.</p>
+<h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>job</code></strong> :&ensp;<code>IBMQJob</code></dt>
 <dd>Return a dict as if there were a to_dict method</dd>
@@ -64,7 +65,135 @@ WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display of Qiskit job or jobs</p>
-<p>Initialize member data</p></div>
+<p>Initialize QisJob member data</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filepaths</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>List of fully qualified or relative filepaths for experiments.</p>
+</dd>
+<dt><strong><code>qasm_src</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>A string of OpenQASM experiment source</p>
+</dd>
+<dt><strong><code>provider_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is "IBMQ".</p>
+<p>The name of the backend provider. Currently supported are</p>
+<pre><code>* IBMQ
+* QI
+* Forest
+* JKU
+</code></pre>
+</dd>
+<dt><strong><code>backend_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>Name of chosen backend for given provider.
+If provider is IBMQ and backend_name is <code>None</code>, QisJob will
+search for 'least_busy'.</p>
+</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>Login token for provider. This is a string even if it looks
+like a giant hexadecimal number</p>
+</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>URL of backend provider gateway</p>
+</dd>
+<dt><strong><code>nuqasm2</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p>An include path for OpenQASM include files that also serves
+to indicate that nuqasm2 should be used as the OpenQASM compiler</p>
+</dd>
+<dt><strong><code>num_qubits</code></strong> :&ensp;<code>int</code></dt>
+<dd>
+<p>The default is 5.</p>
+<p>Number of qubits required for experiment(s)</p>
+</dd>
+<dt><strong><code>shots</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is 1024.</dd>
+<dt><strong><code>max_credits</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is 3.</dd>
+<dt><strong><code>outfile_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>one_job</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>qasm</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_aer</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_qasm_simulator</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_unitary_simulator</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_statevector_gpu</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_unitary_gpu</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_density_matrix_gpu</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_sim</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>qvm</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>qvm_as</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>qc_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>xpile</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>showsched</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>circuit_layout</code></strong></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>optimization_level</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is 1.</dd>
+<dt><strong><code>print_job</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>memory</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>show_result</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>jobs_status</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>job_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>job_result</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>show_backends</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>show_configuration</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>show_properties</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>show_statuses</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>date_time</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default is <code>None</code>.</dd>
+<dt><strong><code>print_histogram</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>print_state_city</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is 0.</dd>
+<dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default is 'figout'.</dd>
+<dt><strong><code>show_q_version</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>int</code></dt>
+<dd>The default is 0.</dd>
+<dt><strong><code>show_qisjob_version</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>use_job_monitor</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The default is <code>False</code>.</dd>
+<dt><strong><code>job_monitor_filepath</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default is <code>None</code>.</dd>
+</dl></div>
 <h3>Static methods</h3>
 <dl>
 <dt id="qisjob.qisjob.QisJob.csv_str"><code class="name flex">
