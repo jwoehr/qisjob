@@ -131,7 +131,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  show_qisjob_version=False,
                  use_job_monitor=False,
                  job_monitor_filepath=None):
-
         """
 
 
@@ -342,7 +341,60 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
 
         """
-
+        self.qasm_src = qasm_src
+        self.provider_name = provider_name.upper()
+        self.provider = None
+        self.filepaths = filepaths
+        self.backend_name = backend_name
+        self.backend = None
+        self.token = token
+        self.url = url
+        self.nuqasm2 = nuqasm2
+        self.num_qubits = num_qubits
+        self.shots = shots
+        self.max_credits = max_credits
+        self.outfile_path = outfile_path
+        self.one_job = one_job
+        self.qasm = qasm
+        self.use_aer = use_aer
+        self.use_qasm_simulator = use_qasm_simulator
+        self.use_unitary_simulator = use_unitary_simulator
+        self.use_statevector_gpu = use_statevector_gpu
+        self.use_unitary_gpu = use_unitary_gpu
+        self.use_density_matrix_gpu = use_density_matrix_gpu
+        self.use_sim = use_sim
+        self.qvm = qvm
+        self.qvm_as = qvm_as
+        self.qc_name = qc_name
+        self.xpile = xpile
+        self.showsched = showsched
+        self.circuit_layout = circuit_layout
+        self.optimization_level = optimization_level
+        self.print_job = print_job
+        self.memory = memory
+        self.show_result = show_result
+        self.jobs_status = jobs_status
+        self.job_id = job_id
+        self.job_result = job_result
+        self.show_backends = show_backends
+        self.show_configuration = show_configuration
+        self.show_properties = show_properties
+        self.show_statuses = show_statuses
+        self.date_time = date_time
+        self.print_histogram = print_histogram
+        self.print_state_city = print_state_city
+        self.figure_basename = figure_basename
+        self.show_q_version = show_q_version
+        self.verbose = verbose
+        self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
+        self.local_simulator_type = 'statevector_simulator'
+        self.show_qisjob_version = show_qisjob_version
+        self.method = None  # methods for simulators e.g., gpu
+        self.my_version = "v3.4 (v3.3+)"
+        self.qasm_result = None
+        self.result_exp_dict = None
+        self.use_job_monitor = use_job_monitor
+        self.job_monitor_filepath = job_monitor_filepath
 
     def qisjob_version(self) -> str:
         """
@@ -447,9 +499,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         else:
                             a_job = a_job.to_dict()
                     self._pp.pprint(a_job)
-                    return
+                return
 
-            elif self.job_id:
+            if self.job_id:
                 a_job = self.backend.retrieve_job(self.job_id)
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
@@ -458,7 +510,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         a_job = a_job.to_dict()
                 return
 
-            elif self.job_result:
+            if self.job_result:
                 a_job = self.backend.retrieve_job(self.job_result)
                 print(f_string.format(str(a_job.job_id()), str(a_job.status())))
                 self._pp.pprint(a_job.result().to_dict())
