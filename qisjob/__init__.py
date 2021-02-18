@@ -1,1 +1,1 @@
-from .qisjob import QisJob
+from .qisjob import QisJob, QisJobException

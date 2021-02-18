@@ -184,7 +184,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """Return version of qisjob"""
         return self.my_version
 
-    def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements
+    def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
         """Run the whole program given ctor args from the driver script"""
 
         if self.show_qisjob_version:
@@ -196,55 +196,65 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self._pp.pprint(__qiskit_version__)
             return
 
-        elif self.provider_name == "IBMQ" and ((self.token and not self.url)
+        if self.provider_name == "IBMQ" and ((self.token and not self.url)
                                                or (self.url and not self.token)):
-            raise QisJobArgumentException('kwargs token and url must be used together for IBMQ provider or not at all')
+            raise QisJobArgumentException(
+                'kwargs token and url must be used together for IBMQ provider or not at all'
+                )
 
-        elif self.show_configuration:
+        if self.show_configuration:
             self.account_fu()
             self.backend = self.provider.get_backend(self.backend_name)
             self._pp.pprint(self.backend.configuration().to_dict())
             return
 
-        elif self.show_properties:
+        if self.show_properties:
             self.account_fu()
 
             try:
                 self.backend = self.provider.get_backend(self.backend_name)
             except QiskitBackendNotFoundError as err:
-                raise QisJobRuntimeException("Backend {} not found: {}".format(self.backend_name, err))
+                raise QisJobRuntimeException(
+                    "Backend {} not found: {}".format(self.backend_name, err)
+                    ) from err
 
             the_date_time = QisJob.gen_datetime(self.date_time) if self.date_time else None
             self._pp.pprint(self.backend.properties(datetime=the_date_time).to_dict())
             return
 
-        elif self.show_backends:
+        if self.show_backends:
             self.account_fu()
             self._pp.pprint(self.provider.backends())
             return
 
-        elif self.show_statuses:
+        if self.show_statuses:
             self.account_fu()
 
             if self.backend_name:
                 try:
                     self.backend = self.provider.get_backend(self.backend_name)
                 except QiskitBackendNotFoundError as err:
-                    raise QisJobRuntimeException("Backend {} not found: {}".format(self.backend_name, err))
+                    raise QisJobRuntimeException(
+                        "Backend {} not found: {}".format(self.backend_name, err)
+                        ) from err
 
             for stat in self.get_statuses():
                 self._pp.pprint(stat)
 
         elif self.jobs_status or self.job_id or self.job_result:
             if not self.backend_name:
-                raise QisJobArgumentException('kwargs jobs or job_id or job_result also require kwarg backend')
+                raise QisJobArgumentException(
+                    'kwargs jobs or job_id or job_result also require kwarg backend'
+                    )
 
             self.account_fu()
 
             try:
                 self.backend = self.provider.get_backend(self.backend_name)
             except QiskitBackendNotFoundError as err:
-                raise QisJobRuntimeException("Backend {} not found: {}".format(self.backend_name, err))
+                raise QisJobRuntimeException(
+                    "Backend {} not found: {}".format(self.backend_name, err)
+                    ) from err
 
             f_string = "Job {} {}"
 
@@ -317,7 +327,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             try:
                 self.provider = IBMQ.load_account()
             except IBMQAccountCredentialsNotFound as err:
-                raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err))
+                raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and return provider"""
@@ -387,7 +397,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 try:
                     self.backend = self.provider.get_backend(self.backend_name)
                 except QiskitBackendNotFoundError as err:
-                    raise QisJobRuntimeException("Backend {} not found: {}".format(self.backend_name, err))
+                    raise QisJobRuntimeException(
+                        "Backend {} not found: {}".format(self.backend_name, err)
+                        ) from err
                 self.verbosity('provider.get_backend() returns {}'.format(str(self.backend)), 3)
 
             elif self.use_sim:
@@ -401,7 +413,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         self.verbosity("Backend is {}".format(str(self.backend)), 1)
                         break
                 if not self.backend:
-                    raise QisJobRuntimeException("No suitable backend found for {} qubits".format(str(self.num_qubits)))
+                    raise QisJobRuntimeException(
+                        "No suitable backend found for {} qubits".format(str(self.num_qubits))
+                        )
             else:
                 from qiskit.providers.ibmq import least_busy  # pylint: disable-msg=import-outside-toplevel, line-too-long
                 large_enough_devices = self.provider.backends(
@@ -410,7 +424,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 try:
                     self.backend = least_busy(large_enough_devices)
                 except QiskitError as err:
-                    raise QisJobRuntimeException("QiskitError no device found for criteria (large enough?) {}".format(err))
+                    raise QisJobRuntimeException(
+                        "QiskitError no device found for criteria (large enough?) {}".format(err)
+                        ) from err
                 self.verbosity("The best backend is {}".format(self.backend.name()), 2)
                 self.verbosity("Backend is {}".format(str(self.backend)), 1)
 
@@ -564,7 +580,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
                 except (Qasm_Exception, Ast2CircException) as err:
                     x = err.errpacket()  # pylint: disable-msg=invalid-name
-                    raise QisJobRuntimeException("Filepath name error {} {} {}".format(filepath_name, err, x))
+                    raise QisJobRuntimeException(
+                        "Filepath name error {} {} {}".format(filepath_name, err, x)
+                        ) from err
 
                 self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
                                .format(circ.qasm()), 3)
@@ -656,7 +674,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.process_result(result_exp, circ, ofh)
 
         except IBMQJobFailureError as err:
-            raise QisJobRuntimeException("Job failure {} {}".format(err, job_exp.error_message()))
+            raise QisJobRuntimeException(
+                "Job failure {} {}".format(err, job_exp.error_message())
+                ) from err
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -713,7 +733,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
                     except (Qasm_Exception, Ast2CircException) as err:
                         x = err.errpacket()  # pylint: disable-msg=invalid-name
-                        raise QisJobRuntimeException("Error in source {} {} {}".format(the_source_list, err, x))
+                        raise QisJobRuntimeException(
+                            "Error in source {} {} {}".format(the_source_list, err, x)
+                            ) from err
 
                     self.verbosity("\nUnrolled circuit's OPENQASM 2.0 source code\n{}"
                                    .format(circ.qasm()), 3)
@@ -797,7 +819,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.process_result(result_exp, circ, ofh)
 
         except IBMQJobFailureError as err:
-             raise QisJobRuntimeException("Job failure {} {}".format(err, job_exp.error_message()))
+            raise QisJobRuntimeException(
+                "Job failure {} {}".format(err, job_exp.error_message())
+                ) from err
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -832,7 +856,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             except (Qasm_Exception, Ast2CircException) as err:
                 x = err.errpacket()  # pylint: disable-msg=invalid-name
-                raise QisJobRuntimeException("Source error {} {} {}".format(the_source, err, x))
+                raise QisJobRuntimeException(
+                    "Source error {} {} {}".format(the_source, err, x)
+                    ) from err
 
             self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
                            .format(circ.qasm()), 3)
@@ -919,7 +945,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             return self.formulate_result(result_exp, circ, None)
 
         except IBMQJobFailureError as err:
-             raise QisJobRuntimeException("Job failure {} {}".format(err, job_exp.error_message()))
+            raise QisJobRuntimeException(
+                "Job failure {} {}".format(err, job_exp.error_message())
+                ) from err
 
 class QisJobException(Exception):
     """Base class for QisJob exceptions"""
@@ -1219,10 +1247,10 @@ if __name__ == '__main__':
                 use_job_monitor=USE_JM,
                 job_monitor_filepath=JOB_MONITOR_FILEPATH)
 
-    retval = 0
+    EXITVAL = 0
     try:
         QJ.do_it()
-    except Exception as ex:
+    except QisJobException as ex:
         print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
-        retval = ex.retval
-    sys.exit(retval)
+        EXITVAL = ex.retval
+    sys.exit(EXITVAL)
