@@ -1,7 +1,7 @@
 #!/usr/bin/env python3  # pylint: disable-msg=too-many-lines
 # -*- coding: utf-8 -*-
-"""qisjob.pyx
-Load from qasm source or Qiskit QuantumCircuit sourceand run job with reporting.
+r"""qisjob.pyx ..
+Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 BSD-3 license -- See LICENSE which you should have received with this code.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND

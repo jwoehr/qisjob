@@ -23,7 +23,8 @@ uninstall:
 	pip3 uninstall qisjob
 
 clean:
-	rm -rf build dist qisjob.egg-info qisjob/__pycache__/ qisjob/qisjob.c
+	rm -rf build dist qisjob.egg-info qisjob/__pycache__ \
+	qisjob/qisjob.c share/doc/qisjob
 
 uninstall_oldname:
 	pip3 uninstall qis_job
