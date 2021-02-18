@@ -248,4 +248,4 @@ try:
 except QisJobException as ex:
     print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
     EXITVAL = ex.retval
-    sys.exit(EXITVAL)
+sys.exit(EXITVAL)

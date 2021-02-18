@@ -10,11 +10,14 @@ CHANGES by revision to QisJob
 v3.4
 - Renamed module to `qisjob` from `qis_job` (Issue #3)
   - Add Makefile target `uninstall_oldname` to uninstall `qis_job`
+- Remove `sys.exit()` calls
+- Add exception regimen
 - Update README.md
 - Add `--job_monitor_filepath`
 - Use `Aer` instead of `BasicAer` (Issue #15)
 - Fix bug in `-w` switch (Issue #17)
 - Better install instructions (Issue #5)
+- Autogenerate docs using `pdoc3`
 
 v3.3:
 	- `--optimization_level` argument
