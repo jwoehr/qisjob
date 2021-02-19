@@ -26,7 +26,9 @@
 <p>Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.</p>
 <p>The main class which one instances programmatically is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
 <p>Commandline usage is via the <code><a title="qisjob" href="index.html">qisjob</a></code> script which provides a <code>--help</code>
-switch. That script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.</p>
+switch. That script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.
+To understand the documentation, it is recommended the reader execute
+<code>qisjob --help</code> and examine that output.</p>
 <p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
 <p>Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
 <p>Unless required by applicable law or agreed to in writing, software
@@ -77,13 +79,16 @@ the <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IB
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display of Qiskit job or jobs</p>
-<p>Initialize QisJob member data</p>
+<p>Initialize QisJob member data.</p>
+<p>In the parameter discussion below, actions are described as being
+taken by <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>. Typically, these actions are actually taken when
+the <code>do_it()</code> method is called, not at ctor time.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>filepaths</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: any and all undecorated
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: Any and all undecorated
 arguments following the <code>--</code> decorated switch arguments are taken
 to be files to add to the <code>filepaths</code> kwarg.</p>
 <p>List of fully qualified or relative filepaths for experiments.</p>
@@ -101,7 +106,7 @@ is ignored.</p>
 <dt><strong><code>provider_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is "IBMQ".</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--api_provider</code></p>
 <p>The name of the backend provider. Currently supported are</p>
 <pre><code>* IBMQ
 * QI
@@ -112,7 +117,7 @@ is ignored.</p>
 <dt><strong><code>backend_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-b, --backend</code></p>
 <p>Name of chosen backend for given provider.</p>
 <p>If provider is IBMQ and backend_name is <code>None</code>, <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>
 will search for <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html"><code>least_busy()</code></a>.</p>
@@ -120,38 +125,51 @@ will search for <a href="https://qiskit.org/documentation/stubs/qiskit.providers
 <dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--token</code></p>
 <p>Login token for provider. This is a string even if it looks
-like a giant hexadecimal number</p>
+like a giant hexadecimal number.</p>
+<p>If provided, then <code>url</code> must also be provided.</p>
+<p>If not provided, <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> will either attempt the supported
+provider's automatic load of login credentials or simply
+attempt the connection without credentials.</p>
 </dd>
 <dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--url</code></p>
 <p>URL of backend provider gateway</p>
+<p>If provided, then <code>token</code> must also be provided.</p>
+<p>If not provided, <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> will assume the default URL
+for the supported provider's backend.</p>
 </dd>
 <dt><strong><code>nuqasm2</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
-<p>An include path for OpenQASM include files that also serves
-to indicate that nuqasm2 should be used as the OpenQASM compiler</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--nuqasm2</code></p>
+<p>This is a "double purpose" switch. Its target is an include path
+for OpenQASM include files, which, if present, serves
+to indicate that <a href="https://github.com/jwoehr/nuqasm2">nuqasm2</a>
+should be used as the OpenQASM compiler.</p>
 </dd>
 <dt><strong><code>num_qubits</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is 5.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
-<p>Number of qubits required for experiment(s)</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-q, --qubits</code></p>
+<p>Number of qubits required for any and all experiment(s).</p>
 </dd>
 <dt><strong><code>shots</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is 1024.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-t, --shots</code></p>
+<p>Number of shots performed for any and all experiment(s).
+Subject to limitation of the provider backend.</p>
 </dd>
 <dt><strong><code>max_credits</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is 3.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-c, --credits</code></p>
+<p>Max credits to expend on each job, default is 3. If provider
+has no credit scheme enabled, <code>max_credits</code> has no effect.</p>
 </dd>
 <dt><strong><code>outfile_path</code></strong> :&ensp;<code>str</code></dt>
 <dd>

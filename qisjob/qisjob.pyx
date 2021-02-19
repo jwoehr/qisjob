@@ -8,6 +8,8 @@ The main class which one instances programmatically is `QisJob`.
 
 Commandline usage is via the `qisjob` script which provides a `--help`
 switch. That script will be mentioned in the `QisJob` documentation.
+To understand the documentation, it is recommended the reader execute
+`qisjob --help` and examine that output.
 
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 
@@ -150,7 +152,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """
 
 
-        Initialize QisJob member data
+        Initialize QisJob member data.
+
+        In the parameter discussion below, actions are described as being
+        taken by `QisJob`. Typically, these actions are actually taken when
+        the `do_it()` method is called, not when member variables are instanced
+        at `__init__` time.
 
         Parameters
         ----------
@@ -158,7 +165,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         filepaths : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: any and all undecorated
+            _Corresponding `qisjob` script argument_: Any and all undecorated
             arguments following the `--` decorated switch arguments are taken
             to be files to add to the `filepaths` kwarg.
 
@@ -181,7 +188,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         provider_name : str
             The default is "IBMQ".
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--api_provider`
 
             The name of the backend provider. Currently supported are
 
@@ -193,7 +200,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         backend_name : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-b, --backend`
 
             Name of chosen backend for given provider.
 
@@ -203,44 +210,61 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         token : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--token`
 
             Login token for provider. This is a string even if it looks
-            like a giant hexadecimal number
+            like a giant hexadecimal number.
+
+            If provided, then `url` must also be provided.
+
+            If not provided, `QisJob` will either attempt the supported
+            provider's automatic load of login credentials or simply
+            attempt the connection without credentials.
 
         url : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--url`
 
             URL of backend provider gateway
+
+            If provided, then `token` must also be provided.
+
+            If not provided, `QisJob` will assume the default URL
+            for the supported provider's backend.
 
         nuqasm2 : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--nuqasm2`
 
-            An include path for OpenQASM include files that also serves
-            to indicate that nuqasm2 should be used as the OpenQASM compiler
+            This is a "double purpose" switch. Its target is an include path
+            for OpenQASM include files, which, if present, serves
+            to indicate that [nuqasm2](https://github.com/jwoehr/nuqasm2)
+            should be used as the OpenQASM compiler.
 
         num_qubits : int
             The default is 5.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-q, --qubits`
 
-            Number of qubits required for experiment(s)
+            Number of qubits required for any and all experiment(s).
 
         shots : int
             The default is 1024.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-t, --shots`
 
+            Number of shots performed for any and all experiment(s).
+            Subject to limitation of the provider backend.
 
         max_credits : int
             The default is 3.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-c, --credits`
 
+            Max credits to expend on each job, default is 3. If provider
+            has no credit scheme enabled, `max_credits` has no effect.
 
         outfile_path : str
             The default is `None`.
