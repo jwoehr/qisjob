@@ -1,17 +1,24 @@
 #!/usr/bin/env python3  # pylint: disable-msg=too-many-lines
 # -*- coding: utf-8 -*-
-r"""qisjob.pyx ..
+"""`qisjob.pyx`
+
 Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
 
+The main class which one instances programmatically is `QisJob`.
+
+Commandline usage is via the `qisjob` script which provides a `--help`
+switch. That script will be mentioned in the `QisJob` documentation.
 
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 
+Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
 
-BSD-3 license -- See LICENSE which you should have received with this code.
-
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES."""
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 
 import argparse
 import datetime
@@ -52,12 +59,21 @@ except ImportError:
 def ibmqjob_to_dict(job: IBMQJob) -> dict:
     """
     Create a dict containing job factors for which there are methods.
-    Acts as a 'to_dict()'.
+    Acts as a `to_dict()`.
 
     Parameters
     ----------
     job : IBMQJob
-        Return a dict as if there were a to_dict method
+
+        Return a dict as if `qiskit.providers.ibmq.job.IBMQJob` had a
+        `to_dict()` method.
+
+        Actually, currently there is such a method, but it is deprectated
+        and will be removed in the next release.
+
+        The members should correspond to the methods documented in
+        the [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
+
 
     Returns
     -------
@@ -142,15 +158,30 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         filepaths : str
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: any and all undecorated
+            arguments following the `--` decorated switch arguments are taken
+            to be files to add to the `filepaths` kwarg.
+
             List of fully qualified or relative filepaths for experiments.
+
+            If `filepaths` is `None` source is read from stdin.
+
+            If `qasm_src` is set, this kwarg is ignored.
 
         qasm_src : str
             The default is `None`.
 
-            A string of OpenQASM experiment source
+            _Corresponding `qisjob` script argument_: _none_
+
+            A string of OpenQASM experiment source.
+
+            If `qasm_src` is set, it takes precendence and `filepaths`
+            is ignored.
 
         provider_name : str
             The default is "IBMQ".
+
+            _Corresponding `qisjob` script argument_: _none_
 
             The name of the backend provider. Currently supported are
 
@@ -162,12 +193,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         backend_name : str
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
             Name of chosen backend for given provider.
-            If provider is IBMQ and backend_name is `None`, QisJob will
-            search for 'least_busy'.
+
+            If provider is IBMQ and backend_name is `None`, `QisJob`
+            will search for [`least_busy()`](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html).
 
         token : str
             The default is `None`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
             Login token for provider. This is a string even if it looks
             like a giant hexadecimal number
@@ -175,10 +211,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         url : str
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
             URL of backend provider gateway
 
         nuqasm2 : str
             The default is `None`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
             An include path for OpenQASM include files that also serves
             to indicate that nuqasm2 should be used as the OpenQASM compiler
@@ -186,158 +226,236 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         num_qubits : int
             The default is 5.
 
+            _Corresponding `qisjob` script argument_: _none_
+
             Number of qubits required for experiment(s)
 
         shots : int
             The default is 1024.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         max_credits : int
             The default is 3.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         outfile_path : str
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         one_job : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         qasm : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         use_aer : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         use_qasm_simulator : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         use_unitary_simulator : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         use_statevector_gpu : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         use_unitary_gpu : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         use_density_matrix_gpu : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         use_sim : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         qvm : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         qvm_as : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         qc_name : str
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         xpile : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         showsched : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         circuit_layout
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         optimization_level : int
             The default is 1.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         print_job : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         memory : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         show_result : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         jobs_status : int
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         job_id : int
             The default is `None`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         job_result : int
             The default is `None`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         show_backends : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         show_configuration : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         show_properties : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         show_statuses : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         date_time : str
             The default is `None`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         print_histogram : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         print_state_city : int
             The default is 0.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         figure_basename : str
             The default is 'figout'.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         show_q_version : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         verbose : int
             The default is 0.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         show_qisjob_version : bool
             The default is `False`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         use_job_monitor : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: _none_
+
 
         job_monitor_filepath : str
             The default is `None`.
+
+            _Corresponding `qisjob` script argument_: _none_
 
 
         """
