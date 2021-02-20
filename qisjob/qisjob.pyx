@@ -419,20 +419,32 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         show_q_version : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-qiskit_version`
 
+             If `True`, `do_it()` prints Qiskit version to stdout and returns.
+
+            This is the 2nd logical branch in `do_it()` and takes precedence
+            over all other kwargs except `show_qisjob_version`.
 
         verbose : int
             The default is 0.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-v, --verbose`
 
+            Set the verbosity level of miscellaneous informational messages
+            emitted to stderr by do_it().
+
+            The range is 0-3.
 
         show_qisjob_version : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--version`
 
+            If `True`, `do_it()` prints QisJob version to stdout and returns.
+
+            This is the 1st logical branch in `do_it()` and takes precedence
+            over all other kwargs.
 
         use_job_monitor : bool
             The default is `False`.
