@@ -29,9 +29,14 @@ state-city plot. Also can give info on backend properties, qiskit version,
 show circuit transpilation, etc. Can run as multiple jobs or all as one job.
 Exits 0 on success, 1 on argument error, 100 on runtime error.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
-BSD-3 license -- See LICENSE which you should have received with this code.
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+
+Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 PARSER = argparse.ArgumentParser(description=EXPLANATION)
 GROUP = PARSER.add_mutually_exclusive_group()
