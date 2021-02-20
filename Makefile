@@ -13,8 +13,9 @@
 # that they have been altered from the originals.
 
 DOCDIR = $(shell pwd)/share/doc
+PYSRCS = qisjob/qisjob.pyx scripts/qisjob
 
-.PHONY:	install uninstall clean uninstall_oldname doc test
+.PHONY:	install uninstall clean uninstall_oldname doc testsrc test
 
 install: clean
 	python3 ./setup.py install
@@ -32,6 +33,10 @@ uninstall_oldname:
 doc:
 	echo "DOCDIR is $(DOCDIR)"
 	cd /tmp && pdoc3 --skip-errors --html -f -o $(DOCDIR) qisjob
+
+testsrc:
+	- pylint $(PYSRCS)
+	- pycodestyle $(PYSRCS)
 
 test:
 ifeq ($(NUQASM2_INCLUDE_PATH),)

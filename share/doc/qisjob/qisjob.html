@@ -472,7 +472,7 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.get_statuses"><code class="name flex">
-<span>def <span class="ident">get_statuses</span></span>(<span>self)</span>
+<span>def <span class="ident">get_statuses</span></span>(<span>self) ‑> list</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return backend status tuple(s)</p></div>
@@ -497,26 +497,26 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
 print csvs and other selected output</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.one_exp"><code class="name flex">
-<span>def <span class="ident">one_exp</span></span>(<span>self, filepath_name=None)</span>
+<span>def <span class="ident">one_exp</span></span>(<span>self, filepath_name: unicode = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load qasm and run the job, print csv and other selected output</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.process_result"><code class="name flex">
-<span>def <span class="ident">process_result</span></span>(<span>self, result_exp, circ, ofh)</span>
+<span>def <span class="ident">process_result</span></span>(<span>self, result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, ofh: _io.TextIOWrapper)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Process the result of one circuit circ
-from result result_exp
+from Result result_exp
 printing to output file handle ofh
-passing original qasm filepath for figure output filename generation</p></div>
+and passing original qasm filepath to figure output filename generation</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qasm_exp"><code class="name flex">
 <span>def <span class="ident">qasm_exp</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Given qasm source, run the job
-and return in a string csv and other selected output</p></div>
+and return in a string csv and other selected output.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qi_account_fu"><code class="name flex">
 <span>def <span class="ident">qi_account_fu</span></span>(<span>self)</span>

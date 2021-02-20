@@ -63,7 +63,6 @@ except ImportError:
     warnings.warn("qiskit-jku-provider not installed.")
 
 
-
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
     """
     Embody preparation, execution, display, and management of Qiskit job or jobs.
@@ -513,7 +512,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         -------
         str
             version string for QisJob.
-
         """
         return self.my_version
 
@@ -872,11 +870,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                                     sorted_keys, sorted_counts)
         return output
 
-    def process_result(self, result_exp, circ, ofh):
+    def process_result(self,
+                       result_exp: Result,
+                       circ: QuantumCircuit,
+                       ofh: TextIOWrapper):
         """Process the result of one circuit circ
-        from result result_exp
+        from Result result_exp
         printing to output file handle ofh
-        passing original qasm filepath for figure output filename generation
+        and passing original qasm filepath to figure output filename generation
         """
         output = self.formulate_result(result_exp, circ, ofh)
 
@@ -891,7 +892,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_histogram:
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-    def one_exp(self, filepath_name=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    def one_exp(self, filepath_name: str=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Load qasm and run the job, print csv and other selected output"""
         circ = None
 
@@ -1184,7 +1185,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         if ofh is not sys.stdout:
             ofh.close()
 
-    def get_statuses(self):
+    def get_statuses(self) -> list:
         """Return backend status tuple(s)"""
         stat = []
         if self.backend:
@@ -1196,7 +1197,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def qasm_exp(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Given qasm source, run the job
-        and return in a string csv and other selected output
+        and return in a string csv and other selected output.
         """
         the_source = self.qasm_src
         self.verbosity("source:\n" + the_source, 1)
