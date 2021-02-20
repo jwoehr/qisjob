@@ -445,11 +445,31 @@ decimals - how many decimal places</p></div>
 <div class="desc"><p>Load Rigetti Forest account appropriately and return provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.formulate_result"><code class="name flex">
-<span>def <span class="ident">formulate_result</span></span>(<span>self, result_exp, circ, ofh)</span>
+<span>def <span class="ident">formulate_result</span></span>(<span>self, result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, ofh: _io.TextIOWrapper) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Forumulate the result of one circuit circ
-from result result_exp returning output as string</p></div>
+<div class="desc"><p>Formulate the result <code>result_exp</code> of one circuit <code>circ</code>
+returning output as string optionally also writing
+this same output to a file.</p>
+<p>Optionally also write the qasm for the circuit if the <code>qasm</code>
+kwarg was <code>True</code> when the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> was instanced. This is written
+to <code>ofh</code> but not added to the method return.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>result_exp</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dict result of an experiment</dd>
+<dt><strong><code>circ</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
+<dd>The circuit for the experiment</dd>
+<dt><strong><code>ofh</code></strong> :&ensp;<code>TextIOWrapper</code></dt>
+<dd>Output file handle to which output is written.
+May be <code>None</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>output</code></strong> :&ensp;<code>list</code></dt>
+<dd>The output list representing the result in csv form.
+It is also written to <code>ofh</code> if that handle is instanced.</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.get_statuses"><code class="name flex">
 <span>def <span class="ident">get_statuses</span></span>(<span>self)</span>

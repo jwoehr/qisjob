@@ -27,6 +27,7 @@ to make it easier to understand what QisJob does in its `do_it()` method.
 
 import argparse
 import datetime
+from io import TextIOWrapper
 import pprint
 import sys
 import warnings
@@ -35,6 +36,7 @@ from qiskit import QuantumCircuit
 from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
+from qiskit.result import Result
 from qiskit.providers.ibmq import IBMQJob
 from qiskit.compiler import transpile
 try:
@@ -812,9 +814,35 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         fig = plot_histogram(outputstate)
         QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
 
-    def formulate_result(self, result_exp, circ, ofh):
-        """Forumulate the result of one circuit circ
-        from result result_exp returning output as string
+    def formulate_result(self,
+                         result_exp: Result,
+                         circ: QuantumCircuit,
+                         ofh: TextIOWrapper) -> list:
+        """
+        Formulate the result `result_exp` of one circuit `circ`
+        returning output as string optionally also writing
+        this same output to a file.
+
+        Optionally also write the qasm for the circuit if the `qasm`
+        kwarg was `True` when the `QisJob` was instanced. This is written
+        to `ofh` but not added to the method return.
+
+        Parameters
+        ----------
+        result_exp : dict
+            The dict result of an experiment
+        circ : QuantumCircuit
+            The circuit for the experiment
+        ofh : TextIOWrapper
+            Output file handle to which output is written.
+            May be `None`.
+
+        Returns
+        -------
+        output : list
+            The output list representing the result in csv form.
+            It is also written to `ofh` if that handle is instanced.
+
         """
         # Write qasm if requested
         if self.qasm and ofh:
