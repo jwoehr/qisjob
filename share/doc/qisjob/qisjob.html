@@ -24,11 +24,6 @@
 <section id="section-intro">
 <p><code>qisjob.pyx</code></p>
 <p>Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.</p>
-<p>The main class which one instances programmatically is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
-<p>Commandline usage is via the <code><a title="qisjob" href="index.html">qisjob</a></code> script which provides a <code>--help</code>
-switch. That script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.
-To understand the documentation, it is recommended the reader execute
-<code>qisjob --help</code> and examine that output.</p>
 <p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
 <p>Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
 <p>Unless required by applicable law or agreed to in writing, software
@@ -36,39 +31,19 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
+<p>The main class which one instances programmatically is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
+<p>Commandline usage is via the <code><a title="qisjob" href="index.html">qisjob</a></code> script which provides a <code>--help</code>
+switch. That script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.
+To understand the documentation, it is recommended the reader execute
+<code>qisjob --help</code> and examine that output.</p>
+<p><em>Note</em> that many essentially private functions are exposed and documented
+to make it easier to understand what QisJob does in its <code>do_it()</code> method.</p>
 </section>
 <section>
 </section>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="qisjob.qisjob.ibmqjob_to_dict"><code class="name flex">
-<span>def <span class="ident">ibmqjob_to_dict</span></span>(<span>...)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Create a dict containing job factors for which there are methods.
-Acts as a <code>to_dict()</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>job</code></strong> :&ensp;<code>IBMQJob</code></dt>
-<dd>
-<p>Return a dict as if <code>qiskit.providers.ibmq.job.IBMQJob</code> had a
-<code>to_dict()</code> method.</p>
-<p>Actually, currently there is such a method, but it is deprectated
-and will be removed in the next release.</p>
-<p>The members should correspond to the methods documented in
-the <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob">Qiskit IBM Quantum Provider documentation</a></p>
-</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>dict</code></dt>
-<dd>Job info from the IBMQ server</dd>
-</dl></div>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -78,11 +53,16 @@ the <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IB
 <span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Embody preparation, execution, display of Qiskit job or jobs</p>
+<div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
+<p>A <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> instance can also fetch information about provider backends.</p>
+<p>A <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> is instanced with all the member variables governing its behavior
+and then the <code>do_it()</code> member function is called. After that, generally,
+the instance is discarded.</p>
 <p>Initialize QisJob member data.</p>
 <p>In the parameter discussion below, actions are described as being
 taken by <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>. Typically, these actions are actually taken when
-the <code>do_it()</code> method is called, not at ctor time.</p>
+the <code>do_it()</code> method is called, not when member variables are instanced
+at <code>__init__</code> time.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>filepaths</code></strong> :&ensp;<code>str</code></dt>
@@ -120,7 +100,8 @@ is ignored.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-b, --backend</code></p>
 <p>Name of chosen backend for given provider.</p>
 <p>If provider is IBMQ and backend_name is <code>None</code>, <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>
-will search for <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html"><code>least_busy()</code></a>.</p>
+will search for
+<a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html"><code>least_busy()</code></a>.</p>
 </dd>
 <dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
 <dd>
@@ -173,33 +154,47 @@ has no credit scheme enabled, <code>max_credits</code> has no effect.</p>
 </dd>
 <dt><strong><code>outfile_path</code></strong> :&ensp;<code>str</code></dt>
 <dd>
-<p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p>The default is stdout.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-o, --outfile</code></p>
+<p>Write CSV output of experiment(s) to the target argument.</p>
 </dd>
 <dt><strong><code>one_job</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-1, --one_job</code></p>
+<p>Run all experiments provided via the <code>filepaths</code> member in one job.</p>
+<p>The default is to submit one job per experiment.</p>
 </dd>
 <dt><strong><code>qasm</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qasm</code></p>
+<p>If <code>True</code>, print each qasm file to stdout before running job.</p>
 </dd>
 <dt><strong><code>use_aer</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-a, --aer</code></p>
+<p>If <code>True</code> use QISKit Aer simulator.</p>
+<p>The default Aer simulator is the Aer statevector simulator.
+In conjunction with this kwarg:</p>
+<pre><code>* Set use_qasm_simulator True for Aer qasm simulator.
+* Set use_unitary_simulator True for Aer unitary simulator.
+</code></pre>
+<p>It is an error to set both <code>qasm_simulator</code> and <code>unitary_simulator</code>
+<code>True</code>.</p>
 </dd>
 <dt><strong><code>use_qasm_simulator</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qasm_simulator</code></p>
+<p>In conjunction with <code>use_aer</code>, use Aer's qasm simulator.</p>
 </dd>
 <dt><strong><code>use_unitary_simulator</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--unitary-simulator</code></p>
+<p>In conjunction with <code>use_aer</code>, use Aer's unitary simulator.</p>
 </dd>
 <dt><strong><code>use_statevector_gpu</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -381,6 +376,29 @@ backend - backend run on</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Convert comma-separated date elements to datetime.</p></div>
+</dd>
+<dt id="qisjob.qisjob.QisJob.ibmqjob_to_dict"><code class="name flex">
+<span>def <span class="ident">ibmqjob_to_dict</span></span>(<span>job: qiskit.providers.ibmq.job.ibmqjob.IBMQJob) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a dict containing job factors for which there are methods.
+Acts as a <code>to_dict()</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>job</code></strong> :&ensp;<code>IBMQJob</code></dt>
+<dd>An instance of <code>qiskit.providers.ibmq.job.IBMQJob</code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>
+<p>Return a dict containing IBMQ Provider Job info as if
+<code>qiskit.providers.ibmq.job.IBMQJob</code> had a <code>to_dict()</code> method.</p>
+<p>Actually, currently there is such a method, but it is deprectated
+and will be removed in the next release.</p>
+<p>The members should correspond to the methods documented in the <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob">Qiskit IBM Quantum Provider documentation</a></p>
+</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.save_fig"><code class="name flex">
 <span>def <span class="ident">save_fig</span></span>(<span>figure, filepath, backend, tail)</span>
@@ -585,11 +603,6 @@ and return in a string csv and other selected output</p></div>
 <li><code><a title="qisjob" href="index.html">qisjob</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="qisjob.qisjob.ibmqjob_to_dict" href="#qisjob.qisjob.ibmqjob_to_dict">ibmqjob_to_dict</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -606,6 +619,7 @@ and return in a string csv and other selected output</p></div>
 <li><code><a title="qisjob.qisjob.QisJob.gen_datetime" href="#qisjob.qisjob.QisJob.gen_datetime">gen_datetime</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.get_statuses" href="#qisjob.qisjob.QisJob.get_statuses">get_statuses</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.ibmq_account_fu" href="#qisjob.qisjob.QisJob.ibmq_account_fu">ibmq_account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.ibmqjob_to_dict" href="#qisjob.qisjob.QisJob.ibmqjob_to_dict">ibmqjob_to_dict</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.jku_account_fu" href="#qisjob.qisjob.QisJob.jku_account_fu">jku_account_fu</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.multi_exps" href="#qisjob.qisjob.QisJob.multi_exps">multi_exps</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.one_exp" href="#qisjob.qisjob.QisJob.one_exp">one_exp</a></code></li>

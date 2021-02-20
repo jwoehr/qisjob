@@ -4,13 +4,6 @@
 
 Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
 
-The main class which one instances programmatically is `QisJob`.
-
-Commandline usage is via the `qisjob` script which provides a `--help`
-switch. That script will be mentioned in the `QisJob` documentation.
-To understand the documentation, it is recommended the reader execute
-`qisjob --help` and examine that output.
-
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
@@ -20,6 +13,16 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+The main class which one instances programmatically is `QisJob`.
+
+Commandline usage is via the `qisjob` script which provides a `--help`
+switch. That script will be mentioned in the `QisJob` documentation.
+To understand the documentation, it is recommended the reader execute
+`qisjob --help` and examine that output.
+
+*Note* that many essentially private functions are exposed and documented
+to make it easier to understand what QisJob does in its `do_it()` method.
 """
 
 import argparse
@@ -58,75 +61,17 @@ except ImportError:
     warnings.warn("qiskit-jku-provider not installed.")
 
 
-def ibmqjob_to_dict(job: IBMQJob) -> dict:
-    """
-    Create a dict containing job factors for which there are methods.
-    Acts as a `to_dict()`.
-
-    Parameters
-    ----------
-    job : IBMQJob
-
-        Return a dict as if `qiskit.providers.ibmq.job.IBMQJob` had a
-        `to_dict()` method.
-
-        Actually, currently there is such a method, but it is deprectated
-        and will be removed in the next release.
-
-        The members should correspond to the methods documented in
-        the [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
-
-
-    Returns
-    -------
-    dict
-        Job info from the IBMQ server
-
-    """
-    my_dict = {}
-    # Return the backend where this job was executed.
-    my_dict["backend"] = job.backend()
-    # Return whether the job has been cancelled.
-    my_dict["cancelled"] = job.cancelled()
-    # Return job creation date, in local time.
-    my_dict["creation_date"] = job.creation_date()
-    # Return whether the job has successfully run.
-    my_dict["done"] = job.done()
-    # Provide details about the reason of failure.
-    my_dict["error_message"] = job.error_message()
-    # Return whether the job is in a final job state.
-    my_dict["in_final_state"] = job.in_final_state()
-    # Return the job ID assigned by the server.
-    my_dict["job_id"] = job.job_id()
-    # Return the name assigned to this job.
-    my_dict["name"] = job.name()
-    # Return the backend properties for this job.
-    my_dict["properties"] = job.properties()
-    # Return the Qobj for this job.
-    my_dict["qobj"] = job.qobj()
-    # Return queue information for this job.
-    my_dict["queue_info"] = job.queue_info()
-    # Return the position of the job in the server queue.
-    my_dict["queue_position"] = job.queue_position()
-    # Return whether the job is actively running.
-    my_dict["result"] = job.result().to_dict()
-    # Return whether the job is actively running.
-    my_dict["running"] = job.running()
-    # Return the scheduling mode the job is in.
-    my_dict["scheduling_mode"] = job.scheduling_mode()
-    # Return the share level of the job.
-    my_dict["share_level"] = job.share_level()
-    # Query the server for the latest job status.
-    my_dict["status"] = job.status()
-    # Return the tags assigned to this job.
-    my_dict["tags"] = job.tags()
-    # Return the date and time information on each step of the job processing.
-    my_dict["time_per_step"] = job.time_per_step()
-    return my_dict
-
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
-    """Embody preparation, execution, display of Qiskit job or jobs"""
+    """
+    Embody preparation, execution, display, and management of Qiskit job or jobs.
+
+    A `QisJob` instance can also fetch information about provider backends.
+
+    A `QisJob` is instanced with all the member variables governing its behavior
+    and then the `do_it()` member function is called. After that, generally,
+    the instance is discarded.
+    """
     def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
                  qasm_src=None,
                  provider_name="IBMQ", backend_name=None,
@@ -205,7 +150,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Name of chosen backend for given provider.
 
             If provider is IBMQ and backend_name is `None`, `QisJob`
-            will search for [`least_busy()`](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html).
+            will search for
+            [`least_busy()`](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.least_busy.html).
 
         token : str
             The default is `None`.
@@ -267,40 +213,57 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             has no credit scheme enabled, `max_credits` has no effect.
 
         outfile_path : str
-            The default is `None`.
+            The default is stdout.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-o, --outfile`
 
+            Write CSV output of experiment(s) to the target argument.
 
         one_job : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-1, --one_job`
 
+            Run all experiments provided via the `filepaths` member in one job.
+
+            The default is to submit one job per experiment.
 
         qasm : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--qasm`
 
+            If `True`, print each qasm file to stdout before running job.
 
         use_aer : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-a, --aer`
 
+            If `True` use QISKit Aer simulator.
+
+            The default Aer simulator is the Aer statevector simulator.
+            In conjunction with this kwarg:
+
+                * Set use_qasm_simulator True for Aer qasm simulator.
+                * Set use_unitary_simulator True for Aer unitary simulator.
+
+            It is an error to set both `qasm_simulator` and `unitary_simulator`
+            `True`.
 
         use_qasm_simulator : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--qasm_simulator`
 
+            In conjunction with `use_aer`, use Aer's qasm simulator.
 
         use_unitary_simulator : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--unitary-simulator`
 
+            In conjunction with `use_aer`, use Aer's unitary simulator.
 
         use_statevector_gpu : bool
             The default is `False`.
@@ -565,7 +528,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             return
 
         if self.provider_name == "IBMQ" and ((self.token and not self.url)
-                                               or (self.url and not self.token)):
+                                             or (self.url and not self.token)):
             raise QisJobArgumentException(
                 'kwargs token and url must be used together for IBMQ provider or not at all'
                 )
@@ -637,7 +600,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 for a_job in be_jobs:
                     if self.provider_name != "QI":
                         if self.provider_name == "IBMQ":
-                            a_job = ibmqjob_to_dict(a_job)
+                            a_job = self.ibmqjob_to_dict(a_job)
                         else:
                             a_job = a_job.to_dict()
                     self._pp.pprint(a_job)
@@ -647,7 +610,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 a_job = self.backend.retrieve_job(self.job_id)
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(a_job)
+                        a_job = self.ibmqjob_to_dict(a_job)
                     else:
                         a_job = a_job.to_dict()
                 return
@@ -991,7 +954,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1015,7 +978,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1146,7 +1109,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1170,7 +1133,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1267,7 +1230,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1291,7 +1254,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = ibmqjob_to_dict(job_exp)
+                        a_job = self.ibmqjob_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1315,6 +1278,71 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             raise QisJobRuntimeException(
                 "Job failure {} {}".format(err, job_exp.error_message())
                 ) from err
+
+    @staticmethod
+    def ibmqjob_to_dict(job: IBMQJob) -> dict:
+        """
+        Create a dict containing job factors for which there are methods.
+        Acts as a `to_dict()`.
+
+        Parameters
+        ----------
+        job : IBMQJob
+            An instance of `qiskit.providers.ibmq.job.IBMQJob`
+
+        Returns
+        -------
+        dict
+            Return a dict containing IBMQ Provider Job info as if
+            `qiskit.providers.ibmq.job.IBMQJob` had a `to_dict()` method.
+
+            Actually, currently there is such a method, but it is deprectated
+            and will be removed in the next release.
+
+            The members should correspond to the methods documented in the [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
+        """  # pylint: disable-msg=line-too-long
+
+        my_dict = {}
+        # Return the backend where this job was executed.
+        my_dict["backend"] = job.backend()
+        # Return whether the job has been cancelled.
+        my_dict["cancelled"] = job.cancelled()
+        # Return job creation date, in local time.
+        my_dict["creation_date"] = job.creation_date()
+        # Return whether the job has successfully run.
+        my_dict["done"] = job.done()
+        # Provide details about the reason of failure.
+        my_dict["error_message"] = job.error_message()
+        # Return whether the job is in a final job state.
+        my_dict["in_final_state"] = job.in_final_state()
+        # Return the job ID assigned by the server.
+        my_dict["job_id"] = job.job_id()
+        # Return the name assigned to this job.
+        my_dict["name"] = job.name()
+        # Return the backend properties for this job.
+        my_dict["properties"] = job.properties()
+        # Return the Qobj for this job.
+        my_dict["qobj"] = job.qobj()
+        # Return queue information for this job.
+        my_dict["queue_info"] = job.queue_info()
+        # Return the position of the job in the server queue.
+        my_dict["queue_position"] = job.queue_position()
+        # Return whether the job is actively running.
+        my_dict["result"] = job.result().to_dict()
+        # Return whether the job is actively running.
+        my_dict["running"] = job.running()
+        # Return the scheduling mode the job is in.
+        my_dict["scheduling_mode"] = job.scheduling_mode()
+        # Return the share level of the job.
+        my_dict["share_level"] = job.share_level()
+        # Query the server for the latest job status.
+        my_dict["status"] = job.status()
+        # Return the tags assigned to this job.
+        my_dict["tags"] = job.tags()
+        # Return the date and time information on each step of the job processing.
+        my_dict["time_per_step"] = job.time_per_step()
+        return my_dict
+
 
 class QisJobException(Exception):
     """Base class for QisJob exceptions"""
@@ -1361,6 +1389,7 @@ class QisJobArgumentException(QisJobException):
         """
         super().__init__(message, 1)
 
+
 class QisJobRuntimeException(QisJobException):
     """
     QisJob encountered an unrecoverable runtime error.
@@ -1381,6 +1410,7 @@ class QisJobRuntimeException(QisJobException):
 
         """
         super().__init__(message, 100)
+
 
 if __name__ == '__main__':
 
