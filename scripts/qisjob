@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """qisjob
-Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
+Load from OpenQASM source or Qiskit `QuantumCircuit` source and run job with
+reporting. Many utility operations to examine provider, backends, and jobs
+are also provided.
 
 The main class which one instances programmatically is `QisJob`.
 
@@ -22,7 +24,7 @@ limitations under the License.
 import argparse
 import sys
 
-EXPLANATION = """Qisjob loads from one or more qasm source files or
+EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
 experiments with reporting in CSV form. Can graph results as histogram or
 state-city plot. Also can give info on backend properties, qiskit version,

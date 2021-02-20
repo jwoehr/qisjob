@@ -23,7 +23,9 @@
 </header>
 <section id="section-intro">
 <p><code>qisjob.pyx</code></p>
-<p>Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.</p>
+<p>Load from OpenQASM source or Qiskit <code>QuantumCircuit</code> source and run job with
+reporting. Many utility operations to examine provider, backends, and jobs
+are also provided.</p>
 <p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
 <p>Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
 <p>Unless required by applicable law or agreed to in writing, software
@@ -289,12 +291,28 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>show_configuration</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-g, --configuration</code></p>
+<p>If <code>True</code>, print configuration for backend specified by -b
+to stdout and return.</p>
+<p>This is the 3rd logical branch in <code>do_it()</code> and takes
+precedence over all other kwargs except</p>
+<pre><code>* show_qisjob_version
+* show_q_version
+</code></pre>
 </dd>
 <dt><strong><code>show_properties</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>p, --properties</code></p>
+<p>If <code>True</code>, print properties for backend specified by -b to stdout
+and return.</p>
+<p>For historical properties, also set the <code>date_time</code> kwarg.</p>
+<p>This is the 4th logical branch in <code>do_it()</code> and takes
+precedence over all other kwargs except</p>
+<pre><code>* show_qisjob_version
+* show_q_version
+* show_configuration
+</code></pre>
 </dd>
 <dt><strong><code>show_statuses</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -304,22 +322,34 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>date_time</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-d, --datetime</code></p>
+<p>Datetime year,month,day[,hour,min,sec] for showing properties
+of a backend in conjunction with the <code>show_properties</code> kwarg.</p>
 </dd>
 <dt><strong><code>print_histogram</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--histogram</code></p>
+<p>If <code>True</code>, write image file of histogram of experiment results
+to the fully qualified filepath specified by the <code>figure_basename</code>
+kwarg.</p>
 </dd>
 <dt><strong><code>print_state_city</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is 0.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--plot_state_city</code></p>
+<p>If non-zero, write image file of state city plot of statevector to
+the number of decimal points indicated by the int value to the fully
+qualified filepath specified by the <code>figure_basename</code> kwarg.</p>
 </dd>
 <dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is 'figout'.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--figure_basename</code></p>
+<p>Basename including path (if any) for figure output, in conjunction
+with kwargs <code>print_histogram</code> and <code>print_state_city</code>. The backend
+name, figure type, and timestamp will be concatenated to form
+the full filename.</p>
 </dd>
 <dt><strong><code>show_q_version</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -341,7 +371,7 @@ emitted to stderr by do_it().</p>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--version</code></p>
-<p>If <code>True</code>, <code>do_it()</code> prints qisjob version to stdout and returns.</p>
+<p>If <code>True</code>, <code>do_it()</code> prints QisJob version to stdout and returns.</p>
 <p>This is the 1st logical branch in <code>do_it()</code> and takes precedence
 over all other kwargs.</p>
 </dd>
@@ -449,7 +479,42 @@ decimals - how many decimal places</p></div>
 <span>def <span class="ident">do_it</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Run the whole program given ctor args from the driver script</p></div>
+<div class="desc"><p>Run the program specified by ctor args/kwargs, usally instanced
+from the driver script. Afterwards, the QisJob instance is usually
+discarded, or the members can be carefully edited and the instance
+reused.</p>
+<p><code>do_it()</code> has many logical branches depending on the request made
+as represented at instancing. Below, in order of branching, are the
+main branches.</p>
+<p>The best information on QisJob logic in <code><a title="qisjob.qisjob.QisJob.do_it" href="#qisjob.qisjob.QisJob.do_it">QisJob.do_it()</a></code> is the source
+code itself; the following is a lite summary.</p>
+<pre><code>1. If show_qisjob_version print QisJob version and return.
+2. If show_q_version Qiskit version shown and returns
+3. If show_configuration print config for -b backend and return.
+4. If show_properties print properties for -b backend and return.
+5. If show_backends print list of backends for provider and return.
+6. If show_statuses print status or statuses for -b backend
+    or if no backend specified, for all backends for provider
+    and return.
+7. If jobs_status print status for n jobs and return.
+8. If job_id then print job dict for that job and return.
+9. If job_result then print job result for that job and return.
+</code></pre>
+<p>Otherwise, proceed to job experiments provided in kwargs as follows:</p>
+<pre><code>1. If qasm_src job and return.
+2. If filepaths read, job, and return.
+3. Else read stdin for qasm src. On EOF, job and return.
+</code></pre>
+<h2 id="returns">Returns</h2>
+<pre><code>None.
+</code></pre>
+<h2 id="raises">Raises</h2>
+<pre><code>QisJobException -+
+                 |
+                 + QisJobArgumentException
+                 |
+                 + QisJobRuntimeException
+</code></pre></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.forest_account_fu"><code class="name flex">
 <span>def <span class="ident">forest_account_fu</span></span>(<span>self)</span>
@@ -488,13 +553,18 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
 <span>def <span class="ident">get_statuses</span></span>(<span>self) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return backend status tuple(s)</p></div>
+<div class="desc"><p>Return backend status tuple(s)</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>Backend status tuple(s)</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.ibmq_account_fu"><code class="name flex">
 <span>def <span class="ident">ibmq_account_fu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load IBMQ account appropriately and return provider</p></div>
+<div class="desc"><p>Load IBMQ account appropriately and instance self with provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.jku_account_fu"><code class="name flex">
 <span>def <span class="ident">jku_account_fu</span></span>(<span>self)</span>

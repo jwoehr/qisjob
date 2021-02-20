@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 """`qisjob.pyx`
 
-Load from qasm source or Qiskit QuantumCircuit source and run job with reporting.
+Load from OpenQASM source or Qiskit `QuantumCircuit` source and run job with
+reporting. Many utility operations to examine provider, backends, and jobs
+are also provided.
 
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 
@@ -377,14 +379,33 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         show_configuration : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-g, --configuration`
 
+            If `True`, print configuration for backend specified by -b
+            to stdout and return.
+
+            This is the 3rd logical branch in `do_it()` and takes
+            precedence over all other kwargs except
+
+                * show_qisjob_version
+                * show_q_version
 
         show_properties : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `p, --properties`
 
+            If `True`, print properties for backend specified by -b to stdout
+            and return.
+
+            For historical properties, also set the `date_time` kwarg.
+
+            This is the 4th logical branch in `do_it()` and takes
+            precedence over all other kwargs except
+
+                * show_qisjob_version
+                * show_q_version
+                * show_configuration
 
         show_statuses : bool
             The default is `False`.
@@ -395,26 +416,38 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         date_time : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-d, --datetime`
 
+            Datetime year,month,day[,hour,min,sec] for showing properties
+            of a backend in conjunction with the `show_properties` kwarg.
 
         print_histogram : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--histogram`
 
+            If `True`, write image file of histogram of experiment results
+            to the fully qualified filepath specified by the `figure_basename`
+            kwarg.
 
         print_state_city : int
             The default is 0.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--plot_state_city`
 
+            If non-zero, write image file of state city plot of statevector to
+            the number of decimal points indicated by the int value to the fully
+            qualified filepath specified by the `figure_basename` kwarg.
 
         figure_basename : str
             The default is 'figout'.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--figure_basename`
 
+            Basename including path (if any) for figure output, in conjunction
+            with kwargs `print_histogram` and `print_state_city`. The backend
+            name, figure type, and timestamp will be concatenated to form
+            the full filename.
 
         show_q_version : bool
             The default is `False`.
@@ -521,7 +554,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def qisjob_version(self) -> str:
         """
 
-
         Return version of QisJob
 
         Returns
@@ -532,8 +564,51 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return self.my_version
 
     def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
-        """Run the whole program given ctor args from the driver script"""
+        """
 
+        Run the program specified by ctor args/kwargs, usally instanced
+        from the driver script. Afterwards, the QisJob instance is usually
+        discarded, or the members can be carefully edited and the instance
+        reused.
+
+        `do_it()` has many logical branches depending on the request made
+        as represented at instancing. Below, in order of branching, are the
+        main branches.
+
+        The best information on QisJob logic in `QisJob.do_it()` is the source
+        code itself; the following is a lite summary.
+
+            1. If show_qisjob_version print QisJob version and return.
+            2. If show_q_version Qiskit version shown and returns
+            3. If show_configuration print config for -b backend and return.
+            4. If show_properties print properties for -b backend and return.
+            5. If show_backends print list of backends for provider and return.
+            6. If show_statuses print status or statuses for -b backend
+                or if no backend specified, for all backends for provider
+                and return.
+            7. If jobs_status print status for n jobs and return.
+            8. If job_id then print job dict for that job and return.
+            9. If job_result then print job result for that job and return.
+
+        Otherwise, proceed to job experiments provided in kwargs as follows:
+
+            1. If qasm_src job and return.
+            2. If filepaths read, job, and return.
+            3. Else read stdin for qasm src. On EOF, job and return.
+
+        Returns
+        -------
+            None.
+
+        Raises
+        ------
+            QisJobException -+
+                             |
+                             + QisJobArgumentException
+                             |
+                             + QisJobRuntimeException
+
+        """
         if self.show_qisjob_version:
             print(self.my_version)
             return
@@ -551,7 +626,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         if self.show_configuration:
             self.account_fu()
-            self.backend = self.provider.get_backend(self.backend_name)
+
+            try:
+                self.backend = self.provider.get_backend(self.backend_name)
+            except QiskitBackendNotFoundError as err:
+                raise QisJobRuntimeException(
+                    "Backend {} not found: {}".format(self.backend_name, err)
+                    ) from err
+
             self._pp.pprint(self.backend.configuration().to_dict())
             return
 
@@ -666,7 +748,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return datetime.datetime(*the_args)
 
     def ibmq_account_fu(self):
-        """Load IBMQ account appropriately and return provider"""
+        """Load IBMQ account appropriately and instance self with provider"""
         if self.token:
             self.provider = IBMQ.enable_account(self.token, url=self.url)
         else:
@@ -1217,7 +1299,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             ofh.close()
 
     def get_statuses(self) -> list:
-        """Return backend status tuple(s)"""
+        """
+        Return backend status tuple(s)
+
+        Returns
+        -------
+        list
+            Backend status tuple(s)
+
+        """
         stat = []
         if self.backend:
             stat.append(self.backend.status().to_dict())
@@ -1474,16 +1564,21 @@ class QisJobRuntimeException(QisJobException):
 
 if __name__ == '__main__':
 
-    EXPLANATION = """Qisjob loads from one or more qasm source files or
+    EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
     from a file containing a Qiskit QuantumCircuit definition in Python and runs as
     experiments with reporting in CSV form. Can graph results as histogram or
     state-city plot. Also can give info on backend properties, qiskit version,
     show circuit transpilation, etc. Can run as multiple jobs or all as one job.
     Exits 0 on success, 1 on argument error, 100 on runtime error.
     Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
-    BSD-3 license -- See LICENSE which you should have received with this code.
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+
+    Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
     """
     PARSER = argparse.ArgumentParser(description=EXPLANATION)
     GROUP = PARSER.add_mutually_exclusive_group()
