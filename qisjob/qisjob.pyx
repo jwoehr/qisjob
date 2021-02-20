@@ -1468,7 +1468,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Return a dict containing IBMQ Provider Job info as if
             `qiskit.providers.ibmq.job.IBMQJob` had a `to_dict()` method.
 
-            Actually, currently there is such a method, but it is deprectated
+            Actually, currently there is such a method, but it is deprecated
             and will be removed in the next release.
 
             The members should correspond to the methods documented in the [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
