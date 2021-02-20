@@ -437,14 +437,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_job_monitor : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--use_job_monitor`
 
+            If `True`, display the periodically updated job monitor output
+            instead of just blocking waiting for job result to return.
 
         job_monitor_filepath : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--job_monitor_filepath`
 
+            In conjunction with `use_job_monitor`, set an output filepath for
+            job monitor output instead of the default outstream of stdout.
 
         """
         self.qasm_src = qasm_src
@@ -874,10 +878,25 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                        result_exp: Result,
                        circ: QuantumCircuit,
                        ofh: TextIOWrapper):
-        """Process the result of one circuit circ
-        from Result result_exp
-        printing to output file handle ofh
-        and passing original qasm filepath to figure output filename generation
+        """
+        Process the result of one `QuantumCircuit circ`
+        experiment from its `Result result_exp`
+        printing to output file handle `ofh`
+        and pass original qasm filepath to figure output.
+
+        Parameters
+        ----------
+        result_exp : Result
+            Result of experiment.
+        circ : QuantumCircuit
+            Circuit subject of experiment.
+        ofh : TextIOWrapper
+            Output file handle, possibly (typically) stdout.
+
+        Returns
+        -------
+        None.
+
         """
         output = self.formulate_result(result_exp, circ, ofh)
 

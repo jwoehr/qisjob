@@ -339,12 +339,16 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>use_job_monitor</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--use_job_monitor</code></p>
+<p>If <code>True</code>, display the periodically updated job monitor output
+instead of just blocking waiting for job result to return.</p>
 </dd>
 <dt><strong><code>job_monitor_filepath</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--job_monitor_filepath</code></p>
+<p>In conjunction with <code>use_job_monitor</code>, set an output filepath for
+job monitor output instead of the default outstream of stdout.</p>
 </dd>
 </dl></div>
 <h3>Static methods</h3>
@@ -506,10 +510,21 @@ print csvs and other selected output</p></div>
 <span>def <span class="ident">process_result</span></span>(<span>self, result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, ofh: _io.TextIOWrapper)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Process the result of one circuit circ
-from Result result_exp
-printing to output file handle ofh
-and passing original qasm filepath to figure output filename generation</p></div>
+<div class="desc"><p>Process the result of one <code>QuantumCircuit circ</code>
+experiment from its <code>Result result_exp</code>
+printing to output file handle <code>ofh</code>
+and pass original qasm filepath to figure output.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>result_exp</code></strong> :&ensp;<code>Result</code></dt>
+<dd>Result of experiment.</dd>
+<dt><strong><code>circ</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
+<dd>Circuit subject of experiment.</dd>
+<dt><strong><code>ofh</code></strong> :&ensp;<code>TextIOWrapper</code></dt>
+<dd>Output file handle, possibly (typically) stdout.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qasm_exp"><code class="name flex">
 <span>def <span class="ident">qasm_exp</span></span>(<span>self)</span>
