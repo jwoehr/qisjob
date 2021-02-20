@@ -758,22 +758,25 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
 
     def qi_account_fu(self):
-        """Load Quantum Inspire account appropriately and return provider"""
+        """Load Quantum Inspire account appropriately and instance self
+        with provider"""
         if self.token:
             qi_enable_account(self.token)
         QI.set_authentication()
         self.provider = QI
 
     def forest_account_fu(self):
-        """Load Rigetti Forest account appropriately and return provider"""
+        """Load Rigetti Forest account appropriately and instance self with
+        provider"""
         self.provider = ForestBackend
 
     def jku_account_fu(self):
-        """Load qiskit-jku-provider"""
+        """Load qiskit-jku-provider and instance self with provider"""
         self.provider = JKUProvider()
 
     def account_fu(self):
-        """Load account from correct API provider"""
+        """Load account from correct API provider and instance self with
+        provider"""
         if self.provider_name == "IBMQ":
             self.ibmq_account_fu()
         elif self.provider_name == "QI":
@@ -784,7 +787,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.jku_account_fu()
 
     def choose_backend(self):  # pylint: disable-msg=too-many-branches, too-many-statements
-        """Return backend selected by user if account will activate and allow."""
+        """Instance self with backend selected by user if account will
+        activate and allow."""
         self.backend = None
 
         # Choose simulator. We defaulted in __init__() to statevector_simulator
@@ -859,8 +863,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.verbosity("Backend is {}".format(str(self.backend)), 1)
 
     @staticmethod
-    def csv_str(description, sort_keys, sort_counts):
-        """Generate a cvs as a string from sorted keys and sorted counts"""
+    def csv_str(description: str, sort_keys: list, sort_counts: list) -> list:
+        """
+        Generate a CSV as a list of two strings from sorted keys
+        and sorted counts.
+
+        Parameters
+        ----------
+        description : str
+            Text description of CSV
+        sort_keys : list
+            List of keys (classical bit patterns)
+        sort_counts : list
+            List of counts
+
+        Returns
+        -------
+        list
+            Two strings representing the key row and count row.
+
+        """
         csv = []
         csv.append(description)
         keys = ""

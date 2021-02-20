@@ -393,10 +393,25 @@ job monitor output instead of the default outstream of stdout.</p>
 <h3>Static methods</h3>
 <dl>
 <dt id="qisjob.qisjob.QisJob.csv_str"><code class="name flex">
-<span>def <span class="ident">csv_str</span></span>(<span>description, sort_keys, sort_counts)</span>
+<span>def <span class="ident">csv_str</span></span>(<span>description: unicode, sort_keys: list, sort_counts: list) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generate a cvs as a string from sorted keys and sorted counts</p></div>
+<div class="desc"><p>Generate a CSV as a list of two strings from sorted keys
+and sorted counts.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text description of CSV</dd>
+<dt><strong><code>sort_keys</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of keys (classical bit patterns)</dd>
+<dt><strong><code>sort_counts</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of counts</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>Two strings representing the key row and count row.</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.do_histogram"><code class="name flex">
 <span>def <span class="ident">do_histogram</span></span>(<span>result_exp, circ, figure_basename, backend)</span>
@@ -467,13 +482,15 @@ decimals - how many decimal places</p></div>
 <span>def <span class="ident">account_fu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load account from correct API provider</p></div>
+<div class="desc"><p>Load account from correct API provider and instance self with
+provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.choose_backend"><code class="name flex">
 <span>def <span class="ident">choose_backend</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return backend selected by user if account will activate and allow.</p></div>
+<div class="desc"><p>Instance self with backend selected by user if account will
+activate and allow.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.do_it"><code class="name flex">
 <span>def <span class="ident">do_it</span></span>(<span>self)</span>
@@ -520,7 +537,8 @@ code itself; the following is a lite summary.</p>
 <span>def <span class="ident">forest_account_fu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load Rigetti Forest account appropriately and return provider</p></div>
+<div class="desc"><p>Load Rigetti Forest account appropriately and instance self with
+provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.formulate_result"><code class="name flex">
 <span>def <span class="ident">formulate_result</span></span>(<span>self, result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, ofh: _io.TextIOWrapper) ‑> list</span>
@@ -570,7 +588,7 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
 <span>def <span class="ident">jku_account_fu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load qiskit-jku-provider</p></div>
+<div class="desc"><p>Load qiskit-jku-provider and instance self with provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.multi_exps"><code class="name flex">
 <span>def <span class="ident">multi_exps</span></span>(<span>self)</span>
@@ -616,7 +634,8 @@ and return in a string csv and other selected output.</p></div>
 <span>def <span class="ident">qi_account_fu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load Quantum Inspire account appropriately and return provider</p></div>
+<div class="desc"><p>Load Quantum Inspire account appropriately and instance self
+with provider</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qisjob_version"><code class="name flex">
 <span>def <span class="ident">qisjob_version</span></span>(<span>self) ‑> unicode</span>
