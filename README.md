@@ -4,6 +4,7 @@
 * [The `qisjob` module](#The-qisjob-module)
 * [The `qisjob` command](#The-qisjob-command)
 * [The `QisJob` class](#The-QisJob-class)
+  * [`QisJob` Documentation](#QisJob-Documentation)
 * [Prerequisites](#Prerequisites)
 * [Install](#Install)
 * [Usage](#Usage)
@@ -55,7 +56,13 @@ The `qisjob` script works by instancing an object of the class `qisjob.QisJob`.
 
 You can use an object instance of the class `qisjob.QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
 
-`qisjob.QisJob` has many args/kwargs. The documentation is installed with the module in `share/doc`.
+### `QisJob` Documentation
+
+The `qisjob.QisJob` object that underlies the `qisjob` script has many args/kwargs.
+
+The documentation is installed with the module in `share/doc`.
+
+You can also read the [QisJob Documentation Online](http://www.softwoehr.com/softwoehr/oss/qisjob/)
 
 ## Prerequisites
 
@@ -97,6 +104,8 @@ Do one of the following in the source directory (preferably in a Python virtual 
 -  `make uninstall_oldname`
 
 ## Usage
+
+The `qisjob` script has helpful help.
 
 ```
 $ qisjob -h
