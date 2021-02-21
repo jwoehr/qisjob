@@ -18,12 +18,21 @@ limitations under the License.
 
 The class to instance in a program is `QisJob`.
 
-The `qisjob` script is for command-line usage.  It provides a `--help`
-switch which will explain all the optional arguments. That script will be
-mentioned in the `QisJob` documentation.
+    1. Instance a `QisJob` with appropriate kwargs.
+    2. Call the member function `do_it()`
 
-To understand the documentation, we recommended that the reader execute
-`qisjob --help` and examine the output.
+    Optionally, wrapper the `do_it()` in try - except.
+
+The `qisjob` script is for command-line usage which instances a `QisJob` and
+calls `do_it()`.  The script provides a `--help` switch which will explain all
+the optional arguments.
+
+The `qisjob` script will be mentioned in the `QisJob` documentation. To better
+understand the documentation, we recommended that the reader execute
+
+    `qisjob --help`
+
+and examine the output.
 
 *Note* that many functions which are really private are exposed and documented
 here to make it easier to understand what QisJob does in its `do_it()` method.
@@ -609,7 +618,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "v3.4 (v3.3+)"
+        self.my_version = "v4.0"
         self.qasm_result = None
         self.result_exp_dict = None
         self.use_job_monitor = use_job_monitor

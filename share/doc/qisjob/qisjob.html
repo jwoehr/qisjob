@@ -34,12 +34,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
 <p>The class to instance in a program is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
-<p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script is for command-line usage.
-It provides a <code>--help</code>
-switch which will explain all the optional arguments. That script will be
-mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.</p>
-<p>To understand the documentation, we recommended that the reader execute
-<code>qisjob --help</code> and examine the output.</p>
+<pre><code>1. Instance a &lt;code&gt;&lt;a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob"&gt;QisJob&lt;/a&gt;&lt;/code&gt; with appropriate kwargs.
+2. Call the member function &lt;code&gt;do\_it()&lt;/code&gt;
+
+Optionally, wrapper the &lt;code&gt;do\_it()&lt;/code&gt; in try - except.
+</code></pre>
+<p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script is for command-line usage which instances a <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> and
+calls <code>do_it()</code>.
+The script provides a <code>--help</code> switch which will explain all
+the optional arguments.</p>
+<p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation. To better
+understand the documentation, we recommended that the reader execute</p>
+<pre><code>`qisjob --help`
+</code></pre>
+<p>and examine the output.</p>
 <p><em>Note</em> that many functions which are really private are exposed and documented
 here to make it easier to understand what QisJob does in its <code>do_it()</code> method.</p>
 </section>
