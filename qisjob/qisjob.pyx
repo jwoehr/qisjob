@@ -16,7 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-The class to instance in a programmatic is `QisJob`.
+The class to instance in a program is `QisJob`.
 
 The `qisjob` script is for command-line usage.  It provides a `--help`
 switch which will explain all the optional arguments. That script will be
@@ -273,44 +273,70 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_statevector_gpu : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--statevector_gpu`
 
+            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
+            `True`, use gpu statevector simulator.
 
         use_unitary_gpu : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--unitary_gpu`
 
+            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
+            `True`, use gpu unitary simulator.
 
         use_density_matrix_gpu : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--density_matrix_gpu`
 
+            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
+            `True`, use gpu density matrix simulator.
 
         use_sim : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: -s, --sim`
 
+            If `True`, use IBMQ online qasm simulator
 
         qvm : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--qvm`
 
+            If `True`. use Forest local qvm simulator described by
+            `backend_name`, generally one of `qasm_simulator` or
+            `statevector_simulator`. Use `qvm_as` to instruct the
+            simulator to emulate a specific Rigetti QPU.
 
         qvm_as : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--qvm_as`
 
+            If `True`. use Forest local qvm simulator to emulate the
+            specific Rigetti QPU described by -b backend. Use --qvm
+            to run the Forest local qvm simulator described by
+            -b backend
 
         qc_name : str
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--qc`
 
+            If set, indicates the name of a variable instanced to a
+            Python-coded `QuantumCircuit` to be run. If set, each and every
+            file (or input from stdin) must contain valid Python code
+            containing such an instance.
+
+            Do not include any Qiskit job control in the file. All that
+            needs to be included or imported is the circuit itself.
+
+            *Warning* QisJob uses Python `exec()` to run your included
+            circuit file. No sanitization is performed. The code will be
+            executed as-is.
 
         xpile : bool
             The default is `False`.
@@ -336,8 +362,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         circuit_layout
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-circuit_layout`
 
+            If `True`, and if `xpile` is also set, write image file of circuit
+            layout to the fully qualified filepath specified by the
+            `figure_basename` kwarg concatenated with an algorithmically added
+            filename extension indicating the type of output and time.
 
         optimization_level : int
             The default is 1.
@@ -442,7 +472,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             If `True`, write image file of histogram of experiment results
             to the fully qualified filepath specified by the `figure_basename`
-            kwarg.
+            kwarg concatenated with an algorithmically added filename extension
+            indicating the type of output and time.
 
         print_state_city : int
             The default is 0.
@@ -451,7 +482,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             If non-zero, write image file of state city plot of statevector to
             the number of decimal points indicated by the int value to the fully
-            qualified filepath specified by the `figure_basename` kwarg.
+            qualified filepath specified by the `figure_basename` kwarg
+            concatenated with an algorithmically added filename extension
+            indicating the type of output and time.
 
         figure_basename : str
             The default is 'figout'.
@@ -1738,7 +1771,7 @@ if __name__ == '__main__':
     PARSER.add_argument("--qasm", action="store_true",
                         help="Print qasm file to stdout before running job")
     PARSER.add_argument("--qc", action="store",
-                        help="Indicate circuit name of python-coded QuantumCircuit")
+                        help="Indicate variable name of Python-coded QuantumCircuit")
     PARSER.add_argument("--status", action="store_true",
                         help="""Print status of chosen --backend to stdout
                         (default all backends)

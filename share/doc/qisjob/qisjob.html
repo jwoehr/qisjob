@@ -33,7 +33,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<p>The class to instance in a programmatic is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
+<p>The class to instance in a program is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
 <p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script is for command-line usage.
 It provides a <code>--help</code>
 switch which will explain all the optional arguments. That script will be
@@ -204,37 +204,61 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>use_statevector_gpu</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--statevector_gpu</code></p>
+<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
+<code>True</code>, use gpu statevector simulator.</p>
 </dd>
 <dt><strong><code>use_unitary_gpu</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--unitary_gpu</code></p>
+<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
+<code>True</code>, use gpu unitary simulator.</p>
 </dd>
 <dt><strong><code>use_density_matrix_gpu</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--density_matrix_gpu</code></p>
+<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
+<code>True</code>, use gpu density matrix simulator.</p>
 </dd>
 <dt><strong><code>use_sim</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: -s, &ndash;sim`</p>
+<p>If <code>True</code>, use IBMQ online qasm simulator</p>
 </dd>
 <dt><strong><code>qvm</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qvm</code></p>
+<p>If <code>True</code>. use Forest local qvm simulator described by
+<code>backend_name</code>, generally one of <code>qasm_simulator</code> or
+<code>statevector_simulator</code>. Use <code>qvm_as</code> to instruct the
+simulator to emulate a specific Rigetti QPU.</p>
 </dd>
 <dt><strong><code>qvm_as</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qvm_as</code></p>
+<p>If <code>True</code>. use Forest local qvm simulator to emulate the
+specific Rigetti QPU described by -b backend. Use &ndash;qvm
+to run the Forest local qvm simulator described by
+-b backend</p>
 </dd>
 <dt><strong><code>qc_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qc</code></p>
+<p>If set, indicates the name of a variable instanced to a
+Python-coded <code>QuantumCircuit</code> to be run. If set, each and every
+file (or input from stdin) must contain valid Python code
+containing such an instance.</p>
+<p>Do not include any Qiskit job control in the file. All that
+needs to be included or imported is the circuit itself.</p>
+<p><em>Warning</em> QisJob uses Python <code>exec()</code> to run your included
+circuit file. No sanitization is performed. The code will be
+executed as-is.</p>
 </dd>
 <dt><strong><code>xpile</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -258,6 +282,10 @@ original circuit.</p>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p>If <code>True</code>, write image file of circuit layout to the fully
+qualified filepath specified by the <code>figure_basename</code> kwarg
+concatenated with an algorithmically added filename extension
+indicating the type of output and time.</p>
 </dd>
 <dt><strong><code>optimization_level</code></strong> :&ensp;<code>int</code></dt>
 <dd>
@@ -347,7 +375,8 @@ of a backend in conjunction with the <code>show_properties</code> kwarg.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--histogram</code></p>
 <p>If <code>True</code>, write image file of histogram of experiment results
 to the fully qualified filepath specified by the <code>figure_basename</code>
-kwarg.</p>
+kwarg concatenated with an algorithmically added filename extension
+indicating the type of output and time.</p>
 </dd>
 <dt><strong><code>print_state_city</code></strong> :&ensp;<code>int</code></dt>
 <dd>
@@ -355,7 +384,9 @@ kwarg.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--plot_state_city</code></p>
 <p>If non-zero, write image file of state city plot of statevector to
 the number of decimal points indicated by the int value to the fully
-qualified filepath specified by the <code>figure_basename</code> kwarg.</p>
+qualified filepath specified by the <code>figure_basename</code> kwarg
+concatenated with an algorithmically added filename extension
+indicating the type of output and time.</p>
 </dd>
 <dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
 <dd>
