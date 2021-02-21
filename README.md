@@ -108,7 +108,7 @@ Do one of the following in the source directory (preferably in a Python virtual 
 The `qisjob` script has helpful help.
 
 ```
-$$ qisjob -h
+$ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version]
               [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
               [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
@@ -182,7 +182,7 @@ optional arguments:
   --figure_basename FIGURE_BASENAME
                         basename including path (if any) for figure output, default='figout', backend name, figure type, and timestamp will be appended
   --qasm                Print qasm file to stdout before running job
-  --qc QC               Indicate circuit name of python-coded QuantumCircuit
+  --qc QC               Indicate variable name of Python-coded QuantumCircuit
   --status              Print status of chosen --backend to stdout (default all backends) of --api_provider (default IBMQ) and exit 0
   --token TOKEN         Use this token
   --url URL             Use this url
