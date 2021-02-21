@@ -975,7 +975,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         Returns
         -------
-        output : list
+        list
             The output list representing the result in csv form.
             It is also written to `ofh` if that handle is instanced.
 
@@ -1544,9 +1544,9 @@ class QisJobException(Exception):
         Parameters
         ----------
         message : str
-            DESCRIPTION.
+            programmer-supplied message
         retval : int
-            DESCRIPTION.
+            suggested return val for an encapsulating function or script
 
         Returns
         -------
@@ -1570,7 +1570,7 @@ class QisJobArgumentException(QisJobException):
         Parameters
         ----------
         message : str
-            DESCRIPTION.
+            programmer-supplied message
 
         Returns
         -------
@@ -1592,7 +1592,7 @@ class QisJobRuntimeException(QisJobException):
         Parameters
         ----------
         message : str
-            DESCRIPTION.
+            programmer-supplied message
 
         Returns
         -------
