@@ -544,13 +544,9 @@ code itself; the following is a lite summary.</p>
                  |
                  + QisJobRuntimeException
 </code></pre>
-<dl>
-<dt><strong><code>_Note_</code></strong> :&ensp;<code>Applications should wrap </code>do_it()<code>in try-except</code>QiskitError``</dt>
-<dd>&nbsp;</dd>
-<dt><code>as miscellaneous instances can be raised in ways the code does not</code></dt>
-<dd>&nbsp;</dd>
-</dl>
-<p>anticipate. See the <code><a title="qisjob" href="index.html">qisjob</a></code> script for an example of this pattern.</p></div>
+<p><em>Note</em>: Applications should wrap <code>do_it()</code> in try-except <code>QiskitError</code> as
+miscellaneous instances can be raised in ways the code does not anticipate.</p>
+<p>See the <code><a title="qisjob" href="index.html">qisjob</a></code> script for an example of this pattern.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.forest_account_fu"><code class="name flex">
 <span>def <span class="ident">forest_account_fu</span></span>(<span>self)</span>

@@ -620,9 +620,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                              |
                              + QisJobRuntimeException
 
-        _Note_: Applications should wrap `do_it()` in try-except `QiskitError`
-        as miscellaneous instances can be raised in ways the code does not
-        anticipate. See the `qisjob` script for an example of this pattern.
+
+        *Note*: Applications should wrap `do_it()` in try-except `QiskitError` as
+        miscellaneous instances can be raised in ways the code does not anticipate.
+
+        See the `qisjob` script for an example of this pattern.
+
         """
         if self.show_qisjob_version:
             print(self.my_version)
