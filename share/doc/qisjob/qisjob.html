@@ -236,12 +236,20 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>xpile</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-x, --transpile</code></p>
+<p>If <code>True</code>, test-transpile the circuit for chosen backend into a
+new circuit and print the new circuit to stdout before jobbing the
+original circuit.</p>
+<p>The level of transpilation is that indicated by the kwarg
+<code>optimization_level</code>.</p>
 </dd>
 <dt><strong><code>showsched</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--showsched</code></p>
+<p>If <code>True</code>, in conjuction with <code>xpile</code>, show schedule for the
+test- transpiled circuit to stdout before jobbing the
+original circuit.</p>
 </dd>
 <dt><strong><code>circuit_layout</code></strong></dt>
 <dd>
@@ -251,7 +259,11 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>optimization_level</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is 1.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--optimization_level</code></p>
+<p>Set optimization level for transpilation before run.
+Valid values are 0-3, default is 1.</p>
+<p>This affects not only the actual circuit, but alsothe test
+transpile, if the latter is invoked by the <code>xpile</code> kwarg.</p>
 </dd>
 <dt><strong><code>print_job</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -452,7 +464,7 @@ Acts as a <code>to_dict()</code>.</p>
 <dd>
 <p>Return a dict containing IBMQ Provider Job info as if
 <code>qiskit.providers.ibmq.job.IBMQJob</code> had a <code>to_dict()</code> method.</p>
-<p>Actually, currently there is such a method, but it is deprectated
+<p>Actually, currently there is such a method, but it is deprecated
 and will be removed in the next release.</p>
 <p>The members should correspond to the methods documented in the <a href="https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob">Qiskit IBM Quantum Provider documentation</a></p>
 </dd>
@@ -531,7 +543,14 @@ code itself; the following is a lite summary.</p>
                  + QisJobArgumentException
                  |
                  + QisJobRuntimeException
-</code></pre></div>
+</code></pre>
+<dl>
+<dt><strong><code>_Note_</code></strong> :&ensp;<code>Applications should wrap </code>do_it()<code>in try-except</code>QiskitError``</dt>
+<dd>&nbsp;</dd>
+<dt><code>as miscellaneous instances can be raised in ways the code does not</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>anticipate. See the <code><a title="qisjob" href="index.html">qisjob</a></code> script for an example of this pattern.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.forest_account_fu"><code class="name flex">
 <span>def <span class="ident">forest_account_fu</span></span>(<span>self)</span>

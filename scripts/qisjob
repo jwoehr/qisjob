@@ -23,13 +23,14 @@ limitations under the License.
 
 import argparse
 import sys
+from qiskit import QiskitError
 
 EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
 experiments with reporting in CSV form. Can graph results as histogram or
 state-city plot. Also can give info on backend properties, qiskit version,
 show circuit transpilation, etc. Can run as multiple jobs or all as one job.
-Exits 0 on success, 1 on argument error, 100 on runtime error.
+Exits 0 on success, 1 on argument error, 100 on runtime error, 200 on QiskitError.
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
@@ -267,4 +268,8 @@ try:
 except QisJobException as ex:
     print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
     EXITVAL = ex.retval
+except QiskitError as qex:
+    print("Miscellaneous QiskitError encountered:")
+    print(qex)
+    EXITVAL = 200
 sys.exit(EXITVAL)

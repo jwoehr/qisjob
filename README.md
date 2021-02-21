@@ -108,34 +108,20 @@ Do one of the following in the source directory (preferably in a Python virtual 
 The `qisjob` script has helpful help.
 
 ```
-$ qisjob -h
-usage: qisjob [-h] [-i | -s | -a | -b BACKEND]
-              [--qasm_simulator | --unitary_simulator]
-              [--statevector_gpu | --unitary_gpu | --density_matrix_gpu]
-              [--version] [--api_provider API_PROVIDER] [--qvm] [--qvm_as]
-              [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j]
-              [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
-              [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version]
-              [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout]
-              [--optimization_level OPTIMIZATION_LEVEL] [--histogram]
-              [--plot_state_city PLOT_STATE_CITY]
-              [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
-              [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
+$$ qisjob -h
+usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version]
+              [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
+              [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
+              [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
               [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
               [filepath [filepath ...]]
 
-Qisjob loads from one or more qasm source files or from a file containing a
-Qiskit QuantumCircuit definition in Python and runs as experiments with
-reporting in CSV form. Can graph results as histogram or state-city plot. Also
-can give info on backend properties, qiskit version, show circuit
-transpilation, etc. Can run as multiple jobs or all as one job. Exits 0 on
-success, 1 on argument error, 100 on runtime error. Copyright 2019 Jack Woehr
-jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. Apache License, Version
-2.0 -- See LICENSE which you should have received with this code. Unless
-required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied. See the License for the
-specific language governing permissions and limitations under the License.
+Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with reporting in CSV form. Can
+graph results as histogram or state-city plot. Also can give info on backend properties, qiskit version, show circuit transpilation, etc. Can run as multiple jobs or all as one job.
+Exits 0 on success, 1 on argument error, 100 on runtime error, 200 on QiskitError. Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051. Apache License,
+Version 2.0 -- See LICENSE which you should have received with this code. Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+limitations under the License.
 
 positional arguments:
   filepath              Filepath(s) to 0 or more .qasm files, default is stdin
@@ -144,96 +130,65 @@ optional arguments:
   -h, --help            show this help message and exit
   -i, --ibmq            Use best genuine IBMQ processor (default)
   -s, --sim             Use IBMQ qasm simulator
-  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector
-                        simulator. Use -a --qasm-simulator to get Aer qasm
-                        simulator. Use -a --unitary-simulator to get Aer
+  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector simulator. Use -a --qasm-simulator to get Aer qasm simulator. Use -a --unitary-simulator to get Aer
                         unitary simulator.
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
-  --qasm_simulator      With -a use qasm simulator instead of statevector
-                        simulator
-  --unitary_simulator   With -a use unitary simulator instead of statevector
-                        simulator
-  --statevector_gpu     With -a and --qasm_simulator use gpu statevector
-                        simulator
+  --qasm_simulator      With -a use qasm simulator instead of statevector simulator
+  --unitary_simulator   With -a use unitary simulator instead of statevector simulator
+  --statevector_gpu     With -a and --qasm_simulator use gpu statevector simulator
   --unitary_gpu         With -a and --qasm_simulator use gpu unitary simulator
-  --density_matrix_gpu  With -a and --qasm_simulator use gpu density matrix
-                        simulator
+  --density_matrix_gpu  With -a and --qasm_simulator use gpu density matrix simulator
   --version             Announce QisJob version
   --api_provider API_PROVIDER
-                        Backend remote api provider, currently supported are
-                        [IBMQ | QI | Forest | JKU]. Default is IBMQ.
-  --qvm                 Use Forest local qvm simulator described by -b
-                        backend, generally one of qasm_simulator or
-                        statevector_simulator. Use --qvm_as to instruct the
-                        simulator to emulate a specific Rigetti QPU
-  --qvm_as              Use Forest local qvm simulator to emulate the specific
-                        Rigetti QPU described by -b backend. Use --qvm to run
-                        the Forest local qvm simulator described by -b
+                        Backend remote api provider, currently supported are [IBMQ | QI | Forest | JKU]. Default is IBMQ.
+  --qvm                 Use Forest local qvm simulator described by -b backend, generally one of qasm_simulator or statevector_simulator. Use --qvm_as to instruct the simulator to
+                        emulate a specific Rigetti QPU
+  --qvm_as              Use Forest local qvm simulator to emulate the specific Rigetti QPU described by -b backend. Use --qvm to run the Forest local qvm simulator described by -b
                         backend.
   --backends            Print list of backends to stdout and exit 0
   -1, --one_job         Run all experiments as one job
   -c CREDITS, --credits CREDITS
                         Max credits to expend on each job, default is 3
   -d DATETIME, --datetime DATETIME
-                        Datetime 'year,month,day[,hour,min,sec]' for -p,--
-                        properties
-  -g, --configuration   Print configuration for backend specified by -b to
-                        stdout and exit 0
+                        Datetime 'year,month,day[,hour,min,sec]' for -p,--properties
+  -g, --configuration   Print configuration for backend specified by -b to stdout and exit 0
   -j, --job             Print your job's dictionary
-  --jobs JOBS           Print JOBS number of jobs and status for -b backend
-                        and exit 0
+  --jobs JOBS           Print JOBS number of jobs and status for -b backend and exit 0
   --job_id JOB_ID       Print job number JOB_ID for -b backend and exit 0
   --job_result JOB_RESULT
-                        Print result of job number JOB_RESULT for -b backend
-                        and exit 0
+                        Print result of job number JOB_RESULT for -b backend and exit 0
   -m, --memory          Print individual results of multishot experiment
   -n NUQASM2, --nuqasm2 NUQASM2
-                        Use nuqasm2 to translate OPENQASM2 source, providing
-                        include path for any include directives
+                        Use nuqasm2 to translate OPENQASM2 source, providing include path for any include directives
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout
-  -p, --properties      Print properties for backend specified by -b to stdout
-                        and exit 0
+  -p, --properties      Print properties for backend specified by -b to stdout and exit 0
   -q QUBITS, --qubits QUBITS
                         Number of qubits for the experiment, default is 5
   --qiskit_version      Print Qiskit version and exit 0
   -r, --result          Print job result
   -t SHOTS, --shots SHOTS
-                        Number of shots for the experiment, default 1024, max
-                        8192
+                        Number of shots for the experiment, default 1024, max 8192
   -v, --verbose         Increase verbosity each -v up to 3
-  -x, --transpile       Print circuit transpiled for chosen backend to stdout
-                        before running job
-  --showsched           In conjuction with -x, show schedule for transpiled
-                        circuit for chosen backend to stdout before running
-                        job
-  --circuit_layout      With -x, write image file of circuit layout after
-                        transpile (see --figure_basename)
+  -x, --transpile       Print circuit transpiled for chosen backend to stdout before running job
+  --showsched           In conjuction with -x, show schedule for transpiled circuit for chosen backend to stdout before running job
+  --circuit_layout      With -x, write image file of circuit layout after transpile (see --figure_basename)
   --optimization_level OPTIMIZATION_LEVEL
-                        Set optimization level for transpilation before run,
-                        valid values 0-3, default is 1
-  --histogram           Write image file of histogram of experiment results
-                        (see --figure_basename)
+                        Set optimization level for transpilation before run, valid values 0-3, default is 1
+  --histogram           Write image file of histogram of experiment results (see --figure_basename)
   --plot_state_city PLOT_STATE_CITY
-                        Write image file of state city plot of statevector to
-                        PLOT_STATE_CITY decimal points (see --figure_basename)
+                        Write image file of state city plot of statevector to PLOT_STATE_CITY decimal points (see --figure_basename)
   --figure_basename FIGURE_BASENAME
-                        basename including path (if any) for figure output,
-                        default='figout', backend name, figure type, and
-                        timestamp will be appended
+                        basename including path (if any) for figure output, default='figout', backend name, figure type, and timestamp will be appended
   --qasm                Print qasm file to stdout before running job
   --qc QC               Indicate circuit name of python-coded QuantumCircuit
-  --status              Print status of chosen --backend to stdout (default
-                        all backends) of --api_provider (default IBMQ) and
-                        exit 0
+  --status              Print status of chosen --backend to stdout (default all backends) of --api_provider (default IBMQ) and exit 0
   --token TOKEN         Use this token
   --url URL             Use this url
-  --use_job_monitor     Display job monitor instead of just waiting for job
-                        result
+  --use_job_monitor     Display job monitor instead of just waiting for job result
   --job_monitor_filepath JOB_MONITOR_FILEPATH
-                        Filepath for Job Monitor output if Job Monitor
-                        requested by --use_job_monitor, default is sys.stdout
+                        Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
 ```
 

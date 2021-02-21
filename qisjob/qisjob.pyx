@@ -313,14 +313,23 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         xpile : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-x, --transpile`
 
+            If `True`, test-transpile the circuit for chosen backend into a
+            new circuit and print the new circuit to stdout before jobbing the
+            original circuit.
+
+            The level of transpilation is that indicated by the kwarg
+            `optimization_level`.
 
         showsched : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--showsched`
 
+            If `True`, in conjuction with `xpile`, show schedule for the
+            test- transpiled circuit to stdout before jobbing the
+            original circuit.
 
         circuit_layout
             The default is `False`.
@@ -331,20 +340,23 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         optimization_level : int
             The default is 1.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--optimization_level`
 
+            Set optimization level for transpilation before run.
+            Valid values are 0-3, default is 1.
+
+            This affects not only the actual circuit, but alsothe test
+            transpile, if the latter is invoked by the `xpile` kwarg.
 
         print_job : bool
             The default is `False`.
 
             _Corresponding `qisjob` script argument_: _none_
 
-
         memory : bool
             The default is `False`.
 
             _Corresponding `qisjob` script argument_: _none_
-
 
         show_result : bool
             The default is `False`.
@@ -608,6 +620,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                              |
                              + QisJobRuntimeException
 
+        _Note_: Applications should wrap `do_it()` in try-except `QiskitError`
+        as miscellaneous instances can be raised in ways the code does not
+        anticipate. See the `qisjob` script for an example of this pattern.
         """
         if self.show_qisjob_version:
             print(self.my_version)
@@ -1591,7 +1606,7 @@ if __name__ == '__main__':
     experiments with reporting in CSV form. Can graph results as histogram or
     state-city plot. Also can give info on backend properties, qiskit version,
     show circuit transpilation, etc. Can run as multiple jobs or all as one job.
-    Exits 0 on success, 1 on argument error, 100 on runtime error.
+    Exits 0 on success, 1 on argument error, 100 on runtime error, 200 on QiskitError.
     Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
 
     Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
@@ -1827,4 +1842,7 @@ if __name__ == '__main__':
     except QisJobException as ex:
         print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
         EXITVAL = ex.retval
+    except QiskitError as qex:
+        print(qex)
+        EXITVAL = 200
     sys.exit(EXITVAL)
