@@ -823,8 +823,22 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             print(printable)
 
     @staticmethod
-    def gen_datetime(datetime_comma_string):
-        """Convert comma-separated date elements to datetime."""
+    def gen_datetime(datetime_comma_string: str) -> datetime:
+        """
+        Convert comma-separated date elements to datetime.
+
+        Parameters
+        ----------
+        datetime_comma_string : str
+            String of comma-separated date elements
+            year,month,day[,hour,min,sec]
+
+        Returns
+        -------
+        datetime
+            Python datetime object
+
+        """
         the_args = []
         the_split = datetime_comma_string.split(',')
         for i in the_split:

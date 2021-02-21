@@ -485,10 +485,21 @@ backend - backend run on</p></div>
 <div class="desc"><p>Create name consisting of filepath, backend and timestamp</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.gen_datetime"><code class="name flex">
-<span>def <span class="ident">gen_datetime</span></span>(<span>datetime_comma_string)</span>
+<span>def <span class="ident">gen_datetime</span></span>(<span>datetime_comma_string: unicode) ‑> <module 'datetime' from '/usr/lib/python3.8/datetime.py'></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Convert comma-separated date elements to datetime.</p></div>
+<div class="desc"><p>Convert comma-separated date elements to datetime.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>datetime_comma_string</code></strong> :&ensp;<code>str</code></dt>
+<dd>String of comma-separated date elements
+year,month,day[,hour,min,sec]</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>datetime</code></dt>
+<dd>Python datetime object</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.ibmqjob_to_dict"><code class="name flex">
 <span>def <span class="ident">ibmqjob_to_dict</span></span>(<span>job: qiskit.providers.ibmq.job.ibmqjob.IBMQJob) ‑> dict</span>
