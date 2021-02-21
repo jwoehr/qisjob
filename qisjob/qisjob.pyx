@@ -51,6 +51,7 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.result import Result
+from qiskit.providers import BaseBackend
 from qiskit.providers.ibmq import IBMQJob
 from qiskit.compiler import transpile
 try:
@@ -1027,12 +1028,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         QisJob.save_fig(fig, figure_basename, backend, 'state_city.png')
 
     @staticmethod
-    def do_histogram(result_exp, circ, figure_basename, backend):
-        """Plot histogram style the counts of
-        result_exp - experiment result
-        circ - the circuit
-        figure_basename - base file name of output
-        backend - backend run on
+    def do_histogram(result_exp: Result, circ: QuantumCircuit, figure_basename: str, backend: BaseBackend):
+        """
+        Plot histogram to file. Filename algorithmically generated from
+        figure_basename plus concatenated type and timestamp.
+
+        Parameters
+        ----------
+        result_exp : Result
+            experiment result
+        circ : QuantumCircuit
+            the circuit
+        figure_basename : str
+            base file name of output.
+        backend : BaseBackend
+            backend experiment was run on.
+
+        Returns
+        -------
+        None.
+
         """
         from qiskit.tools.visualization import plot_histogram  # pylint: disable-msg=import-outside-toplevel, line-too-long
         outputstate = result_exp.get_counts(circ)

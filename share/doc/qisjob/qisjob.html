@@ -477,14 +477,24 @@ and sorted counts.</p>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.do_histogram"><code class="name flex">
-<span>def <span class="ident">do_histogram</span></span>(<span>result_exp, circ, figure_basename, backend)</span>
+<span>def <span class="ident">do_histogram</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.basebackend.BaseBackend)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Plot histogram style the counts of
-result_exp - experiment result
-circ - the circuit
-figure_basename - base file name of output
-backend - backend run on</p></div>
+<div class="desc"><p>Plot histogram to file. Filename algorithmically generated from
+figure_basename plus concatenated type and timestamp.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>result_exp</code></strong> :&ensp;<code>Result</code></dt>
+<dd>experiment result</dd>
+<dt><strong><code>circ</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
+<dd>the circuit</dd>
+<dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
+<dd>base file name of output.</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dd>backend experiment was run on.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.fig_name_str"><code class="name flex">
 <span>def <span class="ident">fig_name_str</span></span>(<span>filepath, backend)</span>
