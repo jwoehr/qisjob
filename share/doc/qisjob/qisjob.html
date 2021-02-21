@@ -659,7 +659,21 @@ print csvs and other selected output</p></div>
 <span>def <span class="ident">one_exp</span></span>(<span>self, filepath_name: unicode = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load qasm and run the job, print csv and other selected output</p></div>
+<div class="desc"><p>Load experiment source (OpenQASM or Python QuantumCircuit source) and
+run the job. print csv and other selected output.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filepath_name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Filepath to experiment source. The default is None.
+If None, read from stdin.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="qisjob.qisjob.QisJobRuntimeException" href="#qisjob.qisjob.QisJobRuntimeException">QisJobRuntimeException</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.process_result"><code class="name flex">
 <span>def <span class="ident">process_result</span></span>(<span>self, result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, ofh: _io.TextIOWrapper)</span>
@@ -707,10 +721,19 @@ with provider</p></div>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.verbosity"><code class="name flex">
-<span>def <span class="ident">verbosity</span></span>(<span>self, text, count)</span>
+<span>def <span class="ident">verbosity</span></span>(<span>self, printable: Any, count: int)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Print text if count exceeds verbose level</p></div>
+<div class="desc"><p>Print some printable item to stdout if count exceeds verbose level.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>printable</code></strong> :&ensp;<code>str</code></dt>
+<dd>Item to print.</dd>
+<dt><strong><code>count</code></strong> :&ensp;<code>int</code></dt>
+<dd>Level that self.verbose must equal or exceed to print message.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
 </dd>
 </dl>
 </dd>

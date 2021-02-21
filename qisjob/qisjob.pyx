@@ -34,6 +34,7 @@ import datetime
 from io import TextIOWrapper
 import pprint
 import sys
+from typing import Any
 import warnings
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
@@ -436,10 +437,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             The default is `False`.
 
             _Corresponding `qisjob` script argument_: `--backends`
-            
+
             If `True`, print list of backends for chosen provider to stdout and
             return.
-            
+
             See `do_it()` for the precedence of this kwarg.
 
         show_configuration : bool
@@ -802,10 +803,24 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         for f_path in self.filepaths:
                             self.one_exp(f_path)
 
-    def verbosity(self, text, count):
-        """Print text if count exceeds verbose level"""
+    def verbosity(self, printable: Any, count: int):
+        """
+        Print some printable item to stdout if count exceeds verbose level.
+
+        Parameters
+        ----------
+        printable : str
+            Item to print.
+        count : int
+            Level that self.verbose must equal or exceed to print message.
+
+        Returns
+        -------
+        None.
+
+        """
         if self.verbose >= count:
-            print(text)
+            print(printable)
 
     @staticmethod
     def gen_datetime(datetime_comma_string):
@@ -1097,7 +1112,25 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
     def one_exp(self, filepath_name: str=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
-        """Load qasm and run the job, print csv and other selected output"""
+        """
+        Load experiment source (OpenQASM or Python QuantumCircuit source) and
+        run the job. print csv and other selected output.
+
+        Parameters
+        ----------
+        filepath_name : str, optional
+            Filepath to experiment source. The default is None.
+            If None, read from stdin.
+
+        Returns
+        -------
+        None.
+
+        Raises
+        ------
+        QisJobRuntimeException
+        """
+
         circ = None
 
         if filepath_name is None:
