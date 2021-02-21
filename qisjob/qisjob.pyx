@@ -18,10 +18,10 @@ limitations under the License.
 
 The class to instance in a program is `QisJob`.
 
-    1. Instance a `QisJob` with appropriate kwargs.
-    2. Call the member function `do_it()`
+    1. Instance a QisJob with appropriate kwargs.
+    2. Call the member function do_it()
 
-    Optionally, wrapper the `do_it()` in try - except.
+    Optionally, wrapper the do_it() in try - except.
 
 The `qisjob` script is for command-line usage which instances a `QisJob` and
 calls `do_it()`.  The script provides a `--help` switch which will explain all
@@ -30,7 +30,7 @@ the optional arguments.
 The `qisjob` script will be mentioned in the `QisJob` documentation. To better
 understand the documentation, we recommended that the reader execute
 
-    `qisjob --help`
+    qisjob --help
 
 and examine the output.
 
@@ -45,6 +45,7 @@ import pprint
 import sys
 from typing import Any
 import warnings
+from matplotlib.figure import Figure
 from qiskit import IBMQ
 from qiskit import QuantumCircuit
 from qiskit import execute
@@ -308,7 +309,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_sim : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: -s, --sim`
+            _Corresponding `qisjob` script argument_: `-s, --sim`
 
             If `True`, use IBMQ online qasm simulator
 
@@ -833,7 +834,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             print(printable)
 
     @staticmethod
-    def gen_datetime(datetime_comma_string: str) -> datetime:
+    def gen_datetime(datetime_comma_string: str) -> datetime.datetime:
         """
         Convert comma-separated date elements to datetime.
 
@@ -845,7 +846,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         Returns
         -------
-        datetime
+        datetime.datetime
             Python datetime object
 
         """
@@ -1004,23 +1005,82 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return csv
 
     @staticmethod
-    def fig_name_str(filepath, backend):
-        """Create name consisting of filepath, backend and timestamp"""
+    def fig_name_str(filepath: str, backend: BaseBackend) -> str:
+        """
+        Create filename consisting of filepath, backend and timestamp.
+
+        Parameters
+        ----------
+        filepath : str
+            base filepath fqp.
+        backend : BaseBackend
+            backend ostensibly one that experiment was run on.
+
+        Returns
+        -------
+        str
+            the algorithmically generated filename.
+
+        """
         return filepath + '_' + str(backend) + '_' + datetime.datetime.now().isoformat()
 
     @staticmethod
-    def save_fig(figure, filepath, backend, tail):
-        """Write a figure to an algorithmically named destination file"""
+    def save_fig(figure: Figure, filepath: str, backend: BaseBackend, tail: str):
+        """
+        Write a figure to an algorithmically named destination file
+
+        Parameters
+        ----------
+        figure : Figure
+            The matplotlib Figure.
+        filepath : str
+            base filepath fqp
+        backend : BaseBackend
+            Ostensibly the Backend the experiment was run on.
+        tail : str
+            uniquifying string to append to filename.
+
+        Returns
+        -------
+        None.
+
+        """
         figure.savefig(QisJob.fig_name_str(filepath, backend) + '.' + tail)
 
     @staticmethod
-    def state_city_plot(result_exp, circ, figure_basename, backend, decimals=3):
-        """Plot state_city style the output state
+    def state_city_plot(result_exp: Result,
+                        circ: QuantumCircuit,
+                        figure_basename: str,
+                        backend: BaseBackend,
+                        decimals: int=3):
+        """
+        Plot state_city-style the output state to file. Filename algorithmically
+        generated from figure_basename plus concatenated type and timestamp.
+
         result_exp - experiment result
         circ - the circuit
         figure_basename - base file name of output
         backend - backend run on
         decimals - how many decimal places
+
+
+        Parameters
+        ----------
+        result_exp : Result
+            experiment result.
+        circ : QuantumCircuit
+            DESCRIPTION.
+        figure_basename : str
+            the circuit.
+        backend : BaseBackend
+            backend run on.
+        decimals : int, optional
+            how many decimal places. The default is 3.
+
+        Returns
+        -------
+        None.
+
         """
         from qiskit.visualization import plot_state_city  # pylint: disable-msg=import-outside-toplevel, line-too-long
         outputstate = result_exp.get_statevector(circ, decimals)
@@ -1028,10 +1088,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         QisJob.save_fig(fig, figure_basename, backend, 'state_city.png')
 
     @staticmethod
-    def do_histogram(result_exp: Result, circ: QuantumCircuit, figure_basename: str, backend: BaseBackend):
+    def do_histogram(result_exp: Result,
+                     circ: QuantumCircuit,
+                     figure_basename: str,
+                     backend: BaseBackend):
         """
-        Plot histogram to file. Filename algorithmically generated from
-        figure_basename plus concatenated type and timestamp.
+        Plot histogram-style the result to file. Filename algorithmically
+        generated from figure_basename plus concatenated type and timestamp.
 
         Parameters
         ----------

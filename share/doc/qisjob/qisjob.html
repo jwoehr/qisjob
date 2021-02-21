@@ -34,10 +34,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
 <p>The class to instance in a program is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
-<pre><code>1. Instance a &lt;code&gt;&lt;a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob"&gt;QisJob&lt;/a&gt;&lt;/code&gt; with appropriate kwargs.
-2. Call the member function &lt;code&gt;do\_it()&lt;/code&gt;
+<pre><code>1. Instance a QisJob with appropriate kwargs.
+2. Call the member function do_it()
 
-Optionally, wrapper the &lt;code&gt;do\_it()&lt;/code&gt; in try - except.
+Optionally, wrapper the do_it() in try - except.
 </code></pre>
 <p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script is for command-line usage which instances a <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> and
 calls <code>do_it()</code>.
@@ -45,7 +45,7 @@ The script provides a <code>--help</code> switch which will explain all
 the optional arguments.</p>
 <p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation. To better
 understand the documentation, we recommended that the reader execute</p>
-<pre><code>`qisjob --help`
+<pre><code>qisjob --help
 </code></pre>
 <p>and examine the output.</p>
 <p><em>Note</em> that many functions which are really private are exposed and documented
@@ -233,7 +233,7 @@ In conjunction with this kwarg:</p>
 <dt><strong><code>use_sim</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: -s, &ndash;sim`</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-s, --sim</code></p>
 <p>If <code>True</code>, use IBMQ online qasm simulator</p>
 </dd>
 <dt><strong><code>qvm</code></strong> :&ensp;<code>bool</code></dt>
@@ -480,8 +480,8 @@ and sorted counts.</p>
 <span>def <span class="ident">do_histogram</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.basebackend.BaseBackend)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Plot histogram to file. Filename algorithmically generated from
-figure_basename plus concatenated type and timestamp.</p>
+<div class="desc"><p>Plot histogram-style the result to file. Filename algorithmically
+generated from figure_basename plus concatenated type and timestamp.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>result_exp</code></strong> :&ensp;<code>Result</code></dt>
@@ -497,13 +497,25 @@ figure_basename plus concatenated type and timestamp.</p>
 <p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.fig_name_str"><code class="name flex">
-<span>def <span class="ident">fig_name_str</span></span>(<span>filepath, backend)</span>
+<span>def <span class="ident">fig_name_str</span></span>(<span>filepath: unicode, backend: qiskit.providers.basebackend.BaseBackend) ‑> unicode</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Create name consisting of filepath, backend and timestamp</p></div>
+<div class="desc"><p>Create filename consisting of filepath, backend and timestamp.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filepath</code></strong> :&ensp;<code>str</code></dt>
+<dd>base filepath fqp.</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dd>backend ostensibly one that experiment was run on.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>the algorithmically generated filename.</dd>
+</dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.gen_datetime"><code class="name flex">
-<span>def <span class="ident">gen_datetime</span></span>(<span>datetime_comma_string: unicode) ‑> <module 'datetime' from '/usr/lib/python3.8/datetime.py'></span>
+<span>def <span class="ident">gen_datetime</span></span>(<span>datetime_comma_string: unicode) ‑> datetime.datetime</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Convert comma-separated date elements to datetime.</p>
@@ -515,7 +527,7 @@ year,month,day[,hour,min,sec]</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>datetime</code></dt>
+<dt><code>datetime.datetime</code></dt>
 <dd>Python datetime object</dd>
 </dl></div>
 </dd>
@@ -543,21 +555,50 @@ and will be removed in the next release.</p>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.save_fig"><code class="name flex">
-<span>def <span class="ident">save_fig</span></span>(<span>figure, filepath, backend, tail)</span>
+<span>def <span class="ident">save_fig</span></span>(<span>figure: matplotlib.figure.Figure, filepath: unicode, backend: qiskit.providers.basebackend.BaseBackend, tail: unicode)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Write a figure to an algorithmically named destination file</p></div>
+<div class="desc"><p>Write a figure to an algorithmically named destination file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>figure</code></strong> :&ensp;<code>Figure</code></dt>
+<dd>The matplotlib Figure.</dd>
+<dt><strong><code>filepath</code></strong> :&ensp;<code>str</code></dt>
+<dd>base filepath fqp</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dd>Ostensibly the Backend the experiment was run on.</dd>
+<dt><strong><code>tail</code></strong> :&ensp;<code>str</code></dt>
+<dd>uniquifying string to append to filename.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.state_city_plot"><code class="name flex">
-<span>def <span class="ident">state_city_plot</span></span>(<span>result_exp, circ, figure_basename, backend, decimals=3)</span>
+<span>def <span class="ident">state_city_plot</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.basebackend.BaseBackend, decimals: int = 3)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Plot state_city style the output state
-result_exp - experiment result
+<div class="desc"><p>Plot state_city-style the output state to file. Filename algorithmically
+generated from figure_basename plus concatenated type and timestamp.</p>
+<p>result_exp - experiment result
 circ - the circuit
 figure_basename - base file name of output
 backend - backend run on
-decimals - how many decimal places</p></div>
+decimals - how many decimal places</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>result_exp</code></strong> :&ensp;<code>Result</code></dt>
+<dd>experiment result.</dd>
+<dt><strong><code>circ</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
+<dd>DESCRIPTION.</dd>
+<dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
+<dd>the circuit.</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dd>backend run on.</dd>
+<dt><strong><code>decimals</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>how many decimal places. The default is 3.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
