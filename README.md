@@ -58,9 +58,11 @@ You can use an object instance of the class `qisjob.QisJob` in your own program 
 
 ### `QisJob` Documentation
 
-The `qisjob.QisJob` object that underlies the `qisjob` script has many args/kwargs.
+The `qisjob.QisJob` object that underlies the `qisjob` script can be used in your own programs.
 
-The documentation is installed with the module in `share/doc`.
+That object has many args/kwargs.
+
+The documentation for `qisjob.QisJob` is installed with the module in the site library's `share/doc`.
 
 You can also read the [QisJob Documentation Online](http://www.softwoehr.com/softwoehr/oss/qisjob/)
 
