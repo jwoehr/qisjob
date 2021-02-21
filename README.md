@@ -54,13 +54,11 @@ You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit
 
 The `qisjob` script works by instancing an object of the class `qisjob.QisJob`.
 
-You can use an object instance of the class `qisjob.QisJob` in your own program and feed it a string of OPENQASM2.0 source code via the `qasm_src=` kwarg.
+You can use an object instance of the class `qisjob.QisJob` in your own program for its utility functions or the execute experiments on real quantum hardware and/or simulators either using OpenQASM source or Qiskit `QuantumCircuit` source code.
 
 ### `QisJob` Documentation
 
-The `qisjob.QisJob` object that underlies the `qisjob` script can be used in your own programs.
-
-That object has many args/kwargs.
+The `qisjob.QisJob` object that underlies the `qisjob` script that can be used in your own programs has many args/kwargs.
 
 The documentation for `qisjob.QisJob` is installed with the module in the site library's `share/doc`.
 
