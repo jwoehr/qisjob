@@ -5,10 +5,10 @@ Load from OpenQASM source or Qiskit `QuantumCircuit` source and run job with
 reporting. Many utility operations to examine provider, backends, and jobs
 are also provided.
 
-The main class which one instances programmatically is `QisJob`.
+The class to instance in a program is `QisJob`.
 
-Commandline usage is via this `qisjob` script which provides a `--help`
-switch.
+This `qisjob` script is for command-line usage. It provides a `--help`
+switch which will explain all the optional arguments.
 
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 

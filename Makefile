@@ -17,7 +17,7 @@ PYSRCS = qisjob/qisjob.pyx scripts/qisjob
 
 .PHONY:	install uninstall clean uninstall_oldname doc testsrc test
 
-install: clean
+install: 
 	python3 ./setup.py install
 
 uninstall:

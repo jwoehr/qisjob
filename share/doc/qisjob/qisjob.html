@@ -33,13 +33,15 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<p>The main class which one instances programmatically is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
-<p>Commandline usage is via the <code><a title="qisjob" href="index.html">qisjob</a></code> script which provides a <code>--help</code>
-switch. That script will be mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.
-To understand the documentation, it is recommended the reader execute
-<code>qisjob --help</code> and examine that output.</p>
-<p><em>Note</em> that many essentially private functions are exposed and documented
-to make it easier to understand what QisJob does in its <code>do_it()</code> method.</p>
+<p>The class to instance in a programmatic is <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>.</p>
+<p>The <code><a title="qisjob" href="index.html">qisjob</a></code> script is for command-line usage.
+It provides a <code>--help</code>
+switch which will explain all the optional arguments. That script will be
+mentioned in the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> documentation.</p>
+<p>To understand the documentation, we recommended that the reader execute
+<code>qisjob --help</code> and examine the output.</p>
+<p><em>Note</em> that many functions which are really private are exposed and documented
+here to make it easier to understand what QisJob does in its <code>do_it()</code> method.</p>
 </section>
 <section>
 </section>
@@ -60,7 +62,8 @@ to make it easier to understand what QisJob does in its <code>do_it()</code> met
 <p>A <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> is instanced with all the member variables governing its behavior
 and then the <code>do_it()</code> member function is called. After that, generally,
 the instance is discarded.</p>
-<p>Initialize QisJob member data.</p>
+<p>QisJob's initializer instances QisJob member data which control
+the instance's behavior when QisJob's main function <code>do_it()</code> is called.</p>
 <p>In the parameter discussion below, actions are described as being
 taken by <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code>. Typically, these actions are actually taken when
 the <code>do_it()</code> method is called, not when member variables are instanced

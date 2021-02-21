@@ -16,15 +16,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-The main class which one instances programmatically is `QisJob`.
+The class to instance in a programmatic is `QisJob`.
 
-Commandline usage is via the `qisjob` script which provides a `--help`
-switch. That script will be mentioned in the `QisJob` documentation.
-To understand the documentation, it is recommended the reader execute
-`qisjob --help` and examine that output.
+The `qisjob` script is for command-line usage.  It provides a `--help`
+switch which will explain all the optional arguments. That script will be
+mentioned in the `QisJob` documentation.
 
-*Note* that many essentially private functions are exposed and documented
-to make it easier to understand what QisJob does in its `do_it()` method.
+To understand the documentation, we recommended that the reader execute
+`qisjob --help` and examine the output.
+
+*Note* that many functions which are really private are exposed and documented
+here to make it easier to understand what QisJob does in its `do_it()` method.
 """
 
 import argparse
@@ -99,8 +101,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  job_monitor_filepath=None):
         """
 
-
-        Initialize QisJob member data.
+        QisJob's initializer instances QisJob member data which control
+        the instance's behavior when QisJob's main function `do_it()` is called.
 
         In the parameter discussion below, actions are described as being
         taken by `QisJob`. Typically, these actions are actually taken when
