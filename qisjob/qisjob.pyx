@@ -132,7 +132,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             A string of OpenQASM experiment source.
 
-            If `qasm_src` is set, it takes precendence and `filepaths`
+            If `qasm_src` is set, it takes precedence and `filepaths`
             is ignored.
 
         provider_name : str
@@ -383,42 +383,64 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         print_job : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-j, --job`
+
+            If `True`, print the Job dictionary to stdout before and after run.
 
         memory : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-m, --memory`
+
+            If `True`, print individual results of each multishot experiment
+            to stdout.
 
         show_result : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `-r, --result`
 
+             If `True`, print each Job's result to stdout.
 
         jobs_status : int
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--jobs`
 
+            If instanced, print that number of most recent jobs and status
+            for the selected backend to stdout and return.
+
+            See `do_it()` for the precedence of this kwarg.
 
         job_id : int
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--job_id`
 
+            If instanced, print that job number (job id) for the chosen
+            backend to stdout and return.
+
+            See `do_it()` for the precedence of this kwarg.
 
         job_result : int
             The default is `None`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: `--job_result`
 
+            If instanced, print the result for that (completed) job number
+            (job id) to stdout and return.
+
+            See `do_it()` for the precedence of this kwarg.
 
         show_backends : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
-
+            _Corresponding `qisjob` script argument_: `--backends`
+            
+            If `True`, print list of backends for chosen provider to stdout and
+            return.
+            
+            See `do_it()` for the precedence of this kwarg.
 
         show_configuration : bool
             The default is `False`.
@@ -428,11 +450,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             If `True`, print configuration for backend specified by -b
             to stdout and return.
 
-            This is the 3rd logical branch in `do_it()` and takes
-            precedence over all other kwargs except
-
-                * show_qisjob_version
-                * show_q_version
+            See `do_it()` for the precedence of this kwarg.
 
         show_properties : bool
             The default is `False`.
@@ -444,18 +462,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             For historical properties, also set the `date_time` kwarg.
 
-            This is the 4th logical branch in `do_it()` and takes
-            precedence over all other kwargs except
-
-                * show_qisjob_version
-                * show_q_version
-                * show_configuration
+            See `do_it()` for the precedence of this kwarg.
 
         show_statuses : bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: _none_
+            _Corresponding `qisjob` script argument_: --status
 
+            If `True`, print status for chosen backend to stdout and return.
+            If no backend chosen, print statuses for all of the chosen
+            provider's backends.
+
+            See `do_it()` for the precedence of this kwarg.
 
         date_time : str
             The default is `None`.
@@ -501,10 +519,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             _Corresponding `qisjob` script argument_: `-qiskit_version`
 
-             If `True`, `do_it()` prints Qiskit version to stdout and returns.
+             If `True`, `do_it()` print Qiskit version to stdout and returns.
 
-            This is the 2nd logical branch in `do_it()` and takes precedence
-            over all other kwargs except `show_qisjob_version`.
+            See `do_it()` for the precedence of this kwarg.
 
         verbose : int
             The default is 0.
@@ -521,10 +538,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             _Corresponding `qisjob` script argument_: `--version`
 
-            If `True`, `do_it()` prints QisJob version to stdout and returns.
+            If `True`, `do_it()` print QisJob version to stdout and returns.
 
-            This is the 1st logical branch in `do_it()` and takes precedence
-            over all other kwargs.
+            See `do_it()` for the precedence of this kwarg.
 
         use_job_monitor : bool
             The default is `False`.

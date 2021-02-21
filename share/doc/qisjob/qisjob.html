@@ -85,7 +85,7 @@ to be files to add to the <code>filepaths</code> kwarg.</p>
 <p>The default is <code>None</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
 <p>A string of OpenQASM experiment source.</p>
-<p>If <code>qasm_src</code> is set, it takes precendence and <code>filepaths</code>
+<p>If <code>qasm_src</code> is set, it takes precedence and <code>filepaths</code>
 is ignored.</p>
 </dd>
 <dt><strong><code>provider_name</code></strong> :&ensp;<code>str</code></dt>
@@ -281,11 +281,11 @@ original circuit.</p>
 <dt><strong><code>circuit_layout</code></strong></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
-<p>If <code>True</code>, write image file of circuit layout to the fully
-qualified filepath specified by the <code>figure_basename</code> kwarg
-concatenated with an algorithmically added filename extension
-indicating the type of output and time.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-circuit_layout</code></p>
+<p>If <code>True</code>, and if <code>xpile</code> is also set, write image file of circuit
+layout to the fully qualified filepath specified by the
+<code>figure_basename</code> kwarg concatenated with an algorithmically added
+filename extension indicating the type of output and time.</p>
 </dd>
 <dt><strong><code>optimization_level</code></strong> :&ensp;<code>int</code></dt>
 <dd>
@@ -299,37 +299,53 @@ transpile, if the latter is invoked by the <code>xpile</code> kwarg.</p>
 <dt><strong><code>print_job</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-j, --job</code></p>
+<p>If <code>True</code>, print the Job dictionary to stdout before and after run.</p>
 </dd>
 <dt><strong><code>memory</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-m, --memory</code></p>
+<p>If <code>True</code>, print individual results of each multishot experiment
+to stdout.</p>
 </dd>
 <dt><strong><code>show_result</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-r, --result</code></p>
+<p>If <code>True</code>, print each Job's result to stdout.</p>
 </dd>
 <dt><strong><code>jobs_status</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--jobs</code></p>
+<p>If instanced, print that number of most recent jobs and status
+for the selected backend to stdout and return.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>job_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--job_id</code></p>
+<p>If instanced, print that job number (job id) for the chosen
+backend to stdout and return.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>job_result</code></strong> :&ensp;<code>int</code></dt>
 <dd>
 <p>The default is <code>None</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--job_result</code></p>
+<p>If instanced, print the result for that (completed) job number
+(job id) to stdout and return.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>show_backends</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--backends</code></p>
+<p>If <code>True</code>, print list of backends for chosen provider to stdout and
+return.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>show_configuration</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -337,11 +353,7 @@ transpile, if the latter is invoked by the <code>xpile</code> kwarg.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-g, --configuration</code></p>
 <p>If <code>True</code>, print configuration for backend specified by -b
 to stdout and return.</p>
-<p>This is the 3rd logical branch in <code>do_it()</code> and takes
-precedence over all other kwargs except</p>
-<pre><code>* show_qisjob_version
-* show_q_version
-</code></pre>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>show_properties</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -350,17 +362,16 @@ precedence over all other kwargs except</p>
 <p>If <code>True</code>, print properties for backend specified by -b to stdout
 and return.</p>
 <p>For historical properties, also set the <code>date_time</code> kwarg.</p>
-<p>This is the 4th logical branch in <code>do_it()</code> and takes
-precedence over all other kwargs except</p>
-<pre><code>* show_qisjob_version
-* show_q_version
-* show_configuration
-</code></pre>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>show_statuses</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <em>none</em></p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: &ndash;status</p>
+<p>If <code>True</code>, print status for chosen backend to stdout and return.
+If no backend chosen, print statuses for all of the chosen
+provider's backends.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>date_time</code></strong> :&ensp;<code>str</code></dt>
 <dd>
@@ -401,9 +412,8 @@ the full filename.</p>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-qiskit_version</code></p>
-<p>If <code>True</code>, <code>do_it()</code> prints Qiskit version to stdout and returns.</p>
-<p>This is the 2nd logical branch in <code>do_it()</code> and takes precedence
-over all other kwargs except <code>show_qisjob_version</code>.</p>
+<p>If <code>True</code>, <code>do_it()</code> print Qiskit version to stdout and returns.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>int</code></dt>
 <dd>
@@ -417,9 +427,8 @@ emitted to stderr by do_it().</p>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--version</code></p>
-<p>If <code>True</code>, <code>do_it()</code> prints QisJob version to stdout and returns.</p>
-<p>This is the 1st logical branch in <code>do_it()</code> and takes precedence
-over all other kwargs.</p>
+<p>If <code>True</code>, <code>do_it()</code> print QisJob version to stdout and returns.</p>
+<p>See <code>do_it()</code> for the precedence of this kwarg.</p>
 </dd>
 <dt><strong><code>use_job_monitor</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
