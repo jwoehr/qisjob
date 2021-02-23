@@ -16,7 +16,7 @@ except ImportError:
 
 setup(
     name="qisjob",
-    version="3.4",
+    version="4.1",
     description="Run Qiskit jobs from command line",
     url="https://github.com/jwoehr/qisjob",
     author="Jack Woehr",

@@ -26,6 +26,7 @@
 <p>Load from OpenQASM source or Qiskit <code>QuantumCircuit</code> source and run job with
 reporting. Many utility operations to examine provider, backends, and jobs
 are also provided.</p>
+<p>The main repository is <a href="https://github.com/jwoehr/qisjob">https://github.com/jwoehr/qisjob</a></p>
 <p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
 <p>Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
 <p>Unless required by applicable law or agreed to in writing, software
@@ -62,7 +63,7 @@ here to make it easier to understand what QisJob does in its <code>do_it()</code
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None)</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -429,7 +430,8 @@ the full filename.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-v, --verbose</code></p>
 <p>Set the verbosity level of miscellaneous informational messages
 emitted to stderr by do_it().</p>
-<p>The range is 0-3.</p>
+<p>The general range is 0-3. If set precisely to 4, <code>do_it()</code>
+will print the <code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code> instance's data dictionary and return.</p>
 </dd>
 <dt><strong><code>show_qisjob_version</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -451,6 +453,16 @@ instead of just blocking waiting for job result to return.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--job_monitor_filepath</code></p>
 <p>In conjunction with <code>use_job_monitor</code>, set an output filepath for
 job monitor output instead of the default outstream of stdout.</p>
+</dd>
+<dt><strong><code>job_monitor_line</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is a string consisting solely of carriage-return <code>0x0d</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--job_monitor_line</code></p>
+<p>Sets the string emitted at the head of every line of job monitor
+output. The default causes the cursor to jump back to the head
+of the line on typical terminals so as to overwrite the previous
+output and update the user interactively without scrolling the
+screen. For program usage, a different string can be set.</p>
 </dd>
 </dl></div>
 <h3>Static methods</h3>
@@ -766,11 +778,19 @@ and pass original qasm filepath to figure output.</p>
 <p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qasm_exp"><code class="name flex">
-<span>def <span class="ident">qasm_exp</span></span>(<span>self)</span>
+<span>def <span class="ident">qasm_exp</span></span>(<span>self) ‑> list</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given qasm source, run the job
-and return in a string csv and other selected output.</p></div>
+<div class="desc"><p>Given qasm source, run the job and return list of string csv and other selected output.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>The output list representing the result in csv form.
+It is also written to <code>ofh</code> if that handle is instanced.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<pre><code>QisJobRuntimeException
+</code></pre></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.qi_account_fu"><code class="name flex">
 <span>def <span class="ident">qi_account_fu</span></span>(<span>self)</span>

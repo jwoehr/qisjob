@@ -6,6 +6,8 @@ Load from OpenQASM source or Qiskit `QuantumCircuit` source and run job with
 reporting. Many utility operations to examine provider, backends, and jobs
 are also provided.
 
+The main repository is https://github.com/jwoehr/qisjob
+
 Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
@@ -110,7 +112,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  show_q_version=False, verbose=0,
                  show_qisjob_version=False,
                  use_job_monitor=False,
-                 job_monitor_filepath=None):
+                 job_monitor_filepath=None,
+                 job_monitor_line='\r'):
         """
 
         QisJob's initializer instances QisJob member data which control
@@ -543,7 +546,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Set the verbosity level of miscellaneous informational messages
             emitted to stderr by do_it().
 
-            The range is 0-3.
+            The general range is 0-3. If set precisely to 4, `do_it()`
+            will print the `QisJob` instance's data dictionary and return.
 
         show_qisjob_version : bool
             The default is `False`.
@@ -570,6 +574,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             In conjunction with `use_job_monitor`, set an output filepath for
             job monitor output instead of the default outstream of stdout.
 
+        job_monitor_line: str
+            The default is a string consisting solely of carriage-return `0x0d`.
+
+            _Corresponding `qisjob` script argument_: `--job_monitor_line`
+
+            Sets the string emitted at the head of every line of job monitor
+            output. The default causes the cursor to jump back to the head
+            of the line on typical terminals so as to overwrite the previous
+            output and update the user interactively without scrolling the
+            screen. For program usage, a different string can be set.
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -620,11 +634,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "v4.0"
+        self.my_version = "v4.1"
         self.qasm_result = None
         self.result_exp_dict = None
         self.use_job_monitor = use_job_monitor
         self.job_monitor_filepath = job_monitor_filepath
+        self.job_monitor_line = job_monitor_line
 
     def qisjob_version(self) -> str:
         """
@@ -690,6 +705,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         See the `qisjob` script for an example of this pattern.
 
         """
+        if self.verbose == 4:
+            self._pp.pprint(self.__dict__)
+            return
+
         if self.show_qisjob_version:
             print(self.my_version)
             return
@@ -1334,10 +1353,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
                     j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    job_monitor(job_exp, output=j_m_file)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    output=j_m_file,
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    job_monitor(job_exp)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -1489,10 +1517,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
                     j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    job_monitor(job_exp, output=j_m_file)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    output=j_m_file,
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    job_monitor(job_exp)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -1541,10 +1578,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 stat.append(b_e.status().to_dict())
         return stat
 
-    def qasm_exp(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
-        """Given qasm source, run the job
-        and return in a string csv and other selected output.
+    def qasm_exp(self) -> list:  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """
+        Given qasm source, run the job and return list of string csv and other selected output.
+
+        Returns
+        -------
+        list
+            The output list representing the result in csv form.
+            It is also written to `ofh` if that handle is instanced.
+
+        Raises
+        ------
+            QisJobRuntimeException
+        """
+
         the_source = self.qasm_src
         self.verbosity("source:\n" + the_source, 1)
 
@@ -1618,10 +1666,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     self.verbosity("File for job monitor output is {}"
                                    .format(self.job_monitor_filepath), 1)
                     j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    job_monitor(job_exp, output=j_m_file)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    output=j_m_file,
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    job_monitor(job_exp)
+                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
+                        job_monitor(job_exp,      # recently added to Qiskit
+                                    line_discipline=self.job_monitor_line)
+                    else:
+                        job_monitor(job_exp)
 
             result_exp = job_exp.result()
             self.result_exp_dict = result_exp.to_dict()
@@ -1893,7 +1950,9 @@ if __name__ == '__main__':
     PARSER.add_argument("-t", "--shots", type=int, action="store", default=1024,
                         help="Number of shots for the experiment, default 1024, max 8192")
     PARSER.add_argument("-v", "--verbose", action="count", default=0,
-                        help="Increase verbosity each -v up to 3")
+                        help="""Increase runtime verbosity each -v up to 3. If
+                        precisely 4, prettyprint QisJob's data dictionary and
+                        return (good for debugging script arguments)""")
     PARSER.add_argument("-x", "--transpile", action="store_true",
                         help="""Print circuit transpiled for chosen backend to stdout
                         before running job""")
@@ -1934,6 +1993,10 @@ if __name__ == '__main__':
     PARSER.add_argument("--use_job_monitor", action="store_true",
                         help="""Display job monitor instead of just waiting for
                         job result""")
+    PARSER.add_argument("--job_monitor_line", action="store", default='0x0d',
+                        help="""Comma-separated list of hex values for
+                        character(s) to emit at the head of each line of job
+                        monitor output, default is '0x0d'""")
     PARSER.add_argument("filepath", nargs='*',
                         help="Filepath(s) to 0 or more .qasm files, default is stdin")
     PARSER.add_argument("--job_monitor_filepath", action="store", default=None,
@@ -1962,6 +2025,8 @@ if __name__ == '__main__':
     JOB = ARGS.job
     JOB_ID = ARGS.job_id
     JOB_MONITOR_FILEPATH = ARGS.job_monitor_filepath
+    JOB_MONITOR_LINE = ''.join(chr(int(lstr, 16))
+                               for lstr in ARGS.job_monitor_line.split(','))
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
     MAX_CREDITS = ARGS.credits
@@ -2022,7 +2087,8 @@ if __name__ == '__main__':
                 show_q_version=QISKIT_VERSION, verbose=VERBOSE,
                 show_qisjob_version=QISJOB_VERSION,
                 use_job_monitor=USE_JM,
-                job_monitor_filepath=JOB_MONITOR_FILEPATH)
+                job_monitor_filepath=JOB_MONITOR_FILEPATH,
+                job_monitor_line=JOB_MONITOR_LINE)
 
     EXITVAL = 0
     try:
