@@ -1731,48 +1731,110 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Actually, currently there is such a method, but it is deprecated
             and will be removed in the next release.
 
-            The members should correspond to the methods documented in the [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
+            The members should correspond to the methods documented in the
+            [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob)
+
+            Not all members are present on all platforms, so we try/except
+            each one.
+
         """  # pylint: disable-msg=line-too-long
 
         my_dict = {}
         # Return the backend where this job was executed.
-        my_dict["backend"] = job.backend()
+        try:
+            my_dict["backend"] = job.backend()
+        except:
+            pass
         # Return whether the job has been cancelled.
-        my_dict["cancelled"] = job.cancelled()
+        try:
+            my_dict["cancelled"] = job.cancelled()
+        except:
+            pass
         # Return job creation date, in local time.
-        my_dict["creation_date"] = job.creation_date()
+        try:
+            my_dict["creation_date"] = job.creation_date()
+        except:
+            pass
         # Return whether the job has successfully run.
-        my_dict["done"] = job.done()
+        try:
+            my_dict["done"] = job.done()
+        except:
+            pass
         # Provide details about the reason of failure.
-        my_dict["error_message"] = job.error_message()
+        try:
+            my_dict["error_message"] = job.error_message()
+        except:
+            pass
         # Return whether the job is in a final job state.
-        my_dict["in_final_state"] = job.in_final_state()
+        try:
+            my_dict["in_final_state"] = job.in_final_state()
+        except:
+            pass
         # Return the job ID assigned by the server.
-        my_dict["job_id"] = job.job_id()
+        try:
+            my_dict["job_id"] = job.job_id()
+        except:
+            pass
         # Return the name assigned to this job.
-        my_dict["name"] = job.name()
+        try:
+            my_dict["name"] = job.name()
+        except:
+            pass
         # Return the backend properties for this job.
-        my_dict["properties"] = job.properties()
+        try:
+            my_dict["properties"] = job.properties()
+        except:
+            pass
         # Return the Qobj for this job.
-        my_dict["qobj"] = job.qobj()
+        try:
+            my_dict["qobj"] = job.qobj()
+        except:
+            pass
         # Return queue information for this job.
-        my_dict["queue_info"] = job.queue_info()
+        try:
+            my_dict["queue_info"] = job.queue_info()
+        except:
+            pass
         # Return the position of the job in the server queue.
-        my_dict["queue_position"] = job.queue_position()
+        try:
+            my_dict["queue_position"] = job.queue_position()
+        except:
+            pass
         # Return whether the job is actively running.
-        my_dict["result"] = job.result().to_dict()
+        try:
+            my_dict["result"] = job.result().to_dict()
+        except:
+            pass
         # Return whether the job is actively running.
-        my_dict["running"] = job.running()
+        try:
+            my_dict["running"] = job.running()
+        except:
+            pass
         # Return the scheduling mode the job is in.
-        my_dict["scheduling_mode"] = job.scheduling_mode()
+        try:
+            my_dict["scheduling_mode"] = job.scheduling_mode()
+        except:
+            pass
         # Return the share level of the job.
-        my_dict["share_level"] = job.share_level()
+        try:
+            my_dict["share_level"] = job.share_level()
+        except:
+            pass
         # Query the server for the latest job status.
-        my_dict["status"] = job.status()
+        try:
+            my_dict["status"] = job.status()
+        except:
+            pass
         # Return the tags assigned to this job.
-        my_dict["tags"] = job.tags()
+        try:
+            my_dict["tags"] = job.tags()
+        except:
+            pass
         # Return the date and time information on each step of the job processing.
-        my_dict["time_per_step"] = job.time_per_step()
+        try:
+            my_dict["time_per_step"] = job.time_per_step()
+        except:
+            pass
         return my_dict
 
 
