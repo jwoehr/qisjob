@@ -22,13 +22,15 @@ If you previously installed the module as `qis_job` you can uninstall that older
 
 The `qisjob` command loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
 computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com). Input is from one or
-more OpenQASM 2 source files or from OpenQASM 2 source code provided via standard input (in the absence of file arguments).
+more OpenQASM 2 source files or Qiskit `QuantumCircuit` Python code or from source provided via standard input in the
+absence of file arguments.
 
 The command also provides some utility functions such as:
 
 -   enumerating backend platforms
--   checking on status of backend platforms
--   checking on status of jobs
+-   configuration both current and historical of backend platforms
+-   status of backend platforms
+-   status and results of jobs both current and historical
 
 and other useful operations for Qiskit experimentation.
 
@@ -39,8 +41,7 @@ and other useful operations for Qiskit experimentation.
 * [OPENQASM Open Quantum Assembly Language](https://arxiv.org/abs/1707.03429)
     * Use a well-formed OPENQASM2 file.
     * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qasm_examples) of the project.
-* a Qiskit Terra `QuantumCircuit` Python code snippet.
-
+* Qiskit Terra `QuantumCircuit` Python code snippet.
     * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
     * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qisjob.py`
         * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
@@ -48,13 +49,15 @@ and other useful operations for Qiskit experimentation.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
 
-`QisJob` is compatible with the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) project, that you can use to compile and run your OPENQASM2.0 source code. Given that you have `NuQasm2` installed, you can use `qisjob`'s `-n` _include-path:include-path:..._ switch
+`QisJob` is compatible with the experimental [NuQasm2](https://github.com/jwoehr/nuqasm2) project, that you can use to compile and run your OPENQASM2.0 source code.
+Given that you have `NuQasm2` installed, you can use `qisjob`'s `-n` _include-path:include-path:..._ switch
 
 ## The `QisJob` class
 
 The `qisjob` script works by instancing an object of the class `qisjob.QisJob`.
 
-You can use an object instance of the class `qisjob.QisJob` in your own program for its utility functions or the execute experiments on real quantum hardware and/or simulators either using OpenQASM source or Qiskit `QuantumCircuit` source code.
+You can use an object instance of the class `qisjob.QisJob` in your own program for its utility functions or the execute
+experiments on real quantum hardware and/or simulators either using OpenQASM source or Qiskit `QuantumCircuit` source code.
 
 ### `QisJob` Documentation
 
@@ -97,7 +100,7 @@ Do one of the following in the source directory (preferably in a Python virtual 
 
 * `make # gnu make, we have provided a Makefile`
 * `./setup.py install`
-* `pip3 install .` 
+* `pip3 install .`
 
 **Note** that the module name has recently (2021-10-16) changed from `qis_job` to `qisjob`. If you previously installed the module as `qis_job` you can uninstall that older version either by
 -  `pip3 uninstall qis_job`
@@ -113,7 +116,7 @@ usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_sim
               [--api_provider API_PROVIDER] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
               [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
               [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
-              [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
+              [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
               [filepath [filepath ...]]
 
 Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with reporting in CSV form. Can
@@ -170,7 +173,7 @@ optional arguments:
   -r, --result          Print job result
   -t SHOTS, --shots SHOTS
                         Number of shots for the experiment, default 1024, max 8192
-  -v, --verbose         Increase verbosity each -v up to 3
+  -v, --verbose         Increase runtime verbosity each -v up to 3. If precisely 4, prettyprint QisJob's data dictionary and return (good for debugging script arguments)
   -x, --transpile       Print circuit transpiled for chosen backend to stdout before running job
   --showsched           In conjuction with -x, show schedule for transpiled circuit for chosen backend to stdout before running job
   --circuit_layout      With -x, write image file of circuit layout after transpile (see --figure_basename)
@@ -187,6 +190,8 @@ optional arguments:
   --token TOKEN         Use this token
   --url URL             Use this url
   --use_job_monitor     Display job monitor instead of just waiting for job result
+  --job_monitor_line JOB_MONITOR_LINE
+                        Comma-separated list of hex values for character(s) to emit at the head of each line of job monitor output, default is '0x0d'
   --job_monitor_filepath JOB_MONITOR_FILEPATH
                         Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
@@ -201,4 +206,4 @@ optional arguments:
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2021-02-21
+Jack Woehr 2021-02-22
