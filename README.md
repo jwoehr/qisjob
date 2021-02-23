@@ -34,7 +34,8 @@ The command also provides some utility functions such as:
 
 and other useful operations for Qiskit experimentation.
 
-**`qisjob` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability. See LICENSE.**
+**`qisjob` comes with NO GUARANTEE and NO WARRANTY including as regards correctness nor applicability.
+See [LICENSE](https://github.com/jwoehr/qisjob/blob/main/LICENSE.txt).**
 
 `qisjob` can run Qiskit experiments expressed as either:
 
