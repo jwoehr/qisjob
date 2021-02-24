@@ -84,6 +84,8 @@ PARSER.add_argument("--group", action="store", default='open',
                     help= "Provider group, default is 'open'" )
 PARSER.add_argument("--project", action="store", default='main',
                     help= "Provider project, default is 'main'" )
+PARSER.add_argument("--providers", action="store_true",
+                    help= "List hub/group/project providers for IBMQ ")
 PARSER.add_argument("--qvm", action="store_true",
                     help="""Use Forest local qvm simulator described by
                     -b backend, generally one of qasm_simulator or
@@ -203,6 +205,7 @@ API_PROVIDER = ARGS.api_provider.upper()
 HUB = ARGS.hub
 GROUP = ARGS.group
 PROJECT = ARGS.project
+PROVIDERS = ARGS.providers
 BACKEND_NAME = ARGS.backend
 BACKENDS = ARGS.backends
 CIRCUIT_LAYOUT = ARGS.circuit_layout
@@ -253,6 +256,7 @@ QJ = QisJob(filepaths=FILEPATH,
             provider_name=API_PROVIDER,
             hub=HUB, group=GROUP, project=PROJECT,
             backend_name=BACKEND_NAME,
+            providers=PROVIDERS,
             token=TOKEN, url=URL,
             nuqasm2=NUQASM2,
             num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,

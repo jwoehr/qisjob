@@ -63,7 +63,7 @@ here to make it easier to understand what QisJob does in its <code>do_it()</code
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -134,6 +134,12 @@ the names and defaults for which are</p>
 the names and defaults for which are</p>
 <pre><code>hub='ibm-q', group='open', project='main'
 </code></pre>
+</dd>
+<dt><strong><code>providers</code></strong> :&ensp;<code>bool</code></dt>
+<dd>
+<p>The default is <code>False</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--providers</code></p>
+<p>List providers for IBM Q and return.</p>
 </dd>
 <dt><strong><code>backend_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>
@@ -673,16 +679,17 @@ main branches.</p>
 <p>The best information on QisJob logic in <code><a title="qisjob.qisjob.QisJob.do_it" href="#qisjob.qisjob.QisJob.do_it">QisJob.do_it()</a></code> is the source
 code itself; the following is a lite summary.</p>
 <pre><code>1. If show_qisjob_version print QisJob version and return.
-2. If show_q_version Qiskit version shown and returns
-3. If show_configuration print config for -b backend and return.
-4. If show_properties print properties for -b backend and return.
-5. If show_backends print list of backends for provider and return.
-6. If show_statuses print status or statuses for -b backend
+2. If show_q_version Qiskit version shown and return.
+3. If providers show IBM Q providers and return.
+4. If show_configuration print config for -b backend and return.
+5. If show_properties print properties for -b backend and return.
+6. If show_backends print list of backends for provider and return.
+7. If show_statuses print status or statuses for -b backend
     or if no backend specified, for all backends for provider
     and return.
-7. If jobs_status print status for n jobs and return.
-8. If job_id then print job dict for that job and return.
-9. If job_result then print job result for that job and return.
+8. If jobs_status print status for n jobs and return.
+9. If job_id then print job dict for that job and return.
+10. If job_result then print job result for that job and return.
 </code></pre>
 <p>Otherwise, proceed to job experiments provided in kwargs as follows:</p>
 <pre><code>1. If qasm_src job and return.

@@ -114,10 +114,10 @@ The `qisjob` script has helpful help.
 ```
 $ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version]
-              [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS]
-              [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout]
-              [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status]
-              [--token TOKEN] [--url URL] [--use_job_monitor] [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
+              [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT] [--providers] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j]
+              [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched]
+              [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC]
+              [--status] [--token TOKEN] [--url URL] [--use_job_monitor] [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
               [filepath [filepath ...]]
 
 Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with reporting in CSV form. Can
@@ -149,6 +149,7 @@ optional arguments:
   --hub HUB             Provider hub, default is 'ibm-q'
   --group GROUP         Provider group, default is 'open'
   --project PROJECT     Provider project, default is 'main'
+  --providers           List hub/group/project providers for IBMQ
   --qvm                 Use Forest local qvm simulator described by -b backend, generally one of qasm_simulator or statevector_simulator. Use --qvm_as to instruct the simulator to
                         emulate a specific Rigetti QPU
   --qvm_as              Use Forest local qvm simulator to emulate the specific Rigetti QPU described by -b backend. Use --qvm to run the Forest local qvm simulator described by -b

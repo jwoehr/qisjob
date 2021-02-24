@@ -13,6 +13,7 @@ CHANGES by revision to QisJob
 v4.1
 - Add support for IBMQ hub, group, and project (`--hub` `--group` `--project`)
 - Add support for `job_monitor` kwarg `line_discipline` (`--job_monitor_line`)
+- Add `--providers` to list hub/group/project providers for IBMQ
 - 4 `-v`s now print QisJob data dictionary and return
 - `ibmqjob_to_dict` calls on members not supported on all platforms: Now each
   call is wrapped in try/except.

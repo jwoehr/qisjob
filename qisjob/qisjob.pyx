@@ -95,6 +95,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  qasm_src=None,
                  provider_name="IBMQ",
                  hub='ibm-q', group='open', project='main',
+                 providers=False,
                  backend_name=None,
                  token=None, url=None,
                  nuqasm2=None,
@@ -194,6 +195,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             the names and defaults for which are
 
                 hub='ibm-q', group='open', project='main'
+
+        providers: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--providers`
+
+            List providers for IBM Q and return.
 
         backend_name : str
             The default is `None`.
@@ -623,6 +631,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.hub = hub
         self.group = group
         self.project = project
+        self.providers = providers
         self.provider = None
         self.filepaths = filepaths
         self.backend_name = backend_name
@@ -705,16 +714,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         code itself; the following is a lite summary.
 
             1. If show_qisjob_version print QisJob version and return.
-            2. If show_q_version Qiskit version shown and returns
-            3. If show_configuration print config for -b backend and return.
-            4. If show_properties print properties for -b backend and return.
-            5. If show_backends print list of backends for provider and return.
-            6. If show_statuses print status or statuses for -b backend
+            2. If show_q_version Qiskit version shown and return.
+            3. If providers show IBM Q providers and return.
+            4. If show_configuration print config for -b backend and return.
+            5. If show_properties print properties for -b backend and return.
+            6. If show_backends print list of backends for provider and return.
+            7. If show_statuses print status or statuses for -b backend
                 or if no backend specified, for all backends for provider
                 and return.
-            7. If jobs_status print status for n jobs and return.
-            8. If job_id then print job dict for that job and return.
-            9. If job_result then print job result for that job and return.
+            8. If jobs_status print status for n jobs and return.
+            9. If job_id then print job dict for that job and return.
+            10. If job_result then print job result for that job and return.
 
         Otherwise, proceed to job experiments provided in kwargs as follows:
 
@@ -759,6 +769,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             raise QisJobArgumentException(
                 'kwargs token and url must be used together for IBMQ provider or not at all'
                 )
+
+        if self.providers:
+            self.account_fu()
+
+            try:
+                self._pp.pprint(IBMQ.providers())
+            except QiskitError as err:
+                raise QisJobRuntimeException(
+                    "Error fetching IBMQ providers: {}".format(err)
+                    ) from err
+            return
 
         if self.show_configuration:
             self.account_fu()
@@ -2004,6 +2025,8 @@ if __name__ == '__main__':
                         help= "Provider group, default is 'open'" )
     PARSER.add_argument("--project", action="store", default='main',
                         help= "Provider project, default is 'main'" )
+    PARSER.add_argument("--providers", action="store_true",
+                        help= "List hub/group/project providers for IBMQ " )
     PARSER.add_argument("--qvm", action="store_true",
                         help="""Use Forest local qvm simulator described by
                         -b backend, generally one of qasm_simulator or
@@ -2121,6 +2144,7 @@ if __name__ == '__main__':
     HUB = ARGS.hub
     GROUP = ARGS.group
     PROJECT = ARGS.project
+    PROVIDERS = ARGS.providers
     BACKEND_NAME = ARGS.backend
     BACKENDS = ARGS.backends
     CIRCUIT_LAYOUT = ARGS.circuit_layout
@@ -2170,6 +2194,7 @@ if __name__ == '__main__':
     QJ = QisJob(filepaths=FILEPATH,
                 provider_name=API_PROVIDER,
                 hub=HUB, group=GROUP, project=PROJECT,
+                providers=PROVIDERS,
                 backend_name=BACKEND_NAME,
                 token=TOKEN, url=URL,
                 nuqasm2=NUQASM2,
