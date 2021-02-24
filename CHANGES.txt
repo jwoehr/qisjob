@@ -11,11 +11,12 @@ limitations under the License.
 CHANGES by revision to QisJob
 
 v4.1
-- Correct version number in `setup.py`
+- Add support for IBMQ hub, group, and project (`--hub` `--group` `--project`)
 - Add support for `job_monitor` kwarg `line_discipline` (`--job_monitor_line`)
 - 4 `-v`s now print QisJob data dictionary and return
 - `ibmqjob_to_dict` calls on members not supported on all platforms: Now each
   call is wrapped in try/except.
+- Correct version number in `setup.py` 
  
 v4.0
 - Renamed module to `qisjob` from `qis_job` (Issue #3)

@@ -93,7 +93,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     """
     def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
                  qasm_src=None,
-                 provider_name="IBMQ", backend_name=None,
+                 provider_name="IBMQ",
+                 hub='ibm-q', group='open', project='main',
+                 backend_name=None,
                  token=None, url=None,
                  nuqasm2=None,
                  num_qubits=5, shots=1024, max_credits=3,
@@ -161,6 +163,37 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 * QI
                 * Forest
                 * JKU
+
+        hub: str
+
+            The default is 'ibm-q'.
+
+            _Corresponding `qisjob` script argument_: `--hub`
+
+            Provider hub. For instance, IBMQ accounts have 3 attributes,
+            the names and defaults for which are
+
+                hub='ibm-q', group='open', project='main'
+
+        group: str
+            The default is 'open'.
+
+            _Corresponding `qisjob` script argument_: `--group`
+
+            Provider group. For instance, IBMQ accounts have 3 attributes,
+            the names and defaults for which are
+
+                hub='ibm-q', group='open', project='main'
+
+        project: str
+            The default is 'main'.
+
+            _Corresponding `qisjob` script argument_: `--project`
+
+            Provider project. For instance, IBMQ accounts have 3 attributes,
+            the names and defaults for which are
+
+                hub='ibm-q', group='open', project='main'
 
         backend_name : str
             The default is `None`.
@@ -587,6 +620,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
+        self.hub = hub
+        self.group = group
+        self.project = project
         self.provider = None
         self.filepaths = filepaths
         self.backend_name = backend_name
@@ -877,13 +913,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def ibmq_account_fu(self):
         """Load IBMQ account appropriately and instance self with provider"""
-        if self.token:
-            self.provider = IBMQ.enable_account(self.token, url=self.url)
-        else:
-            try:
+        try:
+            if self.token:
+                IBMQ.enable_account(self.token, url=self.url)
+            else:
                 self.provider = IBMQ.load_account()
-            except IBMQAccountCredentialsNotFound as err:
-                raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
+        except IBMQAccountCredentialsNotFound as err:
+            raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
+        self.provider=IBMQ.get_provider(hub=self.hub, group=self.group, project=self.project)
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
@@ -1961,6 +1998,12 @@ if __name__ == '__main__':
                         help="""Backend remote api provider,
                         currently supported are [IBMQ | QI | Forest | JKU].
                         Default is IBMQ.""", default="IBMQ")
+    PARSER.add_argument("--hub", action="store", default='ibm-q',
+                        help= "Provider hub, default is 'ibm-q'" )
+    PARSER.add_argument("--group", action="store", default='open',
+                        help= "Provider group, default is 'open'" )
+    PARSER.add_argument("--project", action="store", default='main',
+                        help= "Provider project, default is 'main'" )
     PARSER.add_argument("--qvm", action="store_true",
                         help="""Use Forest local qvm simulator described by
                         -b backend, generally one of qasm_simulator or
@@ -2075,7 +2118,9 @@ if __name__ == '__main__':
 
     AER = ARGS.aer
     API_PROVIDER = ARGS.api_provider.upper()
-    ARGS = PARSER.parse_args()
+    HUB = ARGS.hub
+    GROUP = ARGS.group
+    PROJECT = ARGS.project
     BACKEND_NAME = ARGS.backend
     BACKENDS = ARGS.backends
     CIRCUIT_LAYOUT = ARGS.circuit_layout
@@ -2124,6 +2169,7 @@ if __name__ == '__main__':
 
     QJ = QisJob(filepaths=FILEPATH,
                 provider_name=API_PROVIDER,
+                hub=HUB, group=GROUP, project=PROJECT,
                 backend_name=BACKEND_NAME,
                 token=TOKEN, url=URL,
                 nuqasm2=NUQASM2,

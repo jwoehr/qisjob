@@ -63,7 +63,7 @@ here to make it easier to understand what QisJob does in its <code>do_it()</code
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -106,6 +106,33 @@ is ignored.</p>
 * QI
 * Forest
 * JKU
+</code></pre>
+</dd>
+<dt><strong><code>hub</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is 'ibm-q'.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--hub</code></p>
+<p>Provider hub. For instance, IBMQ accounts have 3 attributes,
+the names and defaults for which are</p>
+<pre><code>hub='ibm-q', group='open', project='main'
+</code></pre>
+</dd>
+<dt><strong><code>group</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is 'open'.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--group</code></p>
+<p>Provider group. For instance, IBMQ accounts have 3 attributes,
+the names and defaults for which are</p>
+<pre><code>hub='ibm-q', group='open', project='main'
+</code></pre>
+</dd>
+<dt><strong><code>project</code></strong> :&ensp;<code>str</code></dt>
+<dd>
+<p>The default is 'main'.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--project</code></p>
+<p>Provider project. For instance, IBMQ accounts have 3 attributes,
+the names and defaults for which are</p>
+<pre><code>hub='ibm-q', group='open', project='main'
 </code></pre>
 </dd>
 <dt><strong><code>backend_name</code></strong> :&ensp;<code>str</code></dt>

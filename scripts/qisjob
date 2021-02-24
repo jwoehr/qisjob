@@ -78,6 +78,12 @@ PARSER.add_argument("--api_provider", action="store",
                     help="""Backend remote api provider,
                     currently supported are [IBMQ | QI | Forest | JKU].
                     Default is IBMQ.""", default="IBMQ")
+PARSER.add_argument("--hub", action="store", default='ibm-q',
+                    help= "Provider hub, default is 'ibm-q'" )
+PARSER.add_argument("--group", action="store", default='open',
+                    help= "Provider group, default is 'open'" )
+PARSER.add_argument("--project", action="store", default='main',
+                    help= "Provider project, default is 'main'" )
 PARSER.add_argument("--qvm", action="store_true",
                     help="""Use Forest local qvm simulator described by
                     -b backend, generally one of qasm_simulator or
@@ -194,7 +200,9 @@ from qisjob import QisJob, QisJobException  # pylint: disable-msg=no-name-in-mod
 
 AER = ARGS.aer
 API_PROVIDER = ARGS.api_provider.upper()
-ARGS = PARSER.parse_args()
+HUB = ARGS.hub
+GROUP = ARGS.group
+PROJECT = ARGS.project
 BACKEND_NAME = ARGS.backend
 BACKENDS = ARGS.backends
 CIRCUIT_LAYOUT = ARGS.circuit_layout
@@ -243,6 +251,7 @@ VERBOSE = ARGS.verbose
 
 QJ = QisJob(filepaths=FILEPATH,
             provider_name=API_PROVIDER,
+            hub=HUB, group=GROUP, project=PROJECT,
             backend_name=BACKEND_NAME,
             token=TOKEN, url=URL,
             nuqasm2=NUQASM2,
