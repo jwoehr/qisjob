@@ -103,7 +103,7 @@ Do one of the following in the source directory (preferably in a Python virtual 
 * `./setup.py install`
 * `pip3 install .`
 
-**Note** that the module name has recently (2021-10-16) changed from `qis_job` to `qisjob`. If you previously installed the module as `qis_job` you can uninstall that older version either by
+**Note** that the module name has recently (2021-02-16) changed from `qis_job` to `qisjob`. If you previously installed the module as `qis_job` you can uninstall that older version either by
 -  `pip3 uninstall qis_job`
 -  `make uninstall_oldname`
 
