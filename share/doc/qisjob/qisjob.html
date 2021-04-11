@@ -63,7 +63,7 @@ here to make it easier to understand what QisJob does in its <code>do_it()</code
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r')</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r', noisy_sim=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -497,9 +497,33 @@ of the line on typical terminals so as to overwrite the previous
 output and update the user interactively without scrolling the
 screen. For program usage, a different string can be set.</p>
 </dd>
+<dt><strong><code>noisy_sim</code></strong> :&ensp;<code>bool</code></dt>
+<dd>
+<p>The default is <code>False</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--noisy_sim</code></p>
+<p>Performs an Aer sim noise model using the designated backend
+(see &ndash;backend) as the model backend.</p>
+</dd>
 </dl></div>
 <h3>Static methods</h3>
 <dl>
+<dt id="qisjob.qisjob.QisJob.basic_noise_sim"><code class="name flex">
+<span>def <span class="ident">basic_noise_sim</span></span>(<span>circuit: qiskit.circuit.quantumcircuit.QuantumCircuit, model_backend: qiskit.providers.basebackend.BaseBackend) ‑> qiskit.providers.basejob.BaseJob</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>model_backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dd>The BaseBackend instance whose noise model is to be used</dd>
+<dt><strong><code>circuit</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
+<dd>The QuantumCircuit instance to execute</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseJob</code></dt>
+<dd>The job which is executing the circuit</dd>
+</dl></div>
+</dd>
 <dt id="qisjob.qisjob.QisJob.csv_str"><code class="name flex">
 <span>def <span class="ident">csv_str</span></span>(<span>description: unicode, sort_keys: list, sort_counts: list) ‑> list</span>
 </code></dt>
@@ -950,6 +974,7 @@ with provider</p></div>
 <h4><code><a title="qisjob.qisjob.QisJob" href="#qisjob.qisjob.QisJob">QisJob</a></code></h4>
 <ul class="two-column">
 <li><code><a title="qisjob.qisjob.QisJob.account_fu" href="#qisjob.qisjob.QisJob.account_fu">account_fu</a></code></li>
+<li><code><a title="qisjob.qisjob.QisJob.basic_noise_sim" href="#qisjob.qisjob.QisJob.basic_noise_sim">basic_noise_sim</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.choose_backend" href="#qisjob.qisjob.QisJob.choose_backend">choose_backend</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.csv_str" href="#qisjob.qisjob.QisJob.csv_str">csv_str</a></code></li>
 <li><code><a title="qisjob.qisjob.QisJob.do_histogram" href="#qisjob.qisjob.QisJob.do_histogram">do_histogram</a></code></li>

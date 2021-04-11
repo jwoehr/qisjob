@@ -1920,14 +1920,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         Parameters
         ----------
         model_backend : BaseBackend
-            DESCRIPTION.
+            The BaseBackend instance whose noise model is to be used
         circuit : QuantumCircuit
-            DESCRIPTION.
+            The QuantumCircuit instance to execute
 
         Returns
         -------
-        Result
-            DESCRIPTION.
+        BaseJob
+            The job which is executing the circuit
 
         """
         from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
