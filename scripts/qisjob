@@ -86,6 +86,10 @@ PARSER.add_argument("--project", action="store", default='main',
                     help="Provider project, default is 'main'")
 PARSER.add_argument("--providers", action="store_true",
                     help="List hub/group/project providers for IBMQ ")
+PARSER.add_argument("--noisy_sim", action="store_true",
+                    help="""Perform circuit(s) as Aer simulation using the
+                    designated backend (see --backend) as the
+                    model backend.""")
 PARSER.add_argument("--qvm", action="store_true",
                     help="""Use Forest local qvm simulator described by
                     -b backend, generally one of qasm_simulator or
@@ -224,6 +228,7 @@ JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
 MAX_CREDITS = ARGS.credits
 MEMORY = ARGS.memory
+NOISY_SIM = ARGS.noisy_sim
 NUQASM2 = ARGS.nuqasm2
 ONE_JOB = ARGS.one_job
 OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -282,7 +287,8 @@ QJ = QisJob(filepaths=FILEPATH,
             show_qisjob_version=QISJOB_VERSION,
             use_job_monitor=USE_JM,
             job_monitor_filepath=JOB_MONITOR_FILEPATH,
-            job_monitor_line=JOB_MONITOR_LINE)
+            job_monitor_line=JOB_MONITOR_LINE,
+            noisy_sim=NOISY_SIM)
 
 EXITVAL = 0
 try:

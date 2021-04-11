@@ -54,7 +54,7 @@ from qiskit import execute
 from qiskit import schedule
 from qiskit import QiskitError
 from qiskit.result import Result
-from qiskit.providers import BaseBackend
+from qiskit.providers import BaseBackend, BaseJob
 from qiskit.providers.ibmq import IBMQJob
 from qiskit.compiler import transpile
 try:
@@ -116,7 +116,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                  show_qisjob_version=False,
                  use_job_monitor=False,
                  job_monitor_filepath=None,
-                 job_monitor_line='\r'):
+                 job_monitor_line='\r',
+                 noisy_sim=False):
         """
 
         QisJob's initializer instances QisJob member data which control
@@ -625,6 +626,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             of the line on typical terminals so as to overwrite the previous
             output and update the user interactively without scrolling the
             screen. For program usage, a different string can be set.
+
+        noisy_sim: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--noisy_sim`
+
+            Performs an Aer sim noise model using the designated backend
+            (see --backend) as the model backend.
+
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -685,6 +695,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_job_monitor = use_job_monitor
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
+        self.noisy_sim = noisy_sim
 
     def qisjob_version(self) -> str:
         """
@@ -1381,7 +1392,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(schedule(new_circ, self.backend))
 
         try:
-            if self.method:
+            if self.noisy_sim:
+                job_exp = self.basic_noise_sim(circ, self.backend)
+
+            elif self.method:
                 self.verbosity("Using gpu method {}".format(self.method), 2)
                 backend_options = {"method": self.method}
                 job_exp = execute(circ, backend=self.backend,
@@ -1544,8 +1558,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             circs.append(circ)
 
         try:
+            if self.noisy_sim:
+                job_exp = self.basic_noise_sim(circ, self.backend)
 
-            if self.use_statevector_gpu:
+            elif self.use_statevector_gpu:
                 self.verbosity("Using gpu", 2)
                 backend_options = {"method": "statevector_gpu"}
                 job_exp = execute(circs, backend=self.backend,
@@ -1896,7 +1912,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return my_dict
 
     @staticmethod
-    def basic_noise_sim(model_backend: BaseBackend, circuit: QuantumCircuit) -> Result:
+    def basic_noise_sim(circuit: QuantumCircuit,
+                        model_backend: BaseBackend)-> BaseJob:
         """
 
 
@@ -1925,7 +1942,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                       coupling_map=coupling_map,
                       noise_model=noise_model,
                       basis_gates=basis_gates)
-        return job.result()
+        return job
 
 
 class QisJobException(Exception):
@@ -2059,6 +2076,10 @@ if __name__ == '__main__':
                         help="Provider project, default is 'main'")
     PARSER.add_argument("--providers", action="store_true",
                         help="List hub/group/project providers for IBMQ")
+    PARSER.add_argument("--noisy_sim", action="store_true",
+                        help="""Perform circuit(s) as Aer simulation using the
+                        designated backend (see --backend) as the
+                        model backend.""")
     PARSER.add_argument("--qvm", action="store_true",
                         help="""Use Forest local qvm simulator described by
                         -b backend, generally one of qasm_simulator or
@@ -2194,6 +2215,7 @@ if __name__ == '__main__':
     JOBS = ARGS.jobs
     MAX_CREDITS = ARGS.credits
     MEMORY = ARGS.memory
+    NOISY_SIM = ARGS.noisy_sim
     NUQASM2 = ARGS.nuqasm2
     ONE_JOB = ARGS.one_job
     OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -2253,7 +2275,8 @@ if __name__ == '__main__':
                 show_qisjob_version=QISJOB_VERSION,
                 use_job_monitor=USE_JM,
                 job_monitor_filepath=JOB_MONITOR_FILEPATH,
-                job_monitor_line=JOB_MONITOR_LINE)
+                job_monitor_line=JOB_MONITOR_LINE,
+                noisy_sim=NOISY_SIM)
 
     EXITVAL = 0
     try:
