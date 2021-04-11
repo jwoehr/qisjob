@@ -1915,7 +1915,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def basic_noise_sim(circuit: QuantumCircuit,
                         model_backend: BaseBackend)-> BaseJob:
         """
-
+        Execute a simulator job with a basic noise model from a known backend.
 
         Parameters
         ----------
