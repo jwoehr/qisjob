@@ -212,4 +212,4 @@ optional arguments:
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2021-02-22
+Jack Woehr 2021-04-11
