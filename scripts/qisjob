@@ -79,13 +79,13 @@ PARSER.add_argument("--api_provider", action="store",
                     currently supported are [IBMQ | QI | Forest | JKU].
                     Default is IBMQ.""", default="IBMQ")
 PARSER.add_argument("--hub", action="store", default='ibm-q',
-                    help= "Provider hub, default is 'ibm-q'" )
+                    help="Provider hub, default is 'ibm-q'")
 PARSER.add_argument("--group", action="store", default='open',
-                    help= "Provider group, default is 'open'" )
+                    help="Provider group, default is 'open'")
 PARSER.add_argument("--project", action="store", default='main',
-                    help= "Provider project, default is 'main'" )
+                    help="Provider project, default is 'main'")
 PARSER.add_argument("--providers", action="store_true",
-                    help= "List hub/group/project providers for IBMQ ")
+                    help="List hub/group/project providers for IBMQ ")
 PARSER.add_argument("--qvm", action="store_true",
                     help="""Use Forest local qvm simulator described by
                     -b backend, generally one of qasm_simulator or

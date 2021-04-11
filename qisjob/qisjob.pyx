@@ -941,7 +941,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self.provider = IBMQ.load_account()
         except IBMQAccountCredentialsNotFound as err:
             raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
-        self.provider=IBMQ.get_provider(hub=self.hub, group=self.group, project=self.project)
+        self.provider = IBMQ.get_provider(hub=self.hub, group=self.group, project=self.project)
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
@@ -1129,7 +1129,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         circ: QuantumCircuit,
                         figure_basename: str,
                         backend: BaseBackend,
-                        decimals: int=3):
+                        decimals: int = 3):
         """
         Plot state_city-style the output state to file. Filename algorithmically
         generated from figure_basename plus concatenated type and timestamp.
@@ -1289,7 +1289,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_histogram:
                 QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
 
-    def one_exp(self, filepath_name: str=None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    def one_exp(self, filepath_name: str = None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """
         Load experiment source (OpenQASM or Python QuantumCircuit source) and
         run the job. print csv and other selected output.
@@ -1895,6 +1895,38 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             pass
         return my_dict
 
+    @staticmethod
+    def basic_noise_sim(model_backend: BaseBackend, circuit: QuantumCircuit) -> Result:
+        """
+
+
+        Parameters
+        ----------
+        model_backend : BaseBackend
+            DESCRIPTION.
+        circuit : QuantumCircuit
+            DESCRIPTION.
+
+        Returns
+        -------
+        Result
+            DESCRIPTION.
+
+        """
+        from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
+        from qiskit.providers.aer.noise import NoiseModel  # pylint: disable-msg=import-outside-toplevel
+        noise_model = NoiseModel.from_backend(model_backend)
+        coupling_map = model_backend.configuration().coupling_map
+        basis_gates = noise_model.basis_gates
+
+        # Perform noisy simulation
+        sim_backend = Aer.get_backend('qasm_simulator')
+        job = execute(circuit, sim_backend,
+                      coupling_map=coupling_map,
+                      noise_model=noise_model,
+                      basis_gates=basis_gates)
+        return job.result()
+
 
 class QisJobException(Exception):
     """Base class for QisJob exceptions"""
@@ -2020,13 +2052,13 @@ if __name__ == '__main__':
                         currently supported are [IBMQ | QI | Forest | JKU].
                         Default is IBMQ.""", default="IBMQ")
     PARSER.add_argument("--hub", action="store", default='ibm-q',
-                        help= "Provider hub, default is 'ibm-q'" )
+                        help="Provider hub, default is 'ibm-q'")
     PARSER.add_argument("--group", action="store", default='open',
-                        help= "Provider group, default is 'open'" )
+                        help="Provider group, default is 'open'")
     PARSER.add_argument("--project", action="store", default='main',
-                        help= "Provider project, default is 'main'" )
+                        help="Provider project, default is 'main'")
     PARSER.add_argument("--providers", action="store_true",
-                        help= "List hub/group/project providers for IBMQ " )
+                        help="List hub/group/project providers for IBMQ")
     PARSER.add_argument("--qvm", action="store_true",
                         help="""Use Forest local qvm simulator described by
                         -b backend, generally one of qasm_simulator or
