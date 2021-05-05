@@ -11,18 +11,21 @@ limitations under the License.
 CHANGES by revision to QisJob
 
 v4.1
+Note: Version 4.1 is the last version before changing Aer simulator support to the new `AerSimulator` backend.
 - Add support for IBMQ hub, group, and project (`--hub` `--group` `--project`)
 - Add support for `job_monitor` kwarg `line_discipline` (`--job_monitor_line`)
+- Add `--noisy_sim` for noisy simulations
 - Add `--providers` to list hub/group/project providers for IBMQ
 - 4 `-v`s now print QisJob data dictionary and return
 - `ibmqjob_to_dict` calls on members not supported on all platforms: Now each
   call is wrapped in try/except.
-- Correct version number in `setup.py` 
- 
+- `examples/multimeasure.qasm`
+- Correct version number in `setup.py`
+
 v4.0
 - Renamed module to `qisjob` from `qis_job` (Issue #3)
 	- Added Makefile target `uninstall_oldname` to uninstall `qis_job`
-- `qisjob.QisJob` is now fully usable class to include in your Python program.  
+- `qisjob.QisJob` is now fully usable class to include in your Python program.
 	- Added exception regimen and removee `sys.exit()` calls (Issue #17)
 	Thanks, Omar Costa Hamido! (github `omarcostahamido`)
 - Add `--job_monitor_filepath`

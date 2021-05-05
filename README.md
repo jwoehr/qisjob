@@ -206,10 +206,11 @@ optional arguments:
 ## Notes
 
 * It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qisjob/releases).
+  * Version v4.1 is the last version before changing Aer simulator support to the new `AerSimulator` backend.
 * This document always reflects the latest checkins and may be ahead of the release versions.
   * See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qisjob/issues) to report any issues or feature requests.
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2021-04-11
+Jack Woehr 2021-05-05
