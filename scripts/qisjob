@@ -70,8 +70,8 @@ PARSER.add_argument(
     "--device",
     action="store",
     help="""Use the specified
-                    AerSimulator device, default is None""",
-    default=None,
+                    AerSimulator device, default is 'CPU'""",
+    default="CPU",
 )
 GROUP.add_argument("-b", "--backend", action="store", help="Use specified IBMQ backend")
 PARSER.add_argument(
@@ -344,6 +344,8 @@ PARSER.add_argument(
 )
 
 ARGS = PARSER.parse_args()
+
+import warnings
 
 if ARGS.warnings:
     warnings.filterwarnings("ignore")

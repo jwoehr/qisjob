@@ -113,11 +113,11 @@ The `qisjob` script has helpful help.
 
 ```
 $ qisjob -h
-usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version]
-              [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT] [--providers] [--noisy_sim] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME]
-              [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x]
-              [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm]
-              [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor] [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
+usage: qisjob [-h] [-i] [-s] [-a] [--method METHOD] [--device DEVICE] [-b BACKEND] [--version] [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT]
+              [--providers] [--noisy_sim] [--qvm] [--qvm_as] [--backends] [-1] [-c CREDITS] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m]
+              [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
+              [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
+              [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
               [filepath [filepath ...]]
 
 Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with reporting in CSV form. Can
@@ -134,15 +134,11 @@ optional arguments:
   -h, --help            show this help message and exit
   -i, --ibmq            Use best genuine IBMQ processor (default)
   -s, --sim             Use IBMQ qasm simulator
-  -a, --aer             Use QISKit Aer simulator. Default is Aer statevector simulator. Use -a --qasm-simulator to get Aer qasm simulator. Use -a --unitary-simulator to get Aer
-                        unitary simulator.
+  -a, --aer             Use QISKit AerSimulator. Use -a --method to get the specific AerSimulator method Use -a --device to get the specific AerSimulator device.
+  --method METHOD       Use the specified AerSimulator method, default is 'automatic'
+  --device DEVICE       Use the specified AerSimulator device, default is 'CPU'
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
-  --qasm_simulator      With -a use qasm simulator instead of statevector simulator
-  --unitary_simulator   With -a use unitary simulator instead of statevector simulator
-  --statevector_gpu     With -a and --qasm_simulator use gpu statevector simulator
-  --unitary_gpu         With -a and --qasm_simulator use gpu unitary simulator
-  --density_matrix_gpu  With -a and --qasm_simulator use gpu density matrix simulator
   --version             Announce QisJob version
   --api_provider API_PROVIDER
                         Backend remote api provider, currently supported are [IBMQ | QI | Forest | JKU]. Default is IBMQ.
@@ -166,10 +162,10 @@ optional arguments:
   --jobs JOBS           Print JOBS number of jobs and status for -b backend and exit 0
   --job_id JOB_ID       Print job number JOB_ID for -b backend and exit 0
   --job_result JOB_RESULT
-                        Print result of job number JOB_RESULT for -b backend and exit 0
+                        "Print result of job number JOB_RESULT for -b backend and exit 0
   -m, --memory          Print individual results of multishot experiment
   -n NUQASM2, --nuqasm2 NUQASM2
-                        Use nuqasm2 to translate OPENQASM2 source, providing include path for any include directives
+                        "Use nuqasm2 to translate OPENQASM2 source, providing include path for any include directives
   -o OUTFILE, --outfile OUTFILE
                         Write appending CSV to outfile, default is stdout
   -p, --properties      Print properties for backend specified by -b to stdout and exit 0

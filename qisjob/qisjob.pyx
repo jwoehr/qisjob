@@ -114,7 +114,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         one_job=False,
         qasm=False,
         use_aer=False,
-        aer_device=None,
+        aer_device="CPU",
         aer_method="automatic",
         use_sim=False,
         qvm=False,
@@ -330,61 +330,52 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             _Corresponding `qisjob` script argument_: `-a, --aer`
 
-            If `True` use QISKit Aer simulator.
+            If `True` use QISKit AerSimulator.
 
-            The default Aer simulator is the Aer statevector simulator.
-            In conjunction with this kwarg:
+            The default AerSimulator method is 'automatic'.
 
-                * Set use_qasm_simulator True for Aer qasm simulator.
-                * Set use_unitary_simulator True for Aer unitary simulator.
+            In conjunction with this kwarg, you may:
+
+                * Set `aer_method` to the specific AerSimulator method you wish
+                * Set `aer_device` to the specific AerSimulator device you wish
 
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
 
-        use_qasm_simulator : bool
-            The default is `False`.
+        aer_method : str
+            The default is `automatic`.
 
-            _Corresponding `qisjob` script argument_: `--qasm_simulator`
+            _Corresponding `qisjob` script argument_: `--method`
 
-            In conjunction with `use_aer`, use Aer's qasm simulator.
+            In conjunction with `use_aer`, set the method for the AerSimulator.
+            The choices are:
 
-        use_unitary_simulator : bool
-            The default is `False`.
+                * "automatic": Default simulation method. Select the simulation method automatically based on the circuit and noise model.
+                * "statevector": A dense statevector simulation that can sample measurement outcomes from ideal circuits with all measurements at end of the circuit. For noisy simulations each shot samples a randomly sampled noisy circuit from the noise model.
+                * "density_matrix": A dense density matrix simulation that may sample measurement outcomes from noisy circuits with all measurements at end of the circuit.
+                * "stabilizer": An efficient Clifford stabilizer state simulator that can simulate noisy Clifford circuits if all errors in the noise model are also Clifford errors.
+                * "extended_stabilizer": An approximate simulated for Clifford + T circuits based on a state decomposition into ranked-stabilizer state. The number of terms grows with the number of non-Clifford (T) gates.
+                * "matrix_product_state": A tensor-network statevector simulator that uses a Matrix Product State (MPS) representation for the state. This can be done either with or without truncation of the MPS bond dimensions depending on the simulator options. The default behaviour is no truncation.
+                * "unitary": A dense unitary matrix simulation of an ideal circuit. This simulates the unitary matrix of the circuit itself rather than the evolution of an initial quantum state. This method can only simulate gates, it does not support measurement, reset, or noise.
+                * "superop": A dense superoperator matrix simulation of an ideal or noisy circuit. This simulates the superoperator matrix of the circuit itself rather than the evolution of an initial quantum state. This method can simulate ideal and noisy gates, and reset, but does not support measurement.
 
-            _Corresponding `qisjob` script argument_: `--unitary-simulator`
+        aer_device : str
+            The default is `CPU`.
 
-            In conjunction with `use_aer`, use Aer's unitary simulator.
+            _Corresponding `qisjob` script argument_: `--device`
 
-        use_statevector_gpu : bool
-            The default is `False`.
+            In conjunction with `use_aer`, set the device for the AerSimulator.
 
-            _Corresponding `qisjob` script argument_: `--statevector_gpu`
-
-            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
-            `True`, use gpu statevector simulator.
-
-        use_unitary_gpu : bool
-            The default is `False`.
-
-            _Corresponding `qisjob` script argument_: `--unitary_gpu`
-
-            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
-            `True`, use gpu unitary simulator.
-
-        use_density_matrix_gpu : bool
-            The default is `False`.
-
-            _Corresponding `qisjob` script argument_: `--density_matrix_gpu`
-
-            If `True` and `use_aer` is `True` and `use_qasm_simulator` is
-            `True`, use gpu density matrix simulator.
+            At present, the options are
+                * `GPU`.
+                * `CPU`.
 
         use_sim : bool
             The default is `False`.
 
             _Corresponding `qisjob` script argument_: `-s, --sim`
 
-            If `True`, use IBMQ online qasm simulator
+            If `True`, use IBMQ cloud qasm simulator
 
         qvm : bool
             The default is `False`.
@@ -1470,18 +1461,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.noisy_sim:
                 job_exp = self.basic_noise_sim(circ, self.backend)
 
-            elif self.method:
-                self.verbosity("Using gpu method {}".format(self.method), 2)
-                backend_options = {"method": self.method}
-                job_exp = execute(
-                    circ,
-                    backend=self.backend,
-                    backend_options=backend_options,
-                    optimization_level=self.optimization_level,
-                    shots=self.shots,
-                    max_credits=self.max_credits,
-                    memory=self.memory,
-                )
             else:
                 job_exp = execute(
                     circ,
@@ -2186,8 +2165,8 @@ if __name__ == "__main__":
         "--device",
         action="store",
         help="""Use the specified
-                        AerSimulator device, default is None""",
-        default=None,
+                        AerSimulator device, default is 'CPU'""",
+        default="CPU",
     )
     GROUP.add_argument(
         "-b", "--backend", action="store", help="Use specified IBMQ backend"

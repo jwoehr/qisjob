@@ -63,7 +63,7 @@ here to make it easier to understand what QisJob does in its <code>do_it()</code
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r', noisy_sim=False)</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, max_credits=3, outfile_path=None, one_job=False, qasm=False, use_aer=False, aer_device='CPU', aer_method='automatic', use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r', noisy_sim=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -222,53 +222,45 @@ has no credit scheme enabled, <code>max_credits</code> has no effect.</p>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-a, --aer</code></p>
-<p>If <code>True</code> use QISKit Aer simulator.</p>
-<p>The default Aer simulator is the Aer statevector simulator.
-In conjunction with this kwarg:</p>
-<pre><code>* Set use_qasm_simulator True for Aer qasm simulator.
-* Set use_unitary_simulator True for Aer unitary simulator.
+<p>If <code>True</code> use QISKit AerSimulator.</p>
+<p>The default AerSimulator method is 'automatic'.</p>
+<p>In conjunction with this kwarg, you may:</p>
+<pre><code>* Set &lt;code&gt;aer\_method&lt;/code&gt; to the specific AerSimulator method you wish
+* Set &lt;code&gt;aer\_device&lt;/code&gt; to the specific AerSimulator device you wish
 </code></pre>
 <p>It is an error to set both <code>qasm_simulator</code> and <code>unitary_simulator</code>
 <code>True</code>.</p>
 </dd>
-<dt><strong><code>use_qasm_simulator</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>aer_method</code></strong> :&ensp;<code>str</code></dt>
 <dd>
-<p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--qasm_simulator</code></p>
-<p>In conjunction with <code>use_aer</code>, use Aer's qasm simulator.</p>
+<p>The default is <code>automatic</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--method</code></p>
+<p>In conjunction with <code>use_aer</code>, set the method for the AerSimulator.
+The choices are:</p>
+<pre><code>* "automatic": Default simulation method. Select the simulation method automatically based on the circuit and noise model.
+* "statevector": A dense statevector simulation that can sample measurement outcomes from ideal circuits with all measurements at end of the circuit. For noisy simulations each shot samples a randomly sampled noisy circuit from the noise model.
+* "density_matrix": A dense density matrix simulation that may sample measurement outcomes from noisy circuits with all measurements at end of the circuit.
+* "stabilizer": An efficient Clifford stabilizer state simulator that can simulate noisy Clifford circuits if all errors in the noise model are also Clifford errors.
+* "extended_stabilizer": An approximate simulated for Clifford + T circuits based on a state decomposition into ranked-stabilizer state. The number of terms grows with the number of non-Clifford (T) gates.
+* "matrix_product_state": A tensor-network statevector simulator that uses a Matrix Product State (MPS) representation for the state. This can be done either with or without truncation of the MPS bond dimensions depending on the simulator options. The default behaviour is no truncation.
+* "unitary": A dense unitary matrix simulation of an ideal circuit. This simulates the unitary matrix of the circuit itself rather than the evolution of an initial quantum state. This method can only simulate gates, it does not support measurement, reset, or noise.
+* "superop": A dense superoperator matrix simulation of an ideal or noisy circuit. This simulates the superoperator matrix of the circuit itself rather than the evolution of an initial quantum state. This method can simulate ideal and noisy gates, and reset, but does not support measurement.
+</code></pre>
 </dd>
-<dt><strong><code>use_unitary_simulator</code></strong> :&ensp;<code>bool</code></dt>
+<dt><strong><code>aer_device</code></strong> :&ensp;<code>str</code></dt>
 <dd>
-<p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--unitary-simulator</code></p>
-<p>In conjunction with <code>use_aer</code>, use Aer's unitary simulator.</p>
-</dd>
-<dt><strong><code>use_statevector_gpu</code></strong> :&ensp;<code>bool</code></dt>
-<dd>
-<p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--statevector_gpu</code></p>
-<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
-<code>True</code>, use gpu statevector simulator.</p>
-</dd>
-<dt><strong><code>use_unitary_gpu</code></strong> :&ensp;<code>bool</code></dt>
-<dd>
-<p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--unitary_gpu</code></p>
-<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
-<code>True</code>, use gpu unitary simulator.</p>
-</dd>
-<dt><strong><code>use_density_matrix_gpu</code></strong> :&ensp;<code>bool</code></dt>
-<dd>
-<p>The default is <code>False</code>.</p>
-<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--density_matrix_gpu</code></p>
-<p>If <code>True</code> and <code>use_aer</code> is <code>True</code> and <code>use_qasm_simulator</code> is
-<code>True</code>, use gpu density matrix simulator.</p>
+<p>The default is <code>CPU</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--device</code></p>
+<p>In conjunction with <code>use_aer</code>, set the device for the AerSimulator.</p>
+<p>At present, the options are
+* <code>GPU</code>.
+* <code>CPU</code>.</p>
 </dd>
 <dt><strong><code>use_sim</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
 <p>The default is <code>False</code>.</p>
 <p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>-s, --sim</code></p>
-<p>If <code>True</code>, use IBMQ online qasm simulator</p>
+<p>If <code>True</code>, use IBMQ cloud qasm simulator</p>
 </dd>
 <dt><strong><code>qvm</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
