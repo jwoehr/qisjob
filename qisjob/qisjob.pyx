@@ -57,6 +57,7 @@ from qiskit.result import Result
 from qiskit.providers import BaseBackend, BaseJob
 from qiskit.providers.ibmq import IBMQJob
 from qiskit.compiler import transpile
+
 try:
     from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
     from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
@@ -65,6 +66,7 @@ except ImportError:
     warnings.warn("Qiskit IBMQ provider not installed.")
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout
+
 try:
     from quantuminspire.api import QuantumInspireAPI
     from quantuminspire.qiskit import QI
@@ -91,33 +93,59 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     and then the `do_it()` member function is called. After that, generally,
     the instance is discarded.
     """
-    def __init__(self, filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
-                 qasm_src=None,
-                 provider_name="IBMQ",
-                 hub='ibm-q', group='open', project='main',
-                 providers=False,
-                 backend_name=None,
-                 token=None, url=None,
-                 nuqasm2=None,
-                 num_qubits=5, shots=1024, max_credits=3,
-                 outfile_path=None, one_job=False, qasm=False,
-                 use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False,
-                 use_statevector_gpu=False, use_unitary_gpu=False,
-                 use_density_matrix_gpu=False,
-                 use_sim=False, qvm=False, qvm_as=False,
-                 qc_name=None, xpile=False, showsched=False, circuit_layout=False,
-                 optimization_level=1,
-                 print_job=False, memory=False, show_result=False,
-                 jobs_status=None, job_id=None, job_result=None,
-                 show_backends=False, show_configuration=False, show_properties=False,
-                 show_statuses=False, date_time=None,
-                 print_histogram=False, print_state_city=0, figure_basename='figout',
-                 show_q_version=False, verbose=0,
-                 show_qisjob_version=False,
-                 use_job_monitor=False,
-                 job_monitor_filepath=None,
-                 job_monitor_line='\r',
-                 noisy_sim=False):
+
+    def __init__(
+        self,
+        filepaths=None,  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
+        qasm_src=None,
+        provider_name="IBMQ",
+        hub="ibm-q",
+        group="open",
+        project="main",
+        providers=False,
+        backend_name=None,
+        token=None,
+        url=None,
+        nuqasm2=None,
+        num_qubits=5,
+        shots=1024,
+        max_credits=3,
+        outfile_path=None,
+        one_job=False,
+        qasm=False,
+        use_aer=False,
+        aer_device=None,
+        aer_method="automatic",
+        use_sim=False,
+        qvm=False,
+        qvm_as=False,
+        qc_name=None,
+        xpile=False,
+        showsched=False,
+        circuit_layout=False,
+        optimization_level=1,
+        print_job=False,
+        memory=False,
+        show_result=False,
+        jobs_status=None,
+        job_id=None,
+        job_result=None,
+        show_backends=False,
+        show_configuration=False,
+        show_properties=False,
+        show_statuses=False,
+        date_time=None,
+        print_histogram=False,
+        print_state_city=0,
+        figure_basename="figout",
+        show_q_version=False,
+        verbose=0,
+        show_qisjob_version=False,
+        use_job_monitor=False,
+        job_monitor_filepath=None,
+        job_monitor_line="\r",
+        noisy_sim=False,
+    ):
         """
 
         QisJob's initializer instances QisJob member data which control
@@ -656,11 +684,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.one_job = one_job
         self.qasm = qasm
         self.use_aer = use_aer
-        self.use_qasm_simulator = use_qasm_simulator
-        self.use_unitary_simulator = use_unitary_simulator
-        self.use_statevector_gpu = use_statevector_gpu
-        self.use_unitary_gpu = use_unitary_gpu
-        self.use_density_matrix_gpu = use_density_matrix_gpu
         self.use_sim = use_sim
         self.qvm = qvm
         self.qvm_as = qvm_as
@@ -686,9 +709,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.show_q_version = show_q_version
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = 'statevector_simulator'
         self.show_qisjob_version = show_qisjob_version
-        self.method = None  # methods for simulators e.g., gpu
+        self.method = aer_method
+        self.device = aer_device
         self.my_version = "v4.1"
         self.qasm_result = None
         self.result_exp_dict = None
@@ -709,7 +732,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """
         return self.my_version
 
-    def do_it(self):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+    def do_it(
+        self,
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
         """
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -771,15 +796,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             return
 
         if self.show_q_version:
-            from qiskit import __qiskit_version__  # pylint: disable-msg=import-outside-toplevel
+            from qiskit import (
+                __qiskit_version__,
+            )  # pylint: disable-msg=import-outside-toplevel
+
             self._pp.pprint(__qiskit_version__)
             return
 
-        if self.provider_name == "IBMQ" and ((self.token and not self.url)
-                                             or (self.url and not self.token)):
+        if self.provider_name == "IBMQ" and (
+            (self.token and not self.url) or (self.url and not self.token)
+        ):
             raise QisJobArgumentException(
-                'kwargs token and url must be used together for IBMQ provider or not at all'
-                )
+                "kwargs token and url must be used together for IBMQ provider or not at all"
+            )
 
         if self.providers:
             self.account_fu()
@@ -789,7 +818,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             except QiskitError as err:
                 raise QisJobRuntimeException(
                     "Error fetching IBMQ providers: {}".format(err)
-                    ) from err
+                ) from err
             return
 
         if self.show_configuration:
@@ -800,7 +829,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             except QiskitBackendNotFoundError as err:
                 raise QisJobRuntimeException(
                     "Backend {} not found: {}".format(self.backend_name, err)
-                    ) from err
+                ) from err
 
             self._pp.pprint(self.backend.configuration().to_dict())
             return
@@ -813,9 +842,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             except QiskitBackendNotFoundError as err:
                 raise QisJobRuntimeException(
                     "Backend {} not found: {}".format(self.backend_name, err)
-                    ) from err
+                ) from err
 
-            the_date_time = QisJob.gen_datetime(self.date_time) if self.date_time else None
+            the_date_time = (
+                QisJob.gen_datetime(self.date_time) if self.date_time else None
+            )
             self._pp.pprint(self.backend.properties(datetime=the_date_time).to_dict())
             return
 
@@ -833,7 +864,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 except QiskitBackendNotFoundError as err:
                     raise QisJobRuntimeException(
                         "Backend {} not found: {}".format(self.backend_name, err)
-                        ) from err
+                    ) from err
 
             for stat in self.get_statuses():
                 self._pp.pprint(stat)
@@ -841,8 +872,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         elif self.jobs_status or self.job_id or self.job_result:
             if not self.backend_name:
                 raise QisJobArgumentException(
-                    'kwargs jobs or job_id or job_result also require kwarg backend'
-                    )
+                    "kwargs jobs or job_id or job_result also require kwarg backend"
+                )
 
             self.account_fu()
 
@@ -851,7 +882,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             except QiskitBackendNotFoundError as err:
                 raise QisJobRuntimeException(
                     "Backend {} not found: {}".format(self.backend_name, err)
-                    ) from err
+                ) from err
 
             f_string = "Job {} {}"
 
@@ -938,7 +969,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         """
         the_args = []
-        the_split = datetime_comma_string.split(',')
+        the_split = datetime_comma_string.split(",")
         for i in the_split:
             the_args.append(int(i))
         return datetime.datetime(*the_args)
@@ -951,8 +982,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             else:
                 self.provider = IBMQ.load_account()
         except IBMQAccountCredentialsNotFound as err:
-            raise QisJobRuntimeException("Error loading IBMQ Account: {}".format(err)) from err
-        self.provider = IBMQ.get_provider(hub=self.hub, group=self.group, project=self.project)
+            raise QisJobRuntimeException(
+                "Error loading IBMQ Account: {}".format(err)
+            ) from err
+        self.provider = IBMQ.get_provider(
+            hub=self.hub, group=self.group, project=self.project
+        )
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
@@ -983,44 +1018,37 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         elif self.provider_name == "JKU":
             self.jku_account_fu()
 
-    def choose_backend(self):  # pylint: disable-msg=too-many-branches, too-many-statements
+    def choose_backend(
+        self,
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements
         """Instance self with backend selected by user if account will
         activate and allow."""
         self.backend = None
 
-        # Choose simulator. We defaulted in __init__() to statevector_simulator
-        if self.use_qasm_simulator:
-            self.local_simulator_type = 'qasm_simulator'
-        elif self.use_unitary_simulator:
-            self.local_simulator_type = 'unitary_simulator'
-
-        # Choose method kwarg for gpu etc if present
-        if self.use_statevector_gpu:
-            self.method = "statevector_gpu"
-        elif self.use_unitary_gpu:
-            self.method = "unitary_gpu"
-        elif self.use_density_matrix_gpu:
-            self.method = "density_matrix_gpu"
-
         if self.use_aer:
-            from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
-            if self.method:
-                self.verbosity("self.local_simulator_type is '{}' with method '{}'"
-                               .format(self.local_simulator_type,
-                                       self.method),
-                               2)
+            from qiskit.providers.aer import (
+                AerSimulator,
+            )  # pylint: disable-msg=import-outside-toplevel
+
+            self.verbosity("self.method is '{}'".format(self.method), 2)
+            if self.device:
+                self.verbosity("self.device is '{}'".format(self.device), 2)
+                self.backend = AerSimulator(method=self.method, device=self.device)
             else:
-                self.verbosity("Aer backend is {}".format(self.backend), 2)
-            self.backend = Aer.get_backend(self.local_simulator_type)
+                self.backend = AerSimulator(method=self.method)
 
         elif self.qvm or self.qvm_as:
             self.backend = ForestBackend.get_backend(self.backend_name, self.qvm_as)
-            self.verbosity('qvm provider.get_backend() returns {}'.format(str(self.backend)), 3)
+            self.verbosity(
+                "qvm provider.get_backend() returns {}".format(str(self.backend)), 3
+            )
 
         else:
             self.account_fu()
             self.verbosity("Provider is {}".format(str(self.provider)), 3)
-            self.verbosity("Provider.backends is {}".format(str(self.provider.backends())), 3)
+            self.verbosity(
+                "Provider.backends is {}".format(str(self.provider.backends())), 3
+            )
 
             if self.backend_name:
                 try:
@@ -1028,34 +1056,51 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 except QiskitBackendNotFoundError as err:
                     raise QisJobRuntimeException(
                         "Backend {} not found: {}".format(self.backend_name, err)
-                        ) from err
-                self.verbosity('provider.get_backend() returns {}'.format(str(self.backend)), 3)
+                    ) from err
+                self.verbosity(
+                    "provider.get_backend() returns {}".format(str(self.backend)), 3
+                )
 
             elif self.use_sim:
-                self.backend = self.provider.get_backend('ibmq_qasm_simulator')
-                self.verbosity('sim provider.get_backend() returns {}'.format(str(self.backend)), 3)
+                self.backend = self.provider.get_backend("ibmq_qasm_simulator")
+                self.verbosity(
+                    "sim provider.get_backend() returns {}".format(str(self.backend)), 3
+                )
 
-            elif self.provider_name == 'QI':
+            elif self.provider_name == "QI":
                 for b_e in self.provider.backends():
-                    if b_e.__dict__['_QuantumInspireBackend__backend']['number_of_qubits'] >= self.num_qubits:  # pylint: disable-msg=line-too-long
+                    if (
+                        b_e.__dict__["_QuantumInspireBackend__backend"][
+                            "number_of_qubits"
+                        ]
+                        >= self.num_qubits
+                    ):  # pylint: disable-msg=line-too-long
                         self.backend = b_e
                         self.verbosity("Backend is {}".format(str(self.backend)), 1)
                         break
                 if not self.backend:
                     raise QisJobRuntimeException(
-                        "No suitable backend found for {} qubits".format(str(self.num_qubits))
+                        "No suitable backend found for {} qubits".format(
+                            str(self.num_qubits)
                         )
+                    )
             else:
-                from qiskit.providers.ibmq import least_busy  # pylint: disable-msg=import-outside-toplevel, line-too-long
+                from qiskit.providers.ibmq import (
+                    least_busy,
+                )  # pylint: disable-msg=import-outside-toplevel, line-too-long
+
                 large_enough_devices = self.provider.backends(
                     filters=lambda x: x.configuration().n_qubits >= self.num_qubits
-                    and not x.configuration().simulator)
+                    and not x.configuration().simulator
+                )
                 try:
                     self.backend = least_busy(large_enough_devices)
                 except QiskitError as err:
                     raise QisJobRuntimeException(
-                        "QiskitError no device found for criteria (large enough?) {}".format(err)
-                        ) from err
+                        "QiskitError no device found for criteria (large enough?) {}".format(
+                            err
+                        )
+                    ) from err
                 self.verbosity("The best backend is {}".format(self.backend.name()), 2)
                 self.verbosity("Backend is {}".format(str(self.backend)), 1)
 
@@ -1084,11 +1129,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         csv.append(description)
         keys = ""
         for key in sort_keys:
-            keys += key + ';'
+            keys += key + ";"
         csv.append(keys)
         counts = ""
         for count in sort_counts:
-            counts += str(count) + ';'
+            counts += str(count) + ";"
         csv.append(counts)
         return csv
 
@@ -1110,7 +1155,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             the algorithmically generated filename.
 
         """
-        return filepath + '_' + str(backend) + '_' + datetime.datetime.now().isoformat()
+        return filepath + "_" + str(backend) + "_" + datetime.datetime.now().isoformat()
 
     @staticmethod
     def save_fig(figure: Figure, filepath: str, backend: BaseBackend, tail: str):
@@ -1133,14 +1178,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         None.
 
         """
-        figure.savefig(QisJob.fig_name_str(filepath, backend) + '.' + tail)
+        figure.savefig(QisJob.fig_name_str(filepath, backend) + "." + tail)
 
     @staticmethod
-    def state_city_plot(result_exp: Result,
-                        circ: QuantumCircuit,
-                        figure_basename: str,
-                        backend: BaseBackend,
-                        decimals: int = 3):
+    def state_city_plot(
+        result_exp: Result,
+        circ: QuantumCircuit,
+        figure_basename: str,
+        backend: BaseBackend,
+        decimals: int = 3,
+    ):
         """
         Plot state_city-style the output state to file. Filename algorithmically
         generated from figure_basename plus concatenated type and timestamp.
@@ -1170,16 +1217,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         None.
 
         """
-        from qiskit.visualization import plot_state_city  # pylint: disable-msg=import-outside-toplevel, line-too-long
+        from qiskit.visualization import (
+            plot_state_city,
+        )  # pylint: disable-msg=import-outside-toplevel, line-too-long
+
         outputstate = result_exp.get_statevector(circ, decimals)
         fig = plot_state_city(outputstate)
-        QisJob.save_fig(fig, figure_basename, backend, 'state_city.png')
+        QisJob.save_fig(fig, figure_basename, backend, "state_city.png")
 
     @staticmethod
-    def do_histogram(result_exp: Result,
-                     circ: QuantumCircuit,
-                     figure_basename: str,
-                     backend: BaseBackend):
+    def do_histogram(
+        result_exp: Result,
+        circ: QuantumCircuit,
+        figure_basename: str,
+        backend: BaseBackend,
+    ):
         """
         Plot histogram-style the result to file. Filename algorithmically
         generated from figure_basename plus concatenated type and timestamp.
@@ -1200,15 +1252,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         None.
 
         """
-        from qiskit.tools.visualization import plot_histogram  # pylint: disable-msg=import-outside-toplevel, line-too-long
+        from qiskit.tools.visualization import (
+            plot_histogram,
+        )  # pylint: disable-msg=import-outside-toplevel, line-too-long
+
         outputstate = result_exp.get_counts(circ)
         fig = plot_histogram(outputstate)
-        QisJob.save_fig(fig, figure_basename, backend, 'histogram.png')
+        QisJob.save_fig(fig, figure_basename, backend, "histogram.png")
 
-    def formulate_result(self,
-                         result_exp: Result,
-                         circ: QuantumCircuit,
-                         ofh: TextIOWrapper) -> list:
+    def formulate_result(
+        self, result_exp: Result, circ: QuantumCircuit, ofh: TextIOWrapper
+    ) -> list:
         """
         Formulate the result `result_exp` of one circuit `circ`
         returning output as string optionally also writing
@@ -1237,20 +1291,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """
         # Write qasm if requested
         if self.qasm and ofh:
-            ofh.write(circ.qasm() + '\n')
+            ofh.write(circ.qasm() + "\n")
 
         # Raw data if requested
         if self.memory:
             self._pp.pprint(result_exp.data(circ))
 
         # Print statevector ... this doesn't handle Forest qvm yet
-        if self.use_aer and self.local_simulator_type == 'statevector_simulator':
+
+        if self.method == "statevector" and result_exp.get_statevector(circ):
             self._pp.pprint(result_exp.get_statevector(circ))
 
         output = None
 
         # Print counts if any measurment was taken
-        if 'counts' in result_exp.data(circ):
+        if "counts" in result_exp.data(circ):
             counts_exp = result_exp.get_counts(circ)
             self.verbosity(counts_exp, 1)
             sorted_keys = sorted(counts_exp.keys())
@@ -1259,14 +1314,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 sorted_counts.append(counts_exp.get(i))
 
             # Generate CSV
-            output = QisJob.csv_str(str(self.backend) + ' ' + datetime.datetime.now().isoformat(),
-                                    sorted_keys, sorted_counts)
+            output = QisJob.csv_str(
+                str(self.backend) + " " + datetime.datetime.now().isoformat(),
+                sorted_keys,
+                sorted_counts,
+            )
         return output
 
-    def process_result(self,
-                       result_exp: Result,
-                       circ: QuantumCircuit,
-                       ofh: TextIOWrapper):
+    def process_result(
+        self, result_exp: Result, circ: QuantumCircuit, ofh: TextIOWrapper
+    ):
         """
         Process the result of one `QuantumCircuit circ`
         experiment from its `Result result_exp`
@@ -1292,15 +1349,24 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         if output:
             # Write CSV
             for line in output:
-                ofh.write(line + '\n')
+                ofh.write(line + "\n")
 
             if self.print_state_city:
-                QisJob.state_city_plot(result_exp, circ, self.figure_basename,
-                                       self.backend, decimals=self.print_state_city)
+                QisJob.state_city_plot(
+                    result_exp,
+                    circ,
+                    self.figure_basename,
+                    self.backend,
+                    decimals=self.print_state_city,
+                )
             if self.print_histogram:
-                QisJob.do_histogram(result_exp, circ, self.figure_basename, self.backend)
+                QisJob.do_histogram(
+                    result_exp, circ, self.figure_basename, self.backend
+                )
 
-    def one_exp(self, filepath_name: str = None):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    def one_exp(
+        self, filepath_name: str = None
+    ):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """
         Load experiment source (OpenQASM or Python QuantumCircuit source) and
         run the job. print csv and other selected output.
@@ -1325,17 +1391,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         if filepath_name is None:
             ifh = sys.stdin
         else:
-            ifh = open(filepath_name, 'r')
+            ifh = open(filepath_name, "r")
 
         if self.outfile_path is None:
             ofh = sys.stdout
         else:
-            ofh = open(self.outfile_path, 'w')
+            ofh = open(self.outfile_path, "w")
 
         if self.backend is None:
             raise QisJobRuntimeException("No backend available, quitting.")
 
-        self.verbosity("File path is " + ("stdin" if ifh is sys.stdin else filepath_name), 2)
+        self.verbosity(
+            "File path is " + ("stdin" if ifh is sys.stdin else filepath_name), 2
+        )
         self.verbosity("File handle is {}".format(str(ifh)), 3)
 
         # Read source
@@ -1355,22 +1423,29 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             circ = my_loc[self.qc_name]
         else:
             if self.nuqasm2:
-                from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
-                                     Qasm_Exception,
-                                     Ast2CircException)
+                from nuqasm2 import (
+                    Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                    Qasm_Exception,
+                    Ast2CircException,
+                )
+
                 try:
-                    circ = Ast2Circ.from_qasm_str(the_source_list,
-                                                  include_path=self.nuqasm2,
-                                                  no_unknown=True)
+                    circ = Ast2Circ.from_qasm_str(
+                        the_source_list, include_path=self.nuqasm2, no_unknown=True
+                    )
 
                 except (Qasm_Exception, Ast2CircException) as err:
                     x = err.errpacket()  # pylint: disable-msg=invalid-name
                     raise QisJobRuntimeException(
                         "Filepath name error {} {} {}".format(filepath_name, err, x)
-                        ) from err
+                    ) from err
 
-                self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
-                               .format(circ.qasm()), 3)
+                self.verbosity(
+                    "Unrolled circuit's OPENQASM 2.0 source code\n{}".format(
+                        circ.qasm()
+                    ),
+                    3,
+                )
 
             else:
                 circ = QuantumCircuit.from_qasm_str(the_source)
@@ -1378,15 +1453,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
         if self.xpile:
-            new_circ = transpile(circ, backend=self.backend,
-                                 optimization_level=self.optimization_level)
+            new_circ = transpile(
+                circ, backend=self.backend, optimization_level=self.optimization_level
+            )
             print(new_circ)
             if self.circuit_layout:
                 fig = plot_circuit_layout(new_circ, self.backend)
-                QisJob.save_fig(fig,
-                                self.figure_basename,
-                                self.backend,
-                                'plot_circuit.png')
+                QisJob.save_fig(
+                    fig, self.figure_basename, self.backend, "plot_circuit.png"
+                )
 
             if self.showsched:
                 self._pp.pprint(schedule(new_circ, self.backend))
@@ -1398,16 +1473,24 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             elif self.method:
                 self.verbosity("Using gpu method {}".format(self.method), 2)
                 backend_options = {"method": self.method}
-                job_exp = execute(circ, backend=self.backend,
-                                  backend_options=backend_options,
-                                  optimization_level=self.optimization_level,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
+                job_exp = execute(
+                    circ,
+                    backend=self.backend,
+                    backend_options=backend_options,
+                    optimization_level=self.optimization_level,
+                    shots=self.shots,
+                    max_credits=self.max_credits,
+                    memory=self.memory,
+                )
             else:
-                job_exp = execute(circ, backend=self.backend,
-                                  optimization_level=self.optimization_level,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
+                job_exp = execute(
+                    circ,
+                    backend=self.backend,
+                    optimization_level=self.optimization_level,
+                    shots=self.shots,
+                    max_credits=self.max_credits,
+                    memory=self.memory,
+                )
 
             if self.print_job:
                 if self.provider_name != "QI":
@@ -1422,20 +1505,28 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             if self.use_job_monitor:
                 if self.job_monitor_filepath:
-                    self.verbosity("File for job monitor output is {}"
-                                   .format(self.job_monitor_filepath), 1)
-                    j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    output=j_m_file,
-                                    line_discipline=self.job_monitor_line)
+                    self.verbosity(
+                        "File for job monitor output is {}".format(
+                            self.job_monitor_filepath
+                        ),
+                        1,
+                    )
+                    j_m_file = open(self.job_monitor_filepath, mode="w", buffering=1)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            output=j_m_file,
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    line_discipline=self.job_monitor_line)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp)
 
@@ -1453,19 +1544,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 print("After run:")
                 self._pp.pprint(a_job)
 
-            if self.use_statevector_gpu:
-                try:
-                    self.verbosity("Method: {}"
-                                   .format(result_exp.data(circ).metadata.get('method')), 2)
-                except AttributeError as err:
-                    print("AttributeError error: {0}".format(err))
-
             if self.show_result:
                 self._pp.pprint(self.result_exp_dict)
 
             # Open outfile
-            self.verbosity("Outfile is {}"
-                           .format("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+            self.verbosity(
+                "Outfile is {}".format(
+                    "stdout" if ofh is sys.stdout else self.outfile_path
+                ),
+                2,
+            )
             self.verbosity("File handle is {}".format(str(ofh)), 3)
 
             self.process_result(result_exp, circ, ofh)
@@ -1473,12 +1561,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         except IBMQJobFailureError as err:
             raise QisJobRuntimeException(
                 "Job failure {} {}".format(err, job_exp.error_message())
-                ) from err
+            ) from err
 
         if ofh is not sys.stdout:
             ofh.close()
 
-    def multi_exps(self):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    def multi_exps(
+        self,
+    ):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """Load qasms and run all as one the job,
         print csvs and other selected output
         """
@@ -1488,15 +1578,19 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         if self.outfile_path is None:
             ofh = sys.stdout
         else:
-            ofh = open(self.outfile_path, 'w')
+            ofh = open(self.outfile_path, "w")
 
-        self.verbosity("Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2)
+        self.verbosity(
+            "Outfile is " + ("stdout" if ofh is sys.stdout else self.outfile_path), 2
+        )
         self.verbosity("File handle is {}".format(str(ofh)), 3)
 
         if self.nuqasm2:
-            from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
-                                 Qasm_Exception,
-                                 Ast2CircException)
+            from nuqasm2 import (
+                Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                Qasm_Exception,
+                Ast2CircException,
+            )
 
         circs = []
 
@@ -1524,18 +1618,22 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             else:
                 if self.nuqasm2:
                     try:
-                        circ = Ast2Circ.from_qasm_str(the_source_list,
-                                                      include_path=self.nuqasm2,
-                                                      no_unknown=True)
+                        circ = Ast2Circ.from_qasm_str(
+                            the_source_list, include_path=self.nuqasm2, no_unknown=True
+                        )
 
                     except (Qasm_Exception, Ast2CircException) as err:
                         x = err.errpacket()  # pylint: disable-msg=invalid-name
                         raise QisJobRuntimeException(
                             "Error in source {} {} {}".format(the_source_list, err, x)
-                            ) from err
+                        ) from err
 
-                    self.verbosity("\nUnrolled circuit's OPENQASM 2.0 source code\n{}"
-                                   .format(circ.qasm()), 3)
+                    self.verbosity(
+                        "\nUnrolled circuit's OPENQASM 2.0 source code\n{}".format(
+                            circ.qasm()
+                        ),
+                        3,
+                    )
 
                 else:
                     circ = QuantumCircuit.from_qasm_str(the_source)
@@ -1543,15 +1641,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
             if self.xpile:
-                new_circ = transpile(circ, backend=self.backend,
-                                     optimization_level=self.optimization_level)
+                new_circ = transpile(
+                    circ,
+                    backend=self.backend,
+                    optimization_level=self.optimization_level,
+                )
                 print(new_circ)
                 if self.circuit_layout:
                     fig = plot_circuit_layout(new_circ, self.backend)
-                    QisJob.save_fig(fig,
-                                    self.figure_basename,
-                                    self.backend,
-                                    'plot_circuit.png')
+                    QisJob.save_fig(
+                        fig, self.figure_basename, self.backend, "plot_circuit.png"
+                    )
                 if self.showsched:
                     self._pp.pprint(schedule(new_circ, self.backend))
 
@@ -1561,19 +1661,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.noisy_sim:
                 job_exp = self.basic_noise_sim(circ, self.backend)
 
-            elif self.use_statevector_gpu:
-                self.verbosity("Using gpu", 2)
-                backend_options = {"method": "statevector_gpu"}
-                job_exp = execute(circs, backend=self.backend,
-                                  optimization_level=self.optimization_level,
-                                  backend_options=backend_options,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
             else:
-                job_exp = execute(circs, backend=self.backend,
-                                  optimization_level=self.optimization_level,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
+                job_exp = execute(
+                    circs,
+                    backend=self.backend,
+                    optimization_level=self.optimization_level,
+                    shots=self.shots,
+                    max_credits=self.max_credits,
+                    memory=self.memory,
+                )
 
             if self.print_job:
                 if self.provider_name != "QI":
@@ -1588,20 +1684,28 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             if self.use_job_monitor:
                 if self.job_monitor_filepath:
-                    self.verbosity("File for job monitor output is {}"
-                                   .format(self.job_monitor_filepath), 1)
-                    j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    output=j_m_file,
-                                    line_discipline=self.job_monitor_line)
+                    self.verbosity(
+                        "File for job monitor output is {}".format(
+                            self.job_monitor_filepath
+                        ),
+                        1,
+                    )
+                    j_m_file = open(self.job_monitor_filepath, mode="w", buffering=1)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            output=j_m_file,
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    line_discipline=self.job_monitor_line)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp)
 
@@ -1629,7 +1733,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         except IBMQJobFailureError as err:
             raise QisJobRuntimeException(
                 "Job failure {} {}".format(err, job_exp.error_message())
-                ) from err
+            ) from err
 
         if ofh is not sys.stdout:
             ofh.close()
@@ -1652,7 +1756,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 stat.append(b_e.status().to_dict())
         return stat
 
-    def qasm_exp(self) -> list:  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    def qasm_exp(
+        self,
+    ) -> list:  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """
         Given qasm source, run the job and return list of string csv and other selected output.
 
@@ -1673,22 +1779,26 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         circ = None
 
         if self.nuqasm2:
-            from nuqasm2 import (Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
-                                 Qasm_Exception,
-                                 Ast2CircException)
+            from nuqasm2 import (
+                Ast2Circ,  # pylint: disable-msg=import-outside-toplevel
+                Qasm_Exception,
+                Ast2CircException,
+            )
+
             try:
-                circ = Ast2Circ.from_qasm_str(the_source,
-                                              include_path=self.nuqasm2,
-                                              no_unknown=True)
+                circ = Ast2Circ.from_qasm_str(
+                    the_source, include_path=self.nuqasm2, no_unknown=True
+                )
 
             except (Qasm_Exception, Ast2CircException) as err:
                 x = err.errpacket()  # pylint: disable-msg=invalid-name
                 raise QisJobRuntimeException(
                     "Source error {} {} {}".format(the_source, err, x)
-                    ) from err
+                ) from err
 
-            self.verbosity("Unrolled circuit's OPENQASM 2.0 source code\n{}"
-                           .format(circ.qasm()), 3)
+            self.verbosity(
+                "Unrolled circuit's OPENQASM 2.0 source code\n{}".format(circ.qasm()), 3
+            )
 
         else:
             circ = QuantumCircuit.from_qasm_str(the_source)
@@ -1696,15 +1806,15 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.verbosity(circ.draw(), 2)
 
         if self.xpile:
-            new_circ = transpile(circ, backend=self.backend,
-                                 optimization_level=self.optimization_level)
+            new_circ = transpile(
+                circ, backend=self.backend, optimization_level=self.optimization_level
+            )
             print(new_circ)
             if self.circuit_layout:
                 fig = plot_circuit_layout(new_circ, self.backend)
-                QisJob.save_fig(fig,
-                                self.figure_basename,
-                                self.backend,
-                                'plot_circuit.png')
+                QisJob.save_fig(
+                    fig, self.figure_basename, self.backend, "plot_circuit.png"
+                )
 
             if self.showsched:
                 self._pp.pprint(schedule(new_circ, self.backend))
@@ -1713,16 +1823,24 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.method:
                 self.verbosity("Using gpu method {}".format(self.method), 2)
                 backend_options = {"method": self.method}
-                job_exp = execute(circ, backend=self.backend,
-                                  optimization_level=self.optimization_level,
-                                  backend_options=backend_options,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
+                job_exp = execute(
+                    circ,
+                    backend=self.backend,
+                    optimization_level=self.optimization_level,
+                    backend_options=backend_options,
+                    shots=self.shots,
+                    max_credits=self.max_credits,
+                    memory=self.memory,
+                )
             else:
-                job_exp = execute(circ, backend=self.backend,
-                                  optimization_level=self.optimization_level,
-                                  shots=self.shots, max_credits=self.max_credits,
-                                  memory=self.memory)
+                job_exp = execute(
+                    circ,
+                    backend=self.backend,
+                    optimization_level=self.optimization_level,
+                    shots=self.shots,
+                    max_credits=self.max_credits,
+                    memory=self.memory,
+                )
 
             if self.print_job:
                 if self.provider_name != "QI":
@@ -1737,20 +1855,28 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             if self.use_job_monitor:
                 if self.job_monitor_filepath:
-                    self.verbosity("File for job monitor output is {}"
-                                   .format(self.job_monitor_filepath), 1)
-                    j_m_file = open(self.job_monitor_filepath, mode='w', buffering=1)
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    output=j_m_file,
-                                    line_discipline=self.job_monitor_line)
+                    self.verbosity(
+                        "File for job monitor output is {}".format(
+                            self.job_monitor_filepath
+                        ),
+                        1,
+                    )
+                    j_m_file = open(self.job_monitor_filepath, mode="w", buffering=1)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            output=j_m_file,
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp, output=j_m_file)
                     j_m_file.close()
                 else:
-                    if self.job_monitor_line != '\r':  # line_discipline kwarg only
-                        job_monitor(job_exp,      # recently added to Qiskit
-                                    line_discipline=self.job_monitor_line)
+                    if self.job_monitor_line != "\r":  # line_discipline kwarg only
+                        job_monitor(
+                            job_exp,  # recently added to Qiskit
+                            line_discipline=self.job_monitor_line,
+                        )
                     else:
                         job_monitor(job_exp)
 
@@ -1768,13 +1894,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 print("After run:")
                 self._pp.pprint(a_job)
 
-            if self.use_statevector_gpu:
-                try:
-                    self.verbosity("Method: {}"
-                                   .format(result_exp.data(circ).metadata.get('method')), 2)
-                except AttributeError as err:
-                    print("AttributeError error: {0}".format(err))
-
             if self.show_result:
                 self._pp.pprint(result_exp.to_dict())
 
@@ -1783,7 +1902,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         except IBMQJobFailureError as err:
             raise QisJobRuntimeException(
                 "Job failure {} {}".format(err, job_exp.error_message())
-                ) from err
+            ) from err
 
     @staticmethod
     def ibmqjob_to_dict(job: IBMQJob) -> dict:
@@ -1912,8 +2031,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return my_dict
 
     @staticmethod
-    def basic_noise_sim(circuit: QuantumCircuit,
-                        model_backend: BaseBackend)-> BaseJob:
+    def basic_noise_sim(circuit: QuantumCircuit, model_backend: BaseBackend) -> BaseJob:
         """
         Execute a simulator job with a basic noise model from a known backend.
 
@@ -1931,17 +2049,23 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         """
         from qiskit import Aer  # pylint: disable-msg=import-outside-toplevel
-        from qiskit.providers.aer.noise import NoiseModel  # pylint: disable-msg=import-outside-toplevel
+        from qiskit.providers.aer.noise import (
+            NoiseModel,
+        )  # pylint: disable-msg=import-outside-toplevel
+
         noise_model = NoiseModel.from_backend(model_backend)
         coupling_map = model_backend.configuration().coupling_map
         basis_gates = noise_model.basis_gates
 
         # Perform noisy simulation
-        sim_backend = Aer.get_backend('qasm_simulator')
-        job = execute(circuit, sim_backend,
-                      coupling_map=coupling_map,
-                      noise_model=noise_model,
-                      basis_gates=basis_gates)
+        sim_backend = Aer.get_backend("qasm_simulator")
+        job = execute(
+            circuit,
+            sim_backend,
+            coupling_map=coupling_map,
+            noise_model=noise_model,
+            basis_gates=basis_gates,
+        )
         return job
 
 
@@ -2013,7 +2137,7 @@ class QisJobRuntimeException(QisJobException):
         super().__init__(message, 100)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
     from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -2033,164 +2157,315 @@ if __name__ == '__main__':
     """
     PARSER = argparse.ArgumentParser(description=EXPLANATION)
     GROUP = PARSER.add_mutually_exclusive_group()
-    GROUPB = PARSER.add_mutually_exclusive_group()
-    GROUPC = PARSER.add_mutually_exclusive_group()
 
-    GROUP.add_argument("-i", "--ibmq", action="store_true",
-                       help="Use best genuine IBMQ processor (default)")
-    GROUP.add_argument("-s", "--sim", action="store_true",
-                       help="Use IBMQ qasm simulator")
-    GROUP.add_argument("-a", "--aer", action="store_true",
-                       help="""Use QISKit Aer simulator.
-                       Default is Aer statevector simulator.
-                       Use -a --qasm-simulator to get Aer qasm simulator.
-                       Use -a --unitary-simulator to get Aer unitary simulator.""")
-    GROUP.add_argument("-b", "--backend", action="store",
-                       help="Use specified IBMQ backend")
-    GROUPB.add_argument("--qasm_simulator", action="store_true",
-                        help="""With -a use qasm simulator
-                        instead of statevector simulator""")
-    GROUPB.add_argument("--unitary_simulator", action="store_true",
-                        help="""With -a use unitary simulator
-                        instead of statevector simulator""")
-    GROUPC.add_argument("--statevector_gpu", action="store_true",
-                        help="""With -a and --qasm_simulator
-                        use gpu statevector simulator""")
-    GROUPC.add_argument("--unitary_gpu", action="store_true",
-                        help="""With -a and --qasm_simulator
-                        use gpu unitary simulator""")
-    GROUPC.add_argument("--density_matrix_gpu", action="store_true",
-                        help="""With -a and --qasm_simulator
-                        use gpu density matrix simulator""")
-    PARSER.add_argument("--version", action="store_true",
-                        help="""Announce QisJob version""")
-    PARSER.add_argument("--api_provider", action="store",
-                        help="""Backend remote api provider,
+    GROUP.add_argument(
+        "-i",
+        "--ibmq",
+        action="store_true",
+        help="Use best genuine IBMQ processor (default)",
+    )
+    GROUP.add_argument(
+        "-s", "--sim", action="store_true", help="Use IBMQ qasm simulator"
+    )
+    GROUP.add_argument(
+        "-a",
+        "--aer",
+        action="store_true",
+        help="""Use QISKit AerSimulator.
+                       Use -a --method to get the specific AerSimulator method
+                       Use -a --device to get the specific AerSimulator device.""",
+    )
+    PARSER.add_argument(
+        "--method",
+        action="store",
+        help="""Use the specified
+                        AerSimulator method, default is 'automatic'""",
+        default="automatic",
+    )
+    PARSER.add_argument(
+        "--device",
+        action="store",
+        help="""Use the specified
+                        AerSimulator device, default is None""",
+        default=None,
+    )
+    GROUP.add_argument(
+        "-b", "--backend", action="store", help="Use specified IBMQ backend"
+    )
+    PARSER.add_argument(
+        "--version", action="store_true", help="""Announce QisJob version"""
+    )
+    PARSER.add_argument(
+        "--api_provider",
+        action="store",
+        help="""Backend remote api provider,
                         currently supported are [IBMQ | QI | Forest | JKU].
-                        Default is IBMQ.""", default="IBMQ")
-    PARSER.add_argument("--hub", action="store", default='ibm-q',
-                        help="Provider hub, default is 'ibm-q'")
-    PARSER.add_argument("--group", action="store", default='open',
-                        help="Provider group, default is 'open'")
-    PARSER.add_argument("--project", action="store", default='main',
-                        help="Provider project, default is 'main'")
-    PARSER.add_argument("--providers", action="store_true",
-                        help="List hub/group/project providers for IBMQ")
-    PARSER.add_argument("--noisy_sim", action="store_true",
-                        help="""Perform circuit(s) as Aer simulation using the
+                        Default is IBMQ.""",
+        default="IBMQ",
+    )
+    PARSER.add_argument(
+        "--hub",
+        action="store",
+        default="ibm-q",
+        help="Provider hub, default is 'ibm-q'",
+    )
+    PARSER.add_argument(
+        "--group",
+        action="store",
+        default="open",
+        help="Provider group, default is 'open'",
+    )
+    PARSER.add_argument(
+        "--project",
+        action="store",
+        default="main",
+        help="Provider project, default is 'main'",
+    )
+    PARSER.add_argument(
+        "--providers",
+        action="store_true",
+        help="List hub/group/project providers for IBMQ",
+    )
+    PARSER.add_argument(
+        "--noisy_sim",
+        action="store_true",
+        help="""Perform circuit(s) as Aer simulation using the
                         designated backend (see --backend) as the
-                        model backend.""")
-    PARSER.add_argument("--qvm", action="store_true",
-                        help="""Use Forest local qvm simulator described by
+                        model backend.""",
+    )
+    PARSER.add_argument(
+        "--qvm",
+        action="store_true",
+        help="""Use Forest local qvm simulator described by
                         -b backend, generally one of qasm_simulator or
                         statevector_simulator. Use --qvm_as to instruct the
-                        simulator to emulate a specific Rigetti QPU""")
-    PARSER.add_argument("--qvm_as", action="store_true",
-                        help="""Use Forest local qvm simulator to emulate the
+                        simulator to emulate a specific Rigetti QPU""",
+    )
+    PARSER.add_argument(
+        "--qvm_as",
+        action="store_true",
+        help="""Use Forest local qvm simulator to emulate the
                         specific Rigetti QPU described by -b backend. Use --qvm
                         to run the Forest local qvm simulator described by
-                        -b backend.""")
-    PARSER.add_argument("--backends", action="store_true",
-                        help="Print list of backends to stdout and exit 0")
-    PARSER.add_argument("-1", "--one_job", action="store_true",
-                        help="Run all experiments as one job")
-    PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
-                        help="Max credits to expend on each job, default is 3")
-    PARSER.add_argument("-d", "--datetime", type=str, action="store",
-                        help="""Datetime 'year,month,day[,hour,min,sec]'
-                        for -p,--properties""")
-    PARSER.add_argument("-g", "--configuration", action="store_true",
-                        help="""Print configuration for backend specified by -b
-                        to stdout and exit 0""")
-    PARSER.add_argument("-j", "--job", action="store_true",
-                        help="Print your job's dictionary")
-    PARSER.add_argument("--jobs", type=int, action="store",
-                        help="""Print JOBS number of jobs and status for -b
-                        backend and exit 0""")
-    PARSER.add_argument("--job_id", type=str, action="store",
-                        help="Print job number JOB_ID for -b backend and exit 0")
-    PARSER.add_argument("--job_result", type=str, action="store",
-                        help=""""Print result of job number JOB_RESULT for
-                        -b backend and exit 0""")
-    PARSER.add_argument("-m", "--memory", action="store_true",
-                        help="Print individual results of multishot experiment")
-    PARSER.add_argument("-n", "--nuqasm2", action="store",
-                        help=""""Use nuqasm2 to translate OPENQASM2 source,
-                        providing include path for any include directives""")
-    PARSER.add_argument("-o", "--outfile", action="store",
-                        help="Write appending CSV to outfile, default is stdout")
-    PARSER.add_argument("-p", "--properties", action="store_true",
-                        help="""Print properties for backend specified by -b to
-                        stdout and exit 0""")
-    PARSER.add_argument("-q", "--qubits", type=int, action="store", default=5,
-                        help="Number of qubits for the experiment, default is 5")
-    PARSER.add_argument("--qiskit_version", action="store_true",
-                        help="Print Qiskit version and exit 0")
-    PARSER.add_argument("-r", "--result", action="store_true",
-                        help="Print job result")
-    PARSER.add_argument("-t", "--shots", type=int, action="store", default=1024,
-                        help="Number of shots for the experiment, default 1024, max 8192")
-    PARSER.add_argument("-v", "--verbose", action="count", default=0,
-                        help="""Increase runtime verbosity each -v up to 3. If
+                        -b backend.""",
+    )
+    PARSER.add_argument(
+        "--backends",
+        action="store_true",
+        help="Print list of backends to stdout and exit 0",
+    )
+    PARSER.add_argument(
+        "-1", "--one_job", action="store_true", help="Run all experiments as one job"
+    )
+    PARSER.add_argument(
+        "-c",
+        "--credits",
+        type=int,
+        action="store",
+        default=3,
+        help="Max credits to expend on each job, default is 3",
+    )
+    PARSER.add_argument(
+        "-d",
+        "--datetime",
+        type=str,
+        action="store",
+        help="""Datetime 'year,month,day[,hour,min,sec]'
+                        for -p,--properties""",
+    )
+    PARSER.add_argument(
+        "-g",
+        "--configuration",
+        action="store_true",
+        help="""Print configuration for backend specified by -b
+                        to stdout and exit 0""",
+    )
+    PARSER.add_argument(
+        "-j", "--job", action="store_true", help="Print your job's dictionary"
+    )
+    PARSER.add_argument(
+        "--jobs",
+        type=int,
+        action="store",
+        help="""Print JOBS number of jobs and status for -b
+                        backend and exit 0""",
+    )
+    PARSER.add_argument(
+        "--job_id",
+        type=str,
+        action="store",
+        help="Print job number JOB_ID for -b backend and exit 0",
+    )
+    PARSER.add_argument(
+        "--job_result",
+        type=str,
+        action="store",
+        help=""""Print result of job number JOB_RESULT for
+                        -b backend and exit 0""",
+    )
+    PARSER.add_argument(
+        "-m",
+        "--memory",
+        action="store_true",
+        help="Print individual results of multishot experiment",
+    )
+    PARSER.add_argument(
+        "-n",
+        "--nuqasm2",
+        action="store",
+        help=""""Use nuqasm2 to translate OPENQASM2 source,
+                        providing include path for any include directives""",
+    )
+    PARSER.add_argument(
+        "-o",
+        "--outfile",
+        action="store",
+        help="Write appending CSV to outfile, default is stdout",
+    )
+    PARSER.add_argument(
+        "-p",
+        "--properties",
+        action="store_true",
+        help="""Print properties for backend specified by -b to
+                        stdout and exit 0""",
+    )
+    PARSER.add_argument(
+        "-q",
+        "--qubits",
+        type=int,
+        action="store",
+        default=5,
+        help="Number of qubits for the experiment, default is 5",
+    )
+    PARSER.add_argument(
+        "--qiskit_version", action="store_true", help="Print Qiskit version and exit 0"
+    )
+    PARSER.add_argument("-r", "--result", action="store_true", help="Print job result")
+    PARSER.add_argument(
+        "-t",
+        "--shots",
+        type=int,
+        action="store",
+        default=1024,
+        help="Number of shots for the experiment, default 1024, max 8192",
+    )
+    PARSER.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="""Increase runtime verbosity each -v up to 3. If
                         precisely 4, prettyprint QisJob's data dictionary and
-                        return (good for debugging script arguments)""")
-    PARSER.add_argument("-x", "--transpile", action="store_true",
-                        help="""Print circuit transpiled for chosen backend to stdout
-                        before running job""")
-    PARSER.add_argument("--showsched", action="store_true",
-                        help="""In conjuction with -x, show schedule for transpiled
-                        circuit for chosen backend to stdout before running job""")
-    PARSER.add_argument("--circuit_layout", action="store_true",
-                        help="""With -x, write image file of circuit layout
-                        after transpile (see --figure_basename)""")
-    PARSER.add_argument("--optimization_level", type=int, action="store",
-                        default=1, help="""Set optimization level for
+                        return (good for debugging script arguments)""",
+    )
+    PARSER.add_argument(
+        "-x",
+        "--transpile",
+        action="store_true",
+        help="""Print circuit transpiled for chosen backend to stdout
+                        before running job""",
+    )
+    PARSER.add_argument(
+        "--showsched",
+        action="store_true",
+        help="""In conjuction with -x, show schedule for transpiled
+                        circuit for chosen backend to stdout before running job""",
+    )
+    PARSER.add_argument(
+        "--circuit_layout",
+        action="store_true",
+        help="""With -x, write image file of circuit layout
+                        after transpile (see --figure_basename)""",
+    )
+    PARSER.add_argument(
+        "--optimization_level",
+        type=int,
+        action="store",
+        default=1,
+        help="""Set optimization level for
                         transpilation before run, valid values 0-3,
-                        default is 1""")
-    PARSER.add_argument("--histogram", action="store_true",
-                        help="""Write image file of histogram of experiment
-                        results (see --figure_basename)""")
-    PARSER.add_argument("--plot_state_city", type=int, action="store",
-                        help="""Write image file of state city plot of statevector to
-                        PLOT_STATE_CITY decimal points (see --figure_basename)""")
-    PARSER.add_argument("--figure_basename", type=str, action="store",
-                        default='figout',
-                        help="""basename including path (if any) for figure output,
+                        default is 1""",
+    )
+    PARSER.add_argument(
+        "--histogram",
+        action="store_true",
+        help="""Write image file of histogram of experiment
+                        results (see --figure_basename)""",
+    )
+    PARSER.add_argument(
+        "--plot_state_city",
+        type=int,
+        action="store",
+        help="""Write image file of state city plot of statevector to
+                        PLOT_STATE_CITY decimal points (see --figure_basename)""",
+    )
+    PARSER.add_argument(
+        "--figure_basename",
+        type=str,
+        action="store",
+        default="figout",
+        help="""basename including path (if any) for figure output,
                         default='figout', backend name, figure type, and timestamp
-                        will be appended""")
-    PARSER.add_argument("--qasm", action="store_true",
-                        help="Print qasm file to stdout before running job")
-    PARSER.add_argument("--qc", action="store",
-                        help="Indicate variable name of Python-coded QuantumCircuit")
-    PARSER.add_argument("--status", action="store_true",
-                        help="""Print status of chosen --backend to stdout
+                        will be appended""",
+    )
+    PARSER.add_argument(
+        "--qasm",
+        action="store_true",
+        help="Print qasm file to stdout before running job",
+    )
+    PARSER.add_argument(
+        "--qc",
+        action="store",
+        help="Indicate variable name of Python-coded QuantumCircuit",
+    )
+    PARSER.add_argument(
+        "--status",
+        action="store_true",
+        help="""Print status of chosen --backend to stdout
                         (default all backends)
                         of --api_provider (default IBMQ)
-                        and exit 0""")
-    PARSER.add_argument("--token", action="store",
-                        help="Use this token")
-    PARSER.add_argument("--url", action="store",
-                        help="Use this url")
-    PARSER.add_argument("--use_job_monitor", action="store_true",
-                        help="""Display job monitor instead of just waiting for
-                        job result""")
-    PARSER.add_argument("--job_monitor_line", action="store", default='0x0d',
-                        help="""Comma-separated list of hex values for
+                        and exit 0""",
+    )
+    PARSER.add_argument("--token", action="store", help="Use this token")
+    PARSER.add_argument("--url", action="store", help="Use this url")
+    PARSER.add_argument(
+        "--use_job_monitor",
+        action="store_true",
+        help="""Display job monitor instead of just waiting for
+                        job result""",
+    )
+    PARSER.add_argument(
+        "--job_monitor_line",
+        action="store",
+        default="0x0d",
+        help="""Comma-separated list of hex values for
                         character(s) to emit at the head of each line of job
-                        monitor output, default is '0x0d'""")
-    PARSER.add_argument("filepath", nargs='*',
-                        help="Filepath(s) to 0 or more .qasm files, default is stdin")
-    PARSER.add_argument("--job_monitor_filepath", action="store", default=None,
-                        help="""Filepath for Job Monitor output if Job Monitor
-                        requested by --use_job_monitor, default is sys.stdout""")
-    PARSER.add_argument("-w", "--warnings", action="store_true",
-                        help="Don't print warnings on missing optional modules")
+                        monitor output, default is '0x0d'""",
+    )
+    PARSER.add_argument(
+        "filepath",
+        nargs="*",
+        help="Filepath(s) to 0 or more .qasm files, default is stdin",
+    )
+    PARSER.add_argument(
+        "--job_monitor_filepath",
+        action="store",
+        default=None,
+        help="""Filepath for Job Monitor output if Job Monitor
+                        requested by --use_job_monitor, default is sys.stdout""",
+    )
+    PARSER.add_argument(
+        "-w",
+        "--warnings",
+        action="store_true",
+        help="Don't print warnings on missing optional modules",
+    )
 
     ARGS = PARSER.parse_args()
 
     if ARGS.warnings:
         # import warnings # already imported
-        warnings.filterwarnings('ignore')
+        warnings.filterwarnings("ignore")
 
     AER = ARGS.aer
     API_PROVIDER = ARGS.api_provider.upper()
@@ -2202,6 +2477,7 @@ if __name__ == '__main__':
     BACKENDS = ARGS.backends
     CIRCUIT_LAYOUT = ARGS.circuit_layout
     CONFIGURATION = ARGS.configuration
+    DEVICE = ARGS.device
     DATETIME = ARGS.datetime
     FIGURE_BASENAME = ARGS.figure_basename
     FILEPATH = ARGS.filepath
@@ -2209,11 +2485,13 @@ if __name__ == '__main__':
     JOB = ARGS.job
     JOB_ID = ARGS.job_id
     JOB_MONITOR_FILEPATH = ARGS.job_monitor_filepath
-    JOB_MONITOR_LINE = ''.join(chr(int(lstr, 16))
-                               for lstr in ARGS.job_monitor_line.split(','))
+    JOB_MONITOR_LINE = "".join(
+        chr(int(lstr, 16)) for lstr in ARGS.job_monitor_line.split(",")
+    )
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
     MAX_CREDITS = ARGS.credits
+    METHOD = ARGS.method
     MEMORY = ARGS.memory
     NOISY_SIM = ARGS.noisy_sim
     NUQASM2 = ARGS.nuqasm2
@@ -2223,7 +2501,6 @@ if __name__ == '__main__':
     PLOT_STATE_CITY = ARGS.plot_state_city
     PROPERTIES = ARGS.properties
     QASM = ARGS.qasm
-    QASM_SIMULATOR = ARGS.qasm_simulator
     QC_NAME = ARGS.qc
     QISJOB_VERSION = ARGS.version
     QISKIT_VERSION = ARGS.qiskit_version
@@ -2233,56 +2510,70 @@ if __name__ == '__main__':
     RESULT = ARGS.result
     SHOTS = ARGS.shots
     SIM = ARGS.sim
-    STATEVECTOR_GPU = ARGS.statevector_gpu
-    UNITARY_GPU = ARGS.unitary_gpu
-    DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
     STATUS = ARGS.status
     TOKEN = ARGS.token
     TRANSPILE = ARGS.transpile
     SHOWSCHED = ARGS.showsched
-    UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     VERBOSE = ARGS.verbose
 
-    QJ = QisJob(filepaths=FILEPATH,
-                provider_name=API_PROVIDER,
-                hub=HUB, group=GROUP, project=PROJECT,
-                providers=PROVIDERS,
-                backend_name=BACKEND_NAME,
-                token=TOKEN, url=URL,
-                nuqasm2=NUQASM2,
-                num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,
-                outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
-                use_aer=AER,
-                use_qasm_simulator=QASM_SIMULATOR,
-                use_unitary_simulator=UNITARY_SIMULATOR,
-                use_statevector_gpu=STATEVECTOR_GPU,
-                use_unitary_gpu=UNITARY_GPU,
-                use_density_matrix_gpu=DENSITY_MATRIX_GPU,
-                use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
-                qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
-                circuit_layout=CIRCUIT_LAYOUT,
-                optimization_level=OPTIMIZATION_LEVEL,
-                print_job=JOB, memory=MEMORY, show_result=RESULT,
-                jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
-                show_backends=BACKENDS, show_configuration=CONFIGURATION,
-                show_properties=PROPERTIES,
-                show_statuses=STATUS, date_time=DATETIME,
-                print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
-                figure_basename=FIGURE_BASENAME,
-                show_q_version=QISKIT_VERSION, verbose=VERBOSE,
-                show_qisjob_version=QISJOB_VERSION,
-                use_job_monitor=USE_JM,
-                job_monitor_filepath=JOB_MONITOR_FILEPATH,
-                job_monitor_line=JOB_MONITOR_LINE,
-                noisy_sim=NOISY_SIM)
+    QJ = QisJob(
+        filepaths=FILEPATH,
+        provider_name=API_PROVIDER,
+        hub=HUB,
+        group=GROUP,
+        project=PROJECT,
+        providers=PROVIDERS,
+        backend_name=BACKEND_NAME,
+        token=TOKEN,
+        url=URL,
+        nuqasm2=NUQASM2,
+        num_qubits=QUBITS,
+        shots=SHOTS,
+        max_credits=MAX_CREDITS,
+        outfile_path=OUTFILE,
+        one_job=ONE_JOB,
+        qasm=QASM,
+        use_aer=AER,
+        aer_method=METHOD,
+        aer_device=DEVICE,
+        use_sim=SIM,
+        qvm=QVM,
+        qvm_as=QVM_AS,
+        qc_name=QC_NAME,
+        xpile=TRANSPILE,
+        showsched=SHOWSCHED,
+        circuit_layout=CIRCUIT_LAYOUT,
+        optimization_level=OPTIMIZATION_LEVEL,
+        print_job=JOB,
+        memory=MEMORY,
+        show_result=RESULT,
+        jobs_status=JOBS,
+        job_id=JOB_ID,
+        job_result=JOB_RESULT,
+        show_backends=BACKENDS,
+        show_configuration=CONFIGURATION,
+        show_properties=PROPERTIES,
+        show_statuses=STATUS,
+        date_time=DATETIME,
+        print_histogram=HISTOGRAM,
+        print_state_city=PLOT_STATE_CITY,
+        figure_basename=FIGURE_BASENAME,
+        show_q_version=QISKIT_VERSION,
+        verbose=VERBOSE,
+        show_qisjob_version=QISJOB_VERSION,
+        use_job_monitor=USE_JM,
+        job_monitor_filepath=JOB_MONITOR_FILEPATH,
+        job_monitor_line=JOB_MONITOR_LINE,
+        noisy_sim=NOISY_SIM,
+    )
 
     EXITVAL = 0
     try:
         QJ.do_it()
     except QisJobException as ex:
-        print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
+        print(type(ex).__name__ + " : " + ex.message, file=sys.stderr)
         EXITVAL = ex.retval
     except QiskitError as qex:
         print(qex)
