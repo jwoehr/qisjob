@@ -2151,14 +2151,15 @@ if __name__ == "__main__":
         "--aer",
         action="store_true",
         help="""Use QISKit AerSimulator.
-                       Use -a --method to get the specific AerSimulator method
-                       Use -a --device to get the specific AerSimulator device.""",
+                       Use -a --method to get the specific AerSimulator method and
+                       -a --device to get the specific AerSimulator device.""",
     )
     PARSER.add_argument(
         "--method",
         action="store",
-        help="""Use the specified
-                        AerSimulator method, default is 'automatic'""",
+        help="""Use the specified AerSimulator method, the choices are 'automatic',
+'statevector', 'density_matrix', 'stabilizer', 'extended_stabilizer', 'matrix_product_state',
+'unitary', 'superop' ... the default is 'automatic'.""",
         default="automatic",
     )
     PARSER.add_argument(
