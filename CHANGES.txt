@@ -10,6 +10,11 @@ limitations under the License.
 
 CHANGES by revision to QisJob
 
+v4.1.1
+This is an intermediate release as the Qiskit BaseBackend, BaseJob, and
+BaseProvider classes have all been removed in favor of BackendV2, JobV1, and
+ProviderV1.
+
 v4.1
 Note: Version 4.1 is the last version before changing Aer simulator support to the new `AerSimulator` backend.
 - Add support for IBMQ hub, group, and project (`--hub` `--group` `--project`)
