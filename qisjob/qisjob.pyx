@@ -109,7 +109,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         nuqasm2=None,
         num_qubits=5,
         shots=1024,
-        max_credits=3,
         outfile_path=None,
         one_job=False,
         qasm=False,
@@ -296,14 +295,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             Number of shots performed for any and all experiment(s).
             Subject to limitation of the provider backend.
-
-        max_credits : int
-            The default is 3.
-
-            _Corresponding `qisjob` script argument_: `-c, --credits`
-
-            Max credits to expend on each job, default is 3. If provider
-            has no credit scheme enabled, `max_credits` has no effect.
 
         outfile_path : str
             The default is stdout.
@@ -682,7 +673,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.nuqasm2 = nuqasm2
         self.num_qubits = num_qubits
         self.shots = shots
-        self.max_credits = max_credits
         self.outfile_path = outfile_path
         self.one_job = one_job
         self.qasm = qasm
@@ -1502,7 +1492,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     backend_options=backend_options,
                     optimization_level=self.optimization_level,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
             else:
@@ -1511,7 +1500,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     backend=self.backend,
                     optimization_level=self.optimization_level,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
 
@@ -1704,7 +1692,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     optimization_level=self.optimization_level,
                     backend_options=backend_options,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
             else:
@@ -1713,7 +1700,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     backend=self.backend,
                     optimization_level=self.optimization_level,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
 
@@ -1875,7 +1861,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     optimization_level=self.optimization_level,
                     backend_options=backend_options,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
             else:
@@ -1884,7 +1869,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     backend=self.backend,
                     optimization_level=self.optimization_level,
                     shots=self.shots,
-                    max_credits=self.max_credits,
                     memory=self.memory,
                 )
 
@@ -2334,14 +2318,6 @@ if __name__ == "__main__":
         "-1", "--one_job", action="store_true", help="Run all experiments as one job"
     )
     PARSER.add_argument(
-        "-c",
-        "--credits",
-        type=int,
-        action="store",
-        default=3,
-        help="Max credits to expend on each job, default is 3",
-    )
-    PARSER.add_argument(
         "-d",
         "--datetime",
         type=str,
@@ -2565,7 +2541,6 @@ if __name__ == "__main__":
     )
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
-    MAX_CREDITS = ARGS.credits
     MEMORY = ARGS.memory
     NOISY_SIM = ARGS.noisy_sim
     NUQASM2 = ARGS.nuqasm2
@@ -2610,7 +2585,6 @@ if __name__ == "__main__":
         nuqasm2=NUQASM2,
         num_qubits=QUBITS,
         shots=SHOTS,
-        max_credits=MAX_CREDITS,
         outfile_path=OUTFILE,
         one_job=ONE_JOB,
         qasm=QASM,

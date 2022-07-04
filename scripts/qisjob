@@ -104,8 +104,6 @@ PARSER.add_argument("--backends", action="store_true",
                     help="Print list of backends to stdout and exit 0")
 PARSER.add_argument("-1", "--one_job", action="store_true",
                     help="Run all experiments as one job")
-PARSER.add_argument("-c", "--credits", type=int, action="store", default=3,
-                    help="Max credits to expend on each job, default is 3")
 PARSER.add_argument("-d", "--datetime", type=str, action="store",
                     help="""Datetime 'year,month,day[,hour,min,sec]'
                     for -p,--properties""")
@@ -226,7 +224,6 @@ JOB_MONITOR_LINE = ''.join(chr(int(lstr, 16))
                            for lstr in ARGS.job_monitor_line.split(','))
 JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
-MAX_CREDITS = ARGS.credits
 MEMORY = ARGS.memory
 NOISY_SIM = ARGS.noisy_sim
 NUQASM2 = ARGS.nuqasm2
@@ -264,7 +261,7 @@ QJ = QisJob(filepaths=FILEPATH,
             providers=PROVIDERS,
             token=TOKEN, url=URL,
             nuqasm2=NUQASM2,
-            num_qubits=QUBITS, shots=SHOTS, max_credits=MAX_CREDITS,
+            num_qubits=QUBITS, shots=SHOTS,
             outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
             use_aer=AER,
             use_qasm_simulator=QASM_SIMULATOR,
