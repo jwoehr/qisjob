@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>qisjob.qisjob API documentation</title>
 <meta name="description" content="`qisjob.pyx` …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -508,20 +508,20 @@ screen. For program usage, a different string can be set.</p>
 <h3>Static methods</h3>
 <dl>
 <dt id="qisjob.qisjob.QisJob.basic_noise_sim"><code class="name flex">
-<span>def <span class="ident">basic_noise_sim</span></span>(<span>circuit: qiskit.circuit.quantumcircuit.QuantumCircuit, model_backend: qiskit.providers.basebackend.BaseBackend) ‑> qiskit.providers.basejob.BaseJob</span>
+<span>def <span class="ident">basic_noise_sim</span></span>(<span>circuit: qiskit.circuit.quantumcircuit.QuantumCircuit, model_backend: qiskit.providers.backend.BackendV2) ‑> qiskit.providers.job.JobV1</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Execute a simulator job with a basic noise model from a known backend.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>model_backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
-<dd>The BaseBackend instance whose noise model is to be used</dd>
+<dt><strong><code>model_backend</code></strong> :&ensp;<code>BackendV2</code></dt>
+<dd>The BackendV2 instance whose noise model is to be used</dd>
 <dt><strong><code>circuit</code></strong> :&ensp;<code>QuantumCircuit</code></dt>
 <dd>The QuantumCircuit instance to execute</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>BaseJob</code></dt>
+<dt><code>JobV1</code></dt>
 <dd>The job which is executing the circuit</dd>
 </dl></div>
 </dd>
@@ -547,7 +547,7 @@ and sorted counts.</p>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.do_histogram"><code class="name flex">
-<span>def <span class="ident">do_histogram</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.basebackend.BaseBackend)</span>
+<span>def <span class="ident">do_histogram</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.backend.BackendV2)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Plot histogram-style the result to file. Filename algorithmically
@@ -560,14 +560,14 @@ generated from figure_basename plus concatenated type and timestamp.</p>
 <dd>the circuit</dd>
 <dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
 <dd>base file name of output.</dd>
-<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BackendV2</code></dt>
 <dd>backend experiment was run on.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.fig_name_str"><code class="name flex">
-<span>def <span class="ident">fig_name_str</span></span>(<span>filepath: unicode, backend: qiskit.providers.basebackend.BaseBackend) ‑> unicode</span>
+<span>def <span class="ident">fig_name_str</span></span>(<span>filepath: unicode, backend: qiskit.providers.backend.BackendV2) ‑> unicode</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create filename consisting of filepath, backend and timestamp.</p>
@@ -575,7 +575,7 @@ generated from figure_basename plus concatenated type and timestamp.</p>
 <dl>
 <dt><strong><code>filepath</code></strong> :&ensp;<code>str</code></dt>
 <dd>base filepath fqp.</dd>
-<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BackendV2</code></dt>
 <dd>backend ostensibly one that experiment was run on.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -628,7 +628,7 @@ each one.</p>
 </dl></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.save_fig"><code class="name flex">
-<span>def <span class="ident">save_fig</span></span>(<span>figure: matplotlib.figure.Figure, filepath: unicode, backend: qiskit.providers.basebackend.BaseBackend, tail: unicode)</span>
+<span>def <span class="ident">save_fig</span></span>(<span>figure: matplotlib.figure.Figure, filepath: unicode, backend: qiskit.providers.backend.BackendV2, tail: unicode)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write a figure to an algorithmically named destination file</p>
@@ -638,7 +638,7 @@ each one.</p>
 <dd>The matplotlib Figure.</dd>
 <dt><strong><code>filepath</code></strong> :&ensp;<code>str</code></dt>
 <dd>base filepath fqp</dd>
-<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BackendV2</code></dt>
 <dd>Ostensibly the Backend the experiment was run on.</dd>
 <dt><strong><code>tail</code></strong> :&ensp;<code>str</code></dt>
 <dd>uniquifying string to append to filename.</dd>
@@ -647,7 +647,7 @@ each one.</p>
 <p>None.</p></div>
 </dd>
 <dt id="qisjob.qisjob.QisJob.state_city_plot"><code class="name flex">
-<span>def <span class="ident">state_city_plot</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.basebackend.BaseBackend, decimals: int = 3)</span>
+<span>def <span class="ident">state_city_plot</span></span>(<span>result_exp: qiskit.result.result.Result, circ: qiskit.circuit.quantumcircuit.QuantumCircuit, figure_basename: unicode, backend: qiskit.providers.backend.BackendV2, decimals: int = 3)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Plot state_city-style the output state to file. Filename algorithmically
@@ -665,7 +665,7 @@ decimals - how many decimal places</p>
 <dd>DESCRIPTION.</dd>
 <dt><strong><code>figure_basename</code></strong> :&ensp;<code>str</code></dt>
 <dd>the circuit.</dd>
-<dt><strong><code>backend</code></strong> :&ensp;<code>BaseBackend</code></dt>
+<dt><strong><code>backend</code></strong> :&ensp;<code>BackendV2</code></dt>
 <dd>backend run on.</dd>
 <dt><strong><code>decimals</code></strong> :&ensp;<code>int</code>, optional</dt>
 <dd>how many decimal places. The default is 3.</dd>
@@ -1014,7 +1014,7 @@ with provider</p></div>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
