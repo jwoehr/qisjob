@@ -24,6 +24,7 @@ limitations under the License.
 import argparse
 import sys
 from qiskit import QiskitError
+from qisjob import QisJob, QisJobException  # pylint: disable-msg=import-self
 
 EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -46,161 +47,308 @@ GROUP = PARSER.add_mutually_exclusive_group()
 GROUPB = PARSER.add_mutually_exclusive_group()
 GROUPC = PARSER.add_mutually_exclusive_group()
 
-GROUP.add_argument("-i", "--ibmq", action="store_true",
-                   help="Use best genuine IBMQ processor (default)")
-GROUP.add_argument("-s", "--sim", action="store_true",
-                   help="Use IBMQ qasm simulator")
-GROUP.add_argument("-a", "--aer", action="store_true",
-                   help="""Use QISKit Aer simulator.
+GROUP.add_argument(
+    "-i",
+    "--ibmq",
+    action="store_true",
+    help="Use best genuine IBMQ processor (default)",
+)
+GROUP.add_argument("-s", "--sim", action="store_true", help="Use IBMQ qasm simulator")
+GROUP.add_argument(
+    "-a",
+    "--aer",
+    action="store_true",
+    help="""Use QISKit Aer simulator.
                    Default is Aer statevector simulator.
                    Use -a --qasm-simulator to get Aer qasm simulator.
-                   Use -a --unitary-simulator to get Aer unitary simulator.""")
-GROUP.add_argument("-b", "--backend", action="store",
-                   help="Use specified IBMQ backend")
-GROUPB.add_argument("--qasm_simulator", action="store_true",
-                    help="""With -a use qasm simulator
-                    instead of statevector simulator""")
-GROUPB.add_argument("--unitary_simulator", action="store_true",
-                    help="""With -a use unitary simulator
-                    instead of statevector simulator""")
-GROUPC.add_argument("--statevector_gpu", action="store_true",
-                    help="""With -a and --qasm_simulator
-                    use gpu statevector simulator""")
-GROUPC.add_argument("--unitary_gpu", action="store_true",
-                    help="""With -a and --qasm_simulator
-                    use gpu unitary simulator""")
-GROUPC.add_argument("--density_matrix_gpu", action="store_true",
-                    help="""With -a and --qasm_simulator
-                    use gpu density matrix simulator""")
-PARSER.add_argument("--version", action="store_true",
-                    help="""Announce QisJob version""")
-PARSER.add_argument("--api_provider", action="store",
-                    help="""Backend remote api provider,
+                   Use -a --unitary-simulator to get Aer unitary simulator.""",
+)
+GROUP.add_argument("-b", "--backend", action="store", help="Use specified IBMQ backend")
+GROUPB.add_argument(
+    "--qasm_simulator",
+    action="store_true",
+    help="""With -a use qasm simulator
+                    instead of statevector simulator""",
+)
+GROUPB.add_argument(
+    "--unitary_simulator",
+    action="store_true",
+    help="""With -a use unitary simulator
+                    instead of statevector simulator""",
+)
+GROUPC.add_argument(
+    "--statevector_gpu",
+    action="store_true",
+    help="""With -a and --qasm_simulator
+                    use gpu statevector simulator""",
+)
+GROUPC.add_argument(
+    "--unitary_gpu",
+    action="store_true",
+    help="""With -a and --qasm_simulator
+                    use gpu unitary simulator""",
+)
+GROUPC.add_argument(
+    "--density_matrix_gpu",
+    action="store_true",
+    help="""With -a and --qasm_simulator
+                    use gpu density matrix simulator""",
+)
+PARSER.add_argument(
+    "--version", action="store_true", help="""Announce QisJob version"""
+)
+PARSER.add_argument(
+    "--api_provider",
+    action="store",
+    help="""Backend remote api provider,
                     currently supported are [IBMQ | QI | Forest | JKU].
-                    Default is IBMQ.""", default="IBMQ")
-PARSER.add_argument("--hub", action="store", default='ibm-q',
-                    help="Provider hub, default is 'ibm-q'")
-PARSER.add_argument("--group", action="store", default='open',
-                    help="Provider group, default is 'open'")
-PARSER.add_argument("--project", action="store", default='main',
-                    help="Provider project, default is 'main'")
-PARSER.add_argument("--providers", action="store_true",
-                    help="List hub/group/project providers for IBMQ ")
-PARSER.add_argument("--noisy_sim", action="store_true",
-                    help="""Perform circuit(s) as Aer simulation using the
+                    Default is IBMQ.""",
+    default="IBMQ",
+)
+PARSER.add_argument(
+    "--hub", action="store", default="ibm-q", help="Provider hub, default is 'ibm-q'"
+)
+PARSER.add_argument(
+    "--group", action="store", default="open", help="Provider group, default is 'open'"
+)
+PARSER.add_argument(
+    "--project",
+    action="store",
+    default="main",
+    help="Provider project, default is 'main'",
+)
+PARSER.add_argument(
+    "--providers",
+    action="store_true",
+    help="List hub/group/project providers for IBMQ ",
+)
+PARSER.add_argument(
+    "--noisy_sim",
+    action="store_true",
+    help="""Perform circuit(s) as Aer simulation using the
                     designated backend (see --backend) as the
-                    model backend.""")
-PARSER.add_argument("--qvm", action="store_true",
-                    help="""Use Forest local qvm simulator described by
+                    model backend.""",
+)
+PARSER.add_argument(
+    "--qvm",
+    action="store_true",
+    help="""Use Forest local qvm simulator described by
                     -b backend, generally one of qasm_simulator or
                     statevector_simulator. Use --qvm_as to instruct the
-                    simulator to emulate a specific Rigetti QPU""")
-PARSER.add_argument("--qvm_as", action="store_true",
-                    help="""Use Forest local qvm simulator to emulate the
+                    simulator to emulate a specific Rigetti QPU""",
+)
+PARSER.add_argument(
+    "--qvm_as",
+    action="store_true",
+    help="""Use Forest local qvm simulator to emulate the
                     specific Rigetti QPU described by -b backend. Use --qvm
                     to run the Forest local qvm simulator described by
-                    -b backend.""")
-PARSER.add_argument("--backends", action="store_true",
-                    help="Print list of backends to stdout and exit 0")
-PARSER.add_argument("-1", "--one_job", action="store_true",
-                    help="Run all experiments as one job")
-PARSER.add_argument("-d", "--datetime", type=str, action="store",
-                    help="""Datetime 'year,month,day[,hour,min,sec]'
-                    for -p,--properties""")
-PARSER.add_argument("-g", "--configuration", action="store_true",
-                    help="""Print configuration for backend specified by -b
-                    to stdout and exit 0""")
-PARSER.add_argument("-j", "--job", action="store_true",
-                    help="Print your job's dictionary")
-PARSER.add_argument("--jobs", type=int, action="store",
-                    help="""Print JOBS number of jobs and status for -b
-                    backend and exit 0""")
-PARSER.add_argument("--job_id", type=str, action="store",
-                    help="Print job number JOB_ID for -b backend and exit 0")
-PARSER.add_argument("--job_result", type=str, action="store",
-                    help="""Print result of job number JOB_RESULT for
-                    -b backend and exit 0""")
-PARSER.add_argument("-m", "--memory", action="store_true",
-                    help="Print individual results of multishot experiment")
-PARSER.add_argument("-n", "--nuqasm2", action="store",
-                    help="""Use nuqasm2 to translate OPENQASM2 source,
-                    providing include path for any include directives""")
-PARSER.add_argument("-o", "--outfile", action="store",
-                    help="Write appending CSV to outfile, default is stdout")
-PARSER.add_argument("-p", "--properties", action="store_true",
-                    help="""Print properties for backend specified by -b to
-                    stdout and exit 0""")
-PARSER.add_argument("-q", "--qubits", type=int, action="store", default=5,
-                    help="Number of qubits for the experiment, default is 5")
-PARSER.add_argument("--qiskit_version", action="store_true",
-                    help="Print Qiskit version and exit 0")
-PARSER.add_argument("-r", "--result", action="store_true",
-                    help="Print job result")
-PARSER.add_argument("-t", "--shots", type=int, action="store", default=1024,
-                    help="Number of shots for the experiment, default 1024, max 8192")
-PARSER.add_argument("-v", "--verbose", action="count", default=0,
-                    help="""Increase runtime verbosity each -v up to 3. If
+                    -b backend.""",
+)
+PARSER.add_argument(
+    "--backends",
+    action="store_true",
+    help="Print list of backends to stdout and exit 0",
+)
+PARSER.add_argument(
+    "-1", "--one_job", action="store_true", help="Run all experiments as one job"
+)
+PARSER.add_argument(
+    "-d",
+    "--datetime",
+    type=str,
+    action="store",
+    help="""Datetime 'year,month,day[,hour,min,sec]'
+                    for -p,--properties""",
+)
+PARSER.add_argument(
+    "-g",
+    "--configuration",
+    action="store_true",
+    help="""Print configuration for backend specified by -b
+                    to stdout and exit 0""",
+)
+PARSER.add_argument(
+    "-j", "--job", action="store_true", help="Print your job's dictionary"
+)
+PARSER.add_argument(
+    "--jobs",
+    type=int,
+    action="store",
+    help="""Print JOBS number of jobs and status for -b
+                    backend and exit 0""",
+)
+PARSER.add_argument(
+    "--job_id",
+    type=str,
+    action="store",
+    help="Print job number JOB_ID for -b backend and exit 0",
+)
+PARSER.add_argument(
+    "--job_result",
+    type=str,
+    action="store",
+    help="""Print result of job number JOB_RESULT for
+                    -b backend and exit 0""",
+)
+PARSER.add_argument(
+    "-m",
+    "--memory",
+    action="store_true",
+    help="Print individual results of multishot experiment",
+)
+PARSER.add_argument(
+    "-n",
+    "--nuqasm2",
+    action="store",
+    help="""Use nuqasm2 to translate OPENQASM2 source,
+                    providing include path for any include directives""",
+)
+PARSER.add_argument(
+    "-o",
+    "--outfile",
+    action="store",
+    help="Write appending CSV to outfile, default is stdout",
+)
+PARSER.add_argument(
+    "-p",
+    "--properties",
+    action="store_true",
+    help="""Print properties for backend specified by -b to
+                    stdout and exit 0""",
+)
+PARSER.add_argument(
+    "-q",
+    "--qubits",
+    type=int,
+    action="store",
+    default=5,
+    help="Number of qubits for the experiment, default is 5",
+)
+PARSER.add_argument(
+    "--qiskit_version", action="store_true", help="Print Qiskit version and exit 0"
+)
+PARSER.add_argument("-r", "--result", action="store_true", help="Print job result")
+PARSER.add_argument(
+    "-t",
+    "--shots",
+    type=int,
+    action="store",
+    default=1024,
+    help="Number of shots for the experiment, default 1024, max 8192",
+)
+PARSER.add_argument(
+    "-v",
+    "--verbose",
+    action="count",
+    default=0,
+    help="""Increase runtime verbosity each -v up to 3. If
                     precisely 4, prettyprint QisJob's data dictionary and
-                    return (good for debugging script arguments)""")
-PARSER.add_argument("-x", "--transpile", action="store_true",
-                    help="""Print circuit transpiled for chosen backend to stdout
-                    before running job""")
-PARSER.add_argument("--showsched", action="store_true",
-                    help="""In conjuction with -x, show schedule for transpiled
-                    circuit for chosen backend to stdout before running job""")
-PARSER.add_argument("--circuit_layout", action="store_true",
-                    help="""With -x, write image file of circuit layout
-                    after transpile (see --figure_basename)""")
-PARSER.add_argument("--optimization_level", type=int, action="store",
-                    default=1, help="""Set optimization level for
+                    return (good for debugging script arguments)""",
+)
+PARSER.add_argument(
+    "-x",
+    "--transpile",
+    action="store_true",
+    help="""Print circuit transpiled for chosen backend to stdout
+                    before running job""",
+)
+PARSER.add_argument(
+    "--showsched",
+    action="store_true",
+    help="""In conjuction with -x, show schedule for transpiled
+                    circuit for chosen backend to stdout before running job""",
+)
+PARSER.add_argument(
+    "--circuit_layout",
+    action="store_true",
+    help="""With -x, write image file of circuit layout
+                    after transpile (see --figure_basename)""",
+)
+PARSER.add_argument(
+    "--optimization_level",
+    type=int,
+    action="store",
+    default=1,
+    help="""Set optimization level for
                     transpilation before run, valid values 0-3,
-                    default is 1""")
-PARSER.add_argument("--histogram", action="store_true",
-                    help="""Write image file of histogram of experiment
-                    results (see --figure_basename)""")
-PARSER.add_argument("--plot_state_city", type=int, action="store",
-                    help="""Write image file of state city plot of statevector to
-                    PLOT_STATE_CITY decimal points (see --figure_basename)""")
-PARSER.add_argument("--figure_basename", type=str, action="store",
-                    default='figout',
-                    help="""basename including path (if any) for figure output,
+                    default is 1""",
+)
+PARSER.add_argument(
+    "--histogram",
+    action="store_true",
+    help="""Write image file of histogram of experiment
+                    results (see --figure_basename)""",
+)
+PARSER.add_argument(
+    "--plot_state_city",
+    type=int,
+    action="store",
+    help="""Write image file of state city plot of statevector to
+                    PLOT_STATE_CITY decimal points (see --figure_basename)""",
+)
+PARSER.add_argument(
+    "--figure_basename",
+    type=str,
+    action="store",
+    default="figout",
+    help="""basename including path (if any) for figure output,
                     default='figout', backend name, figure type, and timestamp
-                    will be appended""")
-PARSER.add_argument("--qasm", action="store_true",
-                    help="Print qasm file to stdout before running job")
-PARSER.add_argument("--qc", action="store",
-                    help="Indicate variable name of Python-coded QuantumCircuit")
-PARSER.add_argument("--status", action="store_true",
-                    help="""Print status of chosen --backend to stdout
+                    will be appended""",
+)
+PARSER.add_argument(
+    "--qasm", action="store_true", help="Print qasm file to stdout before running job"
+)
+PARSER.add_argument(
+    "--qc", action="store", help="Indicate variable name of Python-coded QuantumCircuit"
+)
+PARSER.add_argument(
+    "--status",
+    action="store_true",
+    help="""Print status of chosen --backend to stdout
                     (default all backends)
                     of --api_provider (default IBMQ)
-                    and exit 0""")
-PARSER.add_argument("--token", action="store",
-                    help="Use this token")
-PARSER.add_argument("--url", action="store",
-                    help="Use this url")
-PARSER.add_argument("--use_job_monitor", action="store_true",
-                    help="""Display job monitor instead of just waiting for
-                    job result""")
-PARSER.add_argument("--job_monitor_line", action="store", default='0x0d',
-                    help="""Comma-separated list of hex values for
+                    and exit 0""",
+)
+PARSER.add_argument("--token", action="store", help="Use this token")
+PARSER.add_argument("--url", action="store", help="Use this url")
+PARSER.add_argument(
+    "--use_job_monitor",
+    action="store_true",
+    help="""Display job monitor instead of just waiting for
+                    job result""",
+)
+PARSER.add_argument(
+    "--job_monitor_line",
+    action="store",
+    default="0x0d",
+    help="""Comma-separated list of hex values for
                     character(s) to emit at the head of each line of job
-                    monitor output, default is '0x0d'""")
-PARSER.add_argument("filepath", nargs='*',
-                    help="Filepath(s) to 0 or more .qasm files, default is stdin")
-PARSER.add_argument("--job_monitor_filepath", action="store", default=None,
-                    help="""Filepath for Job Monitor output if Job Monitor
-                    requested by --use_job_monitor, default is sys.stdout""")
-PARSER.add_argument("-w", "--warnings", action="store_true",
-                    help="Don't print warnings on missing optional modules")
+                    monitor output, default is '0x0d'""",
+)
+PARSER.add_argument(
+    "filepath", nargs="*", help="Filepath(s) to 0 or more .qasm files, default is stdin"
+)
+PARSER.add_argument(
+    "--job_monitor_filepath",
+    action="store",
+    default=None,
+    help="""Filepath for Job Monitor output if Job Monitor
+                    requested by --use_job_monitor, default is sys.stdout""",
+)
+PARSER.add_argument(
+    "-w",
+    "--warnings",
+    action="store_true",
+    help="Don't print warnings on missing optional modules",
+)
 
 ARGS = PARSER.parse_args()
 
 if ARGS.warnings:
     import warnings
-    warnings.filterwarnings('ignore')
 
-from qisjob import QisJob, QisJobException  # pylint: disable-msg=no-name-in-module, wrong-import-position
+    warnings.filterwarnings("ignore")
 
 AER = ARGS.aer
 API_PROVIDER = ARGS.api_provider.upper()
@@ -220,8 +368,9 @@ HISTOGRAM = ARGS.histogram
 JOB = ARGS.job
 JOB_ID = ARGS.job_id
 JOB_MONITOR_FILEPATH = ARGS.job_monitor_filepath
-JOB_MONITOR_LINE = ''.join(chr(int(lstr, 16))
-                           for lstr in ARGS.job_monitor_line.split(','))
+JOB_MONITOR_LINE = "".join(
+    chr(int(lstr, 16)) for lstr in ARGS.job_monitor_line.split(",")
+)
 JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
 MEMORY = ARGS.memory
@@ -254,44 +403,64 @@ URL = ARGS.url
 USE_JM = ARGS.use_job_monitor
 VERBOSE = ARGS.verbose
 
-QJ = QisJob(filepaths=FILEPATH,
-            provider_name=API_PROVIDER,
-            hub=HUB, group=GROUP, project=PROJECT,
-            backend_name=BACKEND_NAME,
-            providers=PROVIDERS,
-            token=TOKEN, url=URL,
-            nuqasm2=NUQASM2,
-            num_qubits=QUBITS, shots=SHOTS,
-            outfile_path=OUTFILE, one_job=ONE_JOB, qasm=QASM,
-            use_aer=AER,
-            use_qasm_simulator=QASM_SIMULATOR,
-            use_unitary_simulator=UNITARY_SIMULATOR,
-            use_statevector_gpu=STATEVECTOR_GPU,
-            use_unitary_gpu=UNITARY_GPU,
-            use_density_matrix_gpu=DENSITY_MATRIX_GPU,
-            use_sim=SIM, qvm=QVM, qvm_as=QVM_AS,
-            qc_name=QC_NAME, xpile=TRANSPILE, showsched=SHOWSCHED,
-            circuit_layout=CIRCUIT_LAYOUT,
-            optimization_level=OPTIMIZATION_LEVEL,
-            print_job=JOB, memory=MEMORY, show_result=RESULT,
-            jobs_status=JOBS, job_id=JOB_ID, job_result=JOB_RESULT,
-            show_backends=BACKENDS, show_configuration=CONFIGURATION,
-            show_properties=PROPERTIES,
-            show_statuses=STATUS, date_time=DATETIME,
-            print_histogram=HISTOGRAM, print_state_city=PLOT_STATE_CITY,
-            figure_basename=FIGURE_BASENAME,
-            show_q_version=QISKIT_VERSION, verbose=VERBOSE,
-            show_qisjob_version=QISJOB_VERSION,
-            use_job_monitor=USE_JM,
-            job_monitor_filepath=JOB_MONITOR_FILEPATH,
-            job_monitor_line=JOB_MONITOR_LINE,
-            noisy_sim=NOISY_SIM)
+QJ = QisJob(
+    filepaths=FILEPATH,
+    provider_name=API_PROVIDER,
+    hub=HUB,
+    group=GROUP,
+    project=PROJECT,
+    backend_name=BACKEND_NAME,
+    providers=PROVIDERS,
+    token=TOKEN,
+    url=URL,
+    nuqasm2=NUQASM2,
+    num_qubits=QUBITS,
+    shots=SHOTS,
+    outfile_path=OUTFILE,
+    one_job=ONE_JOB,
+    qasm=QASM,
+    use_aer=AER,
+    use_qasm_simulator=QASM_SIMULATOR,
+    use_unitary_simulator=UNITARY_SIMULATOR,
+    use_statevector_gpu=STATEVECTOR_GPU,
+    use_unitary_gpu=UNITARY_GPU,
+    use_density_matrix_gpu=DENSITY_MATRIX_GPU,
+    use_sim=SIM,
+    qvm=QVM,
+    qvm_as=QVM_AS,
+    qc_name=QC_NAME,
+    xpile=TRANSPILE,
+    showsched=SHOWSCHED,
+    circuit_layout=CIRCUIT_LAYOUT,
+    optimization_level=OPTIMIZATION_LEVEL,
+    print_job=JOB,
+    memory=MEMORY,
+    show_result=RESULT,
+    jobs_status=JOBS,
+    job_id=JOB_ID,
+    job_result=JOB_RESULT,
+    show_backends=BACKENDS,
+    show_configuration=CONFIGURATION,
+    show_properties=PROPERTIES,
+    show_statuses=STATUS,
+    date_time=DATETIME,
+    print_histogram=HISTOGRAM,
+    print_state_city=PLOT_STATE_CITY,
+    figure_basename=FIGURE_BASENAME,
+    show_q_version=QISKIT_VERSION,
+    verbose=VERBOSE,
+    show_qisjob_version=QISJOB_VERSION,
+    use_job_monitor=USE_JM,
+    job_monitor_filepath=JOB_MONITOR_FILEPATH,
+    job_monitor_line=JOB_MONITOR_LINE,
+    noisy_sim=NOISY_SIM,
+)
 
 EXITVAL = 0
 try:
     QJ.do_it()
 except QisJobException as ex:
-    print(type(ex).__name__ + ' : ' + ex.message, file=sys.stderr)
+    print(type(ex).__name__ + " : " + ex.message, file=sys.stderr)
     EXITVAL = ex.retval
 except QiskitError as qex:
     print("Miscellaneous QiskitError encountered:")

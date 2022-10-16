@@ -36,7 +36,7 @@ doc:
 
 testsrc:
 	- pylint $(PYSRCS)
-	- pycodestyle $(PYSRCS)
+	- pycodestyle --max-line-length=200 $(PYSRCS)
 
 test:
 ifeq ($(NUQASM2_INCLUDE_PATH),)
