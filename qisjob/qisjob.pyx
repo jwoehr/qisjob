@@ -89,12 +89,12 @@ except ImportError:
 try:
     from quantastica.qiskit_forest import ForestBackend
 except ImportError:
-    warnings.warn("Rigetti Forest not installed.")
+    warnings.warn("Quantastica Qiskit_Forest not installed.")
 
 try:
-    from qiskit_jku_provider import JKUProvider
+    from mqt import ddsim
 except ImportError:
-    warnings.warn("qiskit-jku-provider not installed.")
+    warnings.warn("MQT DDSIMProvider not installed.")
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
@@ -206,9 +206,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             The name of the backend provider. Currently supported are
 
                 * IBMQ
-                * QI
                 * Forest
-                * JKU
+                * MQT
+                * QI
 
         hub: str
 
@@ -1008,9 +1008,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         provider"""
         self.provider = ForestBackend
 
-    def jku_account_fu(self):
-        """Load qiskit-jku-provider and instance self with provider"""
-        self.provider = JKUProvider()
+    def mqt_account_fu(self):
+        """Load MQT DDSImprovider and instance self with provider"""
+        self.provider = ddsim.DDSIMProvider()
 
     def account_fu(self):
         """Load account from correct API provider and instance self with
@@ -1021,8 +1021,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.qi_account_fu()
         elif self.provider_name == "Forest":
             self.forest_account_fu()
-        elif self.provider_name == "JKU":
-            self.jku_account_fu()
+        elif self.provider_name == "MQT":
+            self.mqt_account_fu()
 
     def choose_backend(
         self,
@@ -2205,7 +2205,7 @@ if __name__ == "__main__":
         "--api_provider",
         action="store",
         help="""Backend remote api provider,
-                        currently supported are [IBMQ | QI | Forest | JKU].
+                        currently supported are [IBMQ | Forest | MQT | QI].
                         Default is IBMQ.""",
         default="IBMQ",
     )

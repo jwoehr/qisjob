@@ -12,6 +12,8 @@ CHANGES by revision to QisJob
 
 v4.x.x
 - Added `entangle.qasm` example
+- Update alternate providers (e.g., JKU -> MQT)
+- General code cleanups
 
 
 v4.1.1

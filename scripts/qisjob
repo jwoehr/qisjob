@@ -101,7 +101,7 @@ PARSER.add_argument(
     "--api_provider",
     action="store",
     help="""Backend remote api provider,
-                    currently supported are [IBMQ | QI | Forest | JKU].
+                    currently supported are [IBMQ | Forest | MQT | QI].
                     Default is IBMQ.""",
     default="IBMQ",
 )
