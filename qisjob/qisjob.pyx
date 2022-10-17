@@ -1009,7 +1009,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.provider = ForestBackend
 
     def mqt_account_fu(self):
-        """Load MQT DDSImprovider and instance self with provider"""
+        """Load MQT DDSIMprovider and instance self with provider"""
         self.provider = ddsim.DDSIMProvider()
 
     def account_fu(self):
