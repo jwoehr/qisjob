@@ -107,7 +107,7 @@ Do one of the following in the source directory (preferably in a Python virtual 
 The `qisjob` script has helpful help.
 
 ```
-$$ qisjob -h
+$ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu]
               [--version] [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT] [--providers] [--noisy_sim] [--qvm] [--qvm_as]
               [--backends] [-1] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p]
