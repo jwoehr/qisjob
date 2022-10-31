@@ -17,7 +17,7 @@ PYSRCS = qisjob/qisjob.pyx scripts/qisjob
 
 .PHONY:	install uninstall clean uninstall_oldname doc testsrc test
 
-install: 
+install:
 	python3 ./setup.py install
 
 uninstall:
@@ -25,7 +25,7 @@ uninstall:
 
 clean:
 	rm -rf build dist qisjob.egg-info qisjob/__pycache__ \
-	qisjob/qisjob.c share/doc/qisjob
+	qisjob/qisjob.c share/doc/qisjob qisjob/qisjob.cpython-*.so
 
 uninstall_oldname:
 	pip3 uninstall qis_job
