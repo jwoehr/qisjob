@@ -47,6 +47,10 @@ GROUP = PARSER.add_mutually_exclusive_group()
 GROUPB = PARSER.add_mutually_exclusive_group()
 GROUPC = PARSER.add_mutually_exclusive_group()
 
+PARSER.add_argument(
+    "--tk", action="store_true", help="""Run in a Tkinter GUI window"""
+)
+
 GROUP.add_argument(
     "-i",
     "--ibmq",
@@ -395,6 +399,7 @@ SHOWSCHED = ARGS.showsched
 SIM = ARGS.sim
 STATEVECTOR_GPU = ARGS.statevector_gpu
 STATUS = ARGS.status
+TK = ARGS.tk
 TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
 UNITARY_GPU = ARGS.unitary_gpu
@@ -458,7 +463,18 @@ QJ = QisJob(
 
 EXITVAL = 0
 try:
-    QJ.do_it()
+    if TK:
+        from tkinter import *
+        from tkinter import ttk
+        root = Tk()
+        frame = ttk.Frame(root)
+        text = Text(frame)
+        text.insert('end', str(QJ))
+        text.grid()
+        frame.grid()
+        root.mainloop()
+    else:
+        QJ.do_it()
 except QisJobException as ex:
     print(type(ex).__name__ + " : " + ex.message, file=sys.stderr)
     EXITVAL = ex.retval
