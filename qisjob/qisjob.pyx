@@ -42,7 +42,7 @@ here to make it easier to understand what QisJob does in its `do_it()` method.
 
 import argparse
 import datetime
-from io import TextIOWrapper
+from io import StringIO, TextIOWrapper
 import pprint
 import sys
 from typing import Any
@@ -731,6 +731,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
         self.noisy_sim = noisy_sim
+
+    def __str__(self) -> str:
+        out = StringIO()
+        pprint.pprint(self.__dict__, out)
+        return "{}\n{}".format(super().__str__(), out.getvalue())
 
     def qisjob_version(self) -> str:
         """
