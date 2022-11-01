@@ -24,7 +24,7 @@ limitations under the License.
 import argparse
 import sys
 from qiskit import QiskitError
-from qisjob import QisJob, QisJobException # pylint: disable-msg=import-self
+from qisjob import QisJob, QisJobException  # pylint: disable-msg=import-self
 
 EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -47,9 +47,7 @@ GROUP = PARSER.add_mutually_exclusive_group()
 GROUPB = PARSER.add_mutually_exclusive_group()
 GROUPC = PARSER.add_mutually_exclusive_group()
 
-PARSER.add_argument(
-    "--tk", action="store_true", help="""Run in a Tkinter GUI window"""
-)
+PARSER.add_argument("--tk", action="store_true", help="""Run in a Tkinter GUI window""")
 
 GROUP.add_argument(
     "-i",
@@ -465,6 +463,7 @@ EXITVAL = 0
 try:
     if TK:
         from qisjob.qisjobtk import QisJobTk
+
         QJTk = QisJobTk(QJ)
         QJTk.run()
     else:
