@@ -24,7 +24,7 @@ limitations under the License.
 import argparse
 import sys
 from qiskit import QiskitError
-from qisjob import QisJob, QisJobException  # pylint: disable-msg=import-self
+from qisjob import QisJob, QisJobException # pylint: disable-msg=import-self
 
 EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
 from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -464,15 +464,9 @@ QJ = QisJob(
 EXITVAL = 0
 try:
     if TK:
-        from tkinter import *
-        from tkinter import ttk
-        root = Tk()
-        frame = ttk.Frame(root)
-        text = Text(frame)
-        text.insert('end', str(QJ))
-        text.grid()
-        frame.grid()
-        root.mainloop()
+        from qisjob.qisjobtk import QisJobTk
+        QJTk = QisJobTk(QJ)
+        QJTk.run()
     else:
         QJ.do_it()
 except QisJobException as ex:

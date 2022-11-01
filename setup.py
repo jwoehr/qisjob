@@ -42,6 +42,7 @@ setup(
                  ['share/qc_examples/google_quantum_supremacy.py'])],
     scripts=['scripts/qisjob'],
     zip_safe=False,
+    modules=['qisjob/qisjobtk'],
     ext_modules=cythonize("qisjob/qisjob.pyx",
                           compiler_directives={'language_level': "3"})
 )
