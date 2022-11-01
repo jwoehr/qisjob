@@ -10,7 +10,9 @@ The class to instance in a program is `QisJob`.
 This `qisjob` script is for command-line usage. It provides a `--help`
 switch which will explain all the optional arguments.
 
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+The main repository is https://github.com/jwoehr/qisjob
+
+Copyright 2019, 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
 
