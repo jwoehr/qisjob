@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>qisjob.qisjobtk API documentation</title>
-<meta name="description" content="Created on Mon Oct 31 19:51:37 2022 …" />
+<meta name="description" content="Created on Mon Oct 31 19:51:37 2022
+Tk interface for QisJob
+The main repository is https://github.com/jwoehr/qisjob …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +24,16 @@
 <h1 class="title">Module <code>qisjob.qisjobtk</code></h1>
 </header>
 <section id="section-intro">
-<p>Created on Mon Oct 31 19:51:37 2022</p>
+<p>Created on Mon Oct 31 19:51:37 2022
+Tk interface for QisJob
+The main repository is <a href="https://github.com/jwoehr/qisjob">https://github.com/jwoehr/qisjob</a></p>
+<p>Copyright 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082
+Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
 <p>@author: jwoehr</p>
 <details class="source">
 <summary>
@@ -32,17 +43,30 @@
 # -*- coding: utf-8 -*-
 &#34;&#34;&#34;
 Created on Mon Oct 31 19:51:37 2022
+Tk interface for QisJob
+The main repository is https://github.com/jwoehr/qisjob
+
+Copyright 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082
+Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 @author: jwoehr
 &#34;&#34;&#34;
 
-from tkinter import *
+from tkinter import Tk, Text, N, W, E, S
 from tkinter import ttk
 from qisjob import QisJob
 
 
 class QisJobTk:
-    &#34;&#34;&#34; &#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Provide an interactive GUI interface to QisJob via Tkinter
+    &#34;&#34;&#34;
 
     def __init__(self, qisjob: QisJob):
         &#34;&#34;&#34;
@@ -62,8 +86,12 @@ class QisJobTk:
         self.root = Tk()
         self.frame = ttk.Frame(self.root)
         self.notebook = ttk.Notebook(self.frame)
+        self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_configure, text=&#34;Configure&#34;)
         self.notebook.add(self.tab_printself, text=&#34;Self&#34;)
+        self.text_configure = Text(self.tab_configure)
+        self.text_configure.insert(&#34;end&#34;, &#34;Configure&#34;)
         self.text_printself = Text(self.tab_printself)
         self.text_printself.insert(&#34;end&#34;, str(self.qisjob))
 
@@ -79,8 +107,9 @@ class QisJobTk:
         self.root.grid()
         self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_printself.grid(sticky=(N, W, E, S))
-        self.text_printself.grid(sticky=(N, W, E, S))
+        self.tab_configure.grid(sticky=(W, E))
+        self.tab_printself.grid(sticky=(W, E))
+        self.text_printself.grid(sticky=(W, E))
         self.root.mainloop()</code></pre>
 </details>
 </section>
@@ -98,7 +127,8 @@ class QisJobTk:
 <span>(</span><span>qisjob: <a title="qisjob.qisjob.QisJob" href="qisjob.html#qisjob.qisjob.QisJob">QisJob</a>)</span>
 </code></dt>
 <dd>
-<div class="desc"><h2 id="parameters">Parameters</h2>
+<div class="desc"><p>Provide an interactive GUI interface to QisJob via Tkinter</p>
+<h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>qisjob</code></strong> :&ensp;<code>QisJob</code></dt>
 <dd>DESCRIPTION.</dd>
@@ -110,7 +140,9 @@ class QisJobTk:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class QisJobTk:
-    &#34;&#34;&#34; &#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Provide an interactive GUI interface to QisJob via Tkinter
+    &#34;&#34;&#34;
 
     def __init__(self, qisjob: QisJob):
         &#34;&#34;&#34;
@@ -130,8 +162,12 @@ class QisJobTk:
         self.root = Tk()
         self.frame = ttk.Frame(self.root)
         self.notebook = ttk.Notebook(self.frame)
+        self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_configure, text=&#34;Configure&#34;)
         self.notebook.add(self.tab_printself, text=&#34;Self&#34;)
+        self.text_configure = Text(self.tab_configure)
+        self.text_configure.insert(&#34;end&#34;, &#34;Configure&#34;)
         self.text_printself = Text(self.tab_printself)
         self.text_printself.insert(&#34;end&#34;, str(self.qisjob))
 
@@ -147,8 +183,9 @@ class QisJobTk:
         self.root.grid()
         self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_printself.grid(sticky=(N, W, E, S))
-        self.text_printself.grid(sticky=(N, W, E, S))
+        self.tab_configure.grid(sticky=(W, E))
+        self.tab_printself.grid(sticky=(W, E))
+        self.text_printself.grid(sticky=(W, E))
         self.root.mainloop()</code></pre>
 </details>
 <h3>Methods</h3>
@@ -175,8 +212,9 @@ class QisJobTk:
     self.root.grid()
     self.frame.grid(sticky=(N, W, E, S))
     self.notebook.grid(sticky=(N, W, E, S))
-    self.tab_printself.grid(sticky=(N, W, E, S))
-    self.text_printself.grid(sticky=(N, W, E, S))
+    self.tab_configure.grid(sticky=(W, E))
+    self.tab_printself.grid(sticky=(W, E))
+    self.text_printself.grid(sticky=(W, E))
     self.root.mainloop()</code></pre>
 </details>
 </dd>

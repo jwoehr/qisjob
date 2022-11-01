@@ -23,7 +23,9 @@ from qisjob import QisJob
 
 
 class QisJobTk:
-    """ """
+    """
+    Provide an interactive GUI interface to QisJob via Tkinter
+    """
 
     def __init__(self, qisjob: QisJob):
         """
@@ -43,8 +45,12 @@ class QisJobTk:
         self.root = Tk()
         self.frame = ttk.Frame(self.root)
         self.notebook = ttk.Notebook(self.frame)
+        self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_configure, text="Configure")
         self.notebook.add(self.tab_printself, text="Self")
+        self.text_configure = Text(self.tab_configure)
+        self.text_configure.insert("end", "Configure")
         self.text_printself = Text(self.tab_printself)
         self.text_printself.insert("end", str(self.qisjob))
 
@@ -60,6 +66,7 @@ class QisJobTk:
         self.root.grid()
         self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_printself.grid(sticky=(N, W, E, S))
-        self.text_printself.grid(sticky=(N, W, E, S))
+        self.tab_configure.grid(sticky=(W, E))
+        self.tab_printself.grid(sticky=(W, E))
+        self.text_printself.grid(sticky=(W, E))
         self.root.mainloop()
