@@ -84,8 +84,7 @@ class QisJobTk:
         &#34;&#34;&#34;
         self.qisjob = qisjob
         self.root = Tk()
-        self.frame = ttk.Frame(self.root)
-        self.notebook = ttk.Notebook(self.frame)
+        self.notebook = ttk.Notebook(self.root)
         self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_configure, text=&#34;Configure&#34;)
@@ -97,19 +96,16 @@ class QisJobTk:
 
     def run(self):
         &#34;&#34;&#34;
-
+        Run the application.
 
         Returns
         -------
         None.
 
         &#34;&#34;&#34;
-        self.root.grid()
-        self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_configure.grid(sticky=(W, E))
-        self.tab_printself.grid(sticky=(W, E))
-        self.text_printself.grid(sticky=(W, E))
+        self.text_printself.grid()
+        self.text_configure.grid()
         self.root.mainloop()</code></pre>
 </details>
 </section>
@@ -160,8 +156,7 @@ class QisJobTk:
         &#34;&#34;&#34;
         self.qisjob = qisjob
         self.root = Tk()
-        self.frame = ttk.Frame(self.root)
-        self.notebook = ttk.Notebook(self.frame)
+        self.notebook = ttk.Notebook(self.root)
         self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_configure, text=&#34;Configure&#34;)
@@ -173,19 +168,16 @@ class QisJobTk:
 
     def run(self):
         &#34;&#34;&#34;
-
+        Run the application.
 
         Returns
         -------
         None.
 
         &#34;&#34;&#34;
-        self.root.grid()
-        self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_configure.grid(sticky=(W, E))
-        self.tab_printself.grid(sticky=(W, E))
-        self.text_printself.grid(sticky=(W, E))
+        self.text_printself.grid()
+        self.text_configure.grid()
         self.root.mainloop()</code></pre>
 </details>
 <h3>Methods</h3>
@@ -194,7 +186,8 @@ class QisJobTk:
 <span>def <span class="ident">run</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><h2 id="returns">Returns</h2>
+<div class="desc"><p>Run the application.</p>
+<h2 id="returns">Returns</h2>
 <p>None.</p></div>
 <details class="source">
 <summary>
@@ -202,19 +195,16 @@ class QisJobTk:
 </summary>
 <pre><code class="python">def run(self):
     &#34;&#34;&#34;
-
+    Run the application.
 
     Returns
     -------
     None.
 
     &#34;&#34;&#34;
-    self.root.grid()
-    self.frame.grid(sticky=(N, W, E, S))
     self.notebook.grid(sticky=(N, W, E, S))
-    self.tab_configure.grid(sticky=(W, E))
-    self.tab_printself.grid(sticky=(W, E))
-    self.text_printself.grid(sticky=(W, E))
+    self.text_printself.grid()
+    self.text_configure.grid()
     self.root.mainloop()</code></pre>
 </details>
 </dd>

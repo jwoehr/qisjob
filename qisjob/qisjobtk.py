@@ -43,8 +43,7 @@ class QisJobTk:
         """
         self.qisjob = qisjob
         self.root = Tk()
-        self.frame = ttk.Frame(self.root)
-        self.notebook = ttk.Notebook(self.frame)
+        self.notebook = ttk.Notebook(self.root)
         self.tab_configure = ttk.Frame(self.notebook)
         self.tab_printself = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_configure, text="Configure")
@@ -56,17 +55,14 @@ class QisJobTk:
 
     def run(self):
         """
-
+        Run the application.
 
         Returns
         -------
         None.
 
         """
-        self.root.grid()
-        self.frame.grid(sticky=(N, W, E, S))
         self.notebook.grid(sticky=(N, W, E, S))
-        self.tab_configure.grid(sticky=(W, E))
-        self.tab_printself.grid(sticky=(W, E))
-        self.text_printself.grid(sticky=(W, E))
+        self.text_printself.grid()
+        self.text_configure.grid()
         self.root.mainloop()
