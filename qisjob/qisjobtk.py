@@ -34,7 +34,7 @@ class QisJobTk:
         Parameters
         ----------
         qisjob : QisJob
-            DESCRIPTION.
+            The QisJob instance this GUI represents
 
         Returns
         -------
