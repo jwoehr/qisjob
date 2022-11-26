@@ -17,7 +17,8 @@ limitations under the License.
 @author: jwoehr
 """
 
-from tkinter import Tk, Menu, Text, N, W, E, S
+import sys
+from tkinter import Tk, Event, Menu, Text, N, W, E, S
 from tkinter import ttk
 from qisjob import QisJob
 
@@ -48,10 +49,12 @@ class QisJobTk:
         self.menu.add_cascade(menu=self.menu_file, label="File")
         self.menu_file.add_command(label="Save")
         self.menu_file.add_command(label="Save As")
-        self.menu_file.add_command(label="Exit")
+        self.menu_file.add_command(
+            label="Exit", command=lambda: self.root.event_generate("<<ExitQisjob>>")
+        )
         self.menu_run = Menu(self.menu)
         self.menu.add_cascade(menu=self.menu_run, label="Run")
-        self.root['menu'] = self.menu
+        self.root["menu"] = self.menu
         self.notebook = ttk.Notebook(self.root)
         self.tab_providers = ttk.Frame(self.notebook)
         self.tab_jobs = ttk.Frame(self.notebook)
@@ -61,6 +64,7 @@ class QisJobTk:
         self.notebook.add(self.tab_qj, text="QisJob")
         self.text_qj = Text(self.tab_qj)
         self.text_qj.insert("end", str(self.qisjob))
+        self.root.bind("<<ExitQisjob>>", self._exit)
 
     def run(self):
         """
@@ -74,3 +78,36 @@ class QisJobTk:
         self.notebook.grid(sticky=(N, W, E, S))
         self.text_qj.grid(sticky=(N, W, E, S))
         self.root.mainloop()
+
+    def _save(self, filename: str):
+        """
+
+
+        Parameters
+        ----------
+        filename : str
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        pass
+
+    def _exit(self, e: Event):
+        """
+
+
+        Parameters
+        ----------
+        e : Event
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        print(f"Exiting on event {e}", file=sys.stderr)
+        sys.exit()
