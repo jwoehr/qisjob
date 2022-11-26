@@ -17,7 +17,7 @@ limitations under the License.
 @author: jwoehr
 """
 
-from tkinter import Tk, Text, N, W, E, S
+from tkinter import Tk, Menu, Text, N, W, E, S
 from tkinter import ttk
 from qisjob import QisJob
 
@@ -43,15 +43,24 @@ class QisJobTk:
         """
         self.qisjob = qisjob
         self.root = Tk()
+        self.menu = Menu(self.root)
+        self.menu_file = Menu(self.menu)
+        self.menu.add_cascade(menu=self.menu_file, label="File")
+        self.menu_file.add_command(label="Save")
+        self.menu_file.add_command(label="Save As")
+        self.menu_file.add_command(label="Exit")
+        self.menu_run = Menu(self.menu)
+        self.menu.add_cascade(menu=self.menu_run, label="Run")
+        self.root['menu'] = self.menu
         self.notebook = ttk.Notebook(self.root)
-        self.tab_configure = ttk.Frame(self.notebook)
-        self.tab_printself = ttk.Frame(self.notebook)
-        self.notebook.add(self.tab_configure, text="Configure")
-        self.notebook.add(self.tab_printself, text="Self")
-        self.text_configure = Text(self.tab_configure)
-        self.text_configure.insert("end", "Configure")
-        self.text_printself = Text(self.tab_printself)
-        self.text_printself.insert("end", str(self.qisjob))
+        self.tab_providers = ttk.Frame(self.notebook)
+        self.tab_jobs = ttk.Frame(self.notebook)
+        self.tab_qj = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_providers, text="Providers")
+        self.notebook.add(self.tab_jobs, text="Jobs")
+        self.notebook.add(self.tab_qj, text="QisJob")
+        self.text_qj = Text(self.tab_qj)
+        self.text_qj.insert("end", str(self.qisjob))
 
     def run(self):
         """
@@ -63,6 +72,5 @@ class QisJobTk:
 
         """
         self.notebook.grid(sticky=(N, W, E, S))
-        self.text_printself.grid()
-        self.text_configure.grid()
+        self.text_qj.grid(sticky=(N, W, E, S))
         self.root.mainloop()
