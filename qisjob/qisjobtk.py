@@ -75,8 +75,14 @@ class QisJobTk:
         None.
 
         """
+        self.root.columnconfigure(0, weight=1)
         self.notebook.grid(sticky=(N, W, E, S))
+        self.notebook.columnconfigure(0, weight=1)
+        self.tab_providers.columnconfigure(0, weight=1)
+        self.tab_jobs.columnconfigure(0, weight=1)
+        self.tab_qj.columnconfigure(0, weight=1)
         self.text_qj.grid(sticky=(N, W, E, S))
+        self.text_qj.columnconfigure(0, weight=1)
         self.root.mainloop()
 
     def _save(self, filename: str):
