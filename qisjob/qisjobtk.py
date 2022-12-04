@@ -55,7 +55,8 @@ class QisJobTk:
         self.menu_run = Menu(self.menu)
         self.menu.add_cascade(menu=self.menu_run, label="Run")
         self.root["menu"] = self.menu
-        self.notebook = ttk.Notebook(self.root)
+        self.frame = ttk.Frame(self.root)
+        self.notebook = ttk.Notebook(self.frame)
         self.tab_providers = ttk.Frame(self.notebook)
         self.tab_jobs = ttk.Frame(self.notebook)
         self.tab_qj = ttk.Frame(self.notebook)
@@ -76,6 +77,8 @@ class QisJobTk:
 
         """
         self.root.columnconfigure(0, weight=1)
+        self.frame.grid(sticky=(N, W, E, S))
+        self.frame.columnconfigure(0, weight=1)
         self.notebook.grid(sticky=(N, W, E, S))
         self.notebook.columnconfigure(0, weight=1)
         self.tab_providers.columnconfigure(0, weight=1)
