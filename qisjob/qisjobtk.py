@@ -54,6 +54,9 @@ class QisJobTk:
         )
         self.menu_run = Menu(self.menu)
         self.menu.add_cascade(menu=self.menu_run, label="Run")
+        self.menu_run.add_command(
+            label="DoIt", command=lambda: self.root.event_generate("<<DoIt>>")
+        )
         self.root["menu"] = self.menu
         self.frame = ttk.Frame(self.root)
         self.notebook = ttk.Notebook(self.frame)
@@ -66,6 +69,7 @@ class QisJobTk:
         self.text_qj = Text(self.tab_qj)
         self.text_qj.insert("end", str(self.qisjob))
         self.root.bind("<<ExitQisjob>>", self._exit)
+        self.root.bind("<<DoIt>>", self._run_qisjob)
 
     def run(self):
         """
@@ -87,6 +91,17 @@ class QisJobTk:
         self.text_qj.grid(sticky=(N, W, E, S))
         self.text_qj.columnconfigure(0, weight=1)
         self.root.mainloop()
+
+    def _run_qisjob(self, *args):
+        """
+
+
+        Returns
+        -------
+        None.
+
+        """
+        self.qisjob.do_it()
 
     def _save(self, filename: str):
         """
