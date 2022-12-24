@@ -8,7 +8,7 @@ are also provided.
 
 The main repository is https://github.com/jwoehr/qisjob
 
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+Copyright 2019, 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
 
