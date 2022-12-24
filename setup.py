@@ -5,16 +5,7 @@ Created on Wed Dec 25 12:04:26 2019
 
 @author: jax
 """
-import sys
-from setuptools import setup  # , find_packages
-
-# try:
-#    from Cython.Build import cythonize
-# except ImportError:
-#    import subprocess
-#
-#    subprocess.call([sys.executable, "-m", "pip", "install", "Cython>=0.27.1"])
-#    from Cython.Build import cythonize
+from setuptools import setup
 
 setup(
     name="qisjob",
@@ -51,7 +42,4 @@ setup(
     scripts=["scripts/qisjob"],
     zip_safe=False,
     modules=["qisjob/qisjob, qisjob/qisjobtk"],
- #   ext_modules=cythonize(
- #       "qisjob/qisjob.pyx", compiler_directives={"language_level": "3"}
- #   ),
 )
