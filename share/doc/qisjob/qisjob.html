@@ -27,7 +27,7 @@
 reporting. Many utility operations to examine provider, backends, and jobs
 are also provided.</p>
 <p>The main repository is <a href="https://github.com/jwoehr/qisjob">https://github.com/jwoehr/qisjob</a></p>
-<p>Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051</p>
+<p>Copyright 2019, 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082</p>
 <p>Apache License, Version 2.0 &ndash; See LICENSE which you should have received with this code.</p>
 <p>Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ are also provided.
 
 The main repository is https://github.com/jwoehr/qisjob
 
-Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051
+Copyright 2019, 2022 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, CO 81023-0082
 
 Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
 
@@ -1047,22 +1047,17 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def ibmq_account_fu(self):
         &#34;&#34;&#34;Load IBMQ account appropriately and instance self with provider&#34;&#34;&#34;
         try:
-        # if &#34;IBMProvider&#34; in dir():  # check for new IBMProvider class
-        # if True:  # check for new IBMProvider class
-            # print(&#34;Found IBMProvider&#34;)
             try:
                 if self.token:
                     self.provider = IBMProvider(token=self.token, url=self.url)
                 else:
                     self.provider = IBMProvider()
-                print(&#34;Success using new IBMProvider&#34;)
             except IBMInputValueError as err:
                 raise QisJobRuntimeException(
                     f&#34;Error loading account via IBMProvider: {err}&#34;
                 ) from err
 
-        except:  # Use older IBMQ class
-            # print(&#34;Did not find IBMProvider&#34;)
+        except:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
@@ -4002,22 +3997,17 @@ screen. For program usage, a different string can be set.</p>
     def ibmq_account_fu(self):
         &#34;&#34;&#34;Load IBMQ account appropriately and instance self with provider&#34;&#34;&#34;
         try:
-        # if &#34;IBMProvider&#34; in dir():  # check for new IBMProvider class
-        # if True:  # check for new IBMProvider class
-            # print(&#34;Found IBMProvider&#34;)
             try:
                 if self.token:
                     self.provider = IBMProvider(token=self.token, url=self.url)
                 else:
                     self.provider = IBMProvider()
-                print(&#34;Success using new IBMProvider&#34;)
             except IBMInputValueError as err:
                 raise QisJobRuntimeException(
                     f&#34;Error loading account via IBMProvider: {err}&#34;
                 ) from err
 
-        except:  # Use older IBMQ class
-            # print(&#34;Did not find IBMProvider&#34;)
+        except:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
@@ -6142,22 +6132,17 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
 <pre><code class="python">def ibmq_account_fu(self):
     &#34;&#34;&#34;Load IBMQ account appropriately and instance self with provider&#34;&#34;&#34;
     try:
-    # if &#34;IBMProvider&#34; in dir():  # check for new IBMProvider class
-    # if True:  # check for new IBMProvider class
-        # print(&#34;Found IBMProvider&#34;)
         try:
             if self.token:
                 self.provider = IBMProvider(token=self.token, url=self.url)
             else:
                 self.provider = IBMProvider()
-            print(&#34;Success using new IBMProvider&#34;)
         except IBMInputValueError as err:
             raise QisJobRuntimeException(
                 f&#34;Error loading account via IBMProvider: {err}&#34;
             ) from err
 
-    except:  # Use older IBMQ class
-        # print(&#34;Did not find IBMProvider&#34;)
+    except:
         try:
             if self.token:
                 IBMQ.enable_account(self.token, url=self.url)

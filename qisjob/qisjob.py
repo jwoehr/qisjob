@@ -995,7 +995,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     self.provider = IBMProvider(token=self.token, url=self.url)
                 else:
                     self.provider = IBMProvider()
-                print("Success using new IBMProvider")
             except IBMInputValueError as err:
                 raise QisJobRuntimeException(
                     f"Error loading account via IBMProvider: {err}"
