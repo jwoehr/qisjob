@@ -10,7 +10,7 @@ limitations under the License.
 
 CHANGES by revision to QisJob
 
-v4.x.x
+v4.1.2-dev
 - Added `entangle.qasm` example
 - Update alternate providers (e.g., JKU -> MQT)
 - General code cleanups
