@@ -11,6 +11,7 @@ limitations under the License.
 CHANGES by revision to QisJob
 
 v4.1.2-dev
+- Use IBMProvider
 - Working on Tkinter GUI in a branch
 - Added `entangle.qasm` example
 - Update alternate providers (e.g., JKU -> MQT)
