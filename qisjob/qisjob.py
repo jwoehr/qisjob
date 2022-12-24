@@ -75,6 +75,11 @@ except ImportError:
     warnings.warn("Qiskit IBMQ provider not installed.")
 
 try:
+    from qiskit_ibm_provider import IBMProvider, IBMInputValueError
+except ImportError:
+    warnings.warn("Qiskit IBMProvider not installed.")
+
+try:
     from nuqasm2 import Ast2Circ, Qasm_Exception, Ast2CircException
 except ImportError:
     warnings.warn("NuQasm2 not installed.")
@@ -985,15 +990,30 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def ibmq_account_fu(self):
         """Load IBMQ account appropriately and instance self with provider"""
         try:
-            if self.token:
-                IBMQ.enable_account(self.token, url=self.url)
-            else:
-                self.provider = IBMQ.load_account()
-        except IBMQAccountCredentialsNotFound as err:
-            raise QisJobRuntimeException(f"Error loading IBMQ Account: {err}") from err
-        self.provider = IBMQ.get_provider(
-            hub=self.hub, group=self.group, project=self.project
-        )
+            try:
+                if self.token:
+                    self.provider = IBMProvider(token=self.token, url=self.url)
+                else:
+                    self.provider = IBMProvider()
+                print("Success using new IBMProvider")
+            except IBMInputValueError as err:
+                raise QisJobRuntimeException(
+                    f"Error loading account via IBMProvider: {err}"
+                ) from err
+
+        except:
+            try:
+                if self.token:
+                    IBMQ.enable_account(self.token, url=self.url)
+                else:
+                    self.provider = IBMQ.load_account()
+            except IBMQAccountCredentialsNotFound as err:
+                raise QisJobRuntimeException(
+                    f"Error loading IBMQ Account: {err}"
+                ) from err
+            self.provider = IBMQ.get_provider(
+                hub=self.hub, group=self.group, project=self.project
+            )
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
