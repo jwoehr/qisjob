@@ -1,0 +1,4 @@
+- use AerSimulator class
+- use qiskit-ibm-provider instead of qiskit-ibmq-provider
+- option for Jake Lishman's OpenQASM 3 loader https://github.com/jakelishman/qiskit-qasm3-import
+
