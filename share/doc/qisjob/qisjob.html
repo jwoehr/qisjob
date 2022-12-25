@@ -107,7 +107,7 @@ here to make it easier to understand what QisJob does in its `do_it()` method.
 
 import argparse
 import datetime
-from io import TextIOWrapper
+from io import StringIO, TextIOWrapper
 import pprint
 import sys
 from typing import Any
@@ -804,6 +804,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.job_monitor_line = job_monitor_line
         self.noisy_sim = noisy_sim
 
+    def __str__(self) -&gt; str:
+        out = StringIO()
+        pprint.pprint(self.__dict__, out)
+        return &#34;{}\n{}&#34;.format(super().__str__(), out.getvalue())
+
     def qisjob_version(self) -&gt; str:
         &#34;&#34;&#34;
 
@@ -818,7 +823,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         &#34;&#34;&#34;
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -1067,7 +1072,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     f&#34;Error loading account via IBMProvider: {err}&#34;
                 ) from err
 
-        except:
+        except NameError:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
@@ -3686,6 +3691,11 @@ screen. For program usage, a different string can be set.</p>
         self.job_monitor_line = job_monitor_line
         self.noisy_sim = noisy_sim
 
+    def __str__(self) -&gt; str:
+        out = StringIO()
+        pprint.pprint(self.__dict__, out)
+        return &#34;{}\n{}&#34;.format(super().__str__(), out.getvalue())
+
     def qisjob_version(self) -&gt; str:
         &#34;&#34;&#34;
 
@@ -3700,7 +3710,7 @@ screen. For program usage, a different string can be set.</p>
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         &#34;&#34;&#34;
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -3949,7 +3959,7 @@ screen. For program usage, a different string can be set.</p>
                     f&#34;Error loading account via IBMProvider: {err}&#34;
                 ) from err
 
-        except:
+        except NameError:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
@@ -5727,7 +5737,7 @@ miscellaneous instances can be raised in ways the code does not anticipate.</p>
 </summary>
 <pre><code class="python">def do_it(
     self,
-):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
     &#34;&#34;&#34;
 
     Run the program specified by ctor args/kwargs, usally instanced
@@ -6084,7 +6094,7 @@ It is also written to <code>ofh</code> if that handle is instanced.</dd>
                 f&#34;Error loading account via IBMProvider: {err}&#34;
             ) from err
 
-    except:
+    except NameError:
         try:
             if self.token:
                 IBMQ.enable_account(self.token, url=self.url)

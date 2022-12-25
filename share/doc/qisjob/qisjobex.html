@@ -65,6 +65,7 @@ limitations under the License.
 @author: jwoehr
 &#34;&#34;&#34;
 
+
 class QisJobException(Exception):
     &#34;&#34;&#34;Base class for QisJob exceptions&#34;&#34;&#34;
 
@@ -91,7 +92,7 @@ class QisJobException(Exception):
 
 class QisJobArgumentException(QisJobException):
     &#34;&#34;&#34;
-    Argument passed to QisJob ctor is invalid.
+    Invalid Argument passed to one of QisJob&#39;s classes or function.
     &#34;&#34;&#34;
 
     def __init__(self, message: str):
@@ -147,7 +148,7 @@ class QisJobRuntimeException(QisJobException):
 <span>(</span><span>message: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Argument passed to QisJob ctor is invalid.</p>
+<div class="desc"><p>Invalid Argument passed to one of QisJob's classes or function.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
@@ -161,7 +162,7 @@ class QisJobRuntimeException(QisJobException):
 </summary>
 <pre><code class="python">class QisJobArgumentException(QisJobException):
     &#34;&#34;&#34;
-    Argument passed to QisJob ctor is invalid.
+    Invalid Argument passed to one of QisJob&#39;s classes or function.
     &#34;&#34;&#34;
 
     def __init__(self, message: str):
