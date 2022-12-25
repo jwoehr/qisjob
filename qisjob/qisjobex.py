@@ -48,7 +48,7 @@ class QisJobException(Exception):
 
 class QisJobArgumentException(QisJobException):
     """
-    Argument passed to QisJob ctor is invalid.
+    Invalid Argument passed to one of QisJob's classes or function.
     """
 
     def __init__(self, message: str):
