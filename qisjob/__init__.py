@@ -1,2 +1,3 @@
 """Namespace fu"""
-from .qisjob import QisJob, QisJobException
+from .qisjob import QisJob
+from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException

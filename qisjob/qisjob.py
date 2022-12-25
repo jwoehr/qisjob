@@ -105,6 +105,8 @@ try:
 except ImportError:
     warnings.warn("MQT DDSIMProvider not installed.")
 
+from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
+
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
     """
@@ -2077,74 +2079,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             basis_gates=basis_gates,
         )
         return job
-
-
-class QisJobException(Exception):
-    """Base class for QisJob exceptions"""
-
-    def __init__(self, message: str, retval: int):
-        """
-
-
-        Parameters
-        ----------
-        message : str
-            programmer-supplied message
-        retval : int
-            suggested return val for an encapsulating function or script
-
-        Returns
-        -------
-        None.
-
-        """
-        super().__init__()
-        self.message = message
-        self.retval = retval
-
-
-class QisJobArgumentException(QisJobException):
-    """
-    Argument passed to QisJob ctor is invalid.
-    """
-
-    def __init__(self, message: str):
-        """
-
-
-        Parameters
-        ----------
-        message : str
-            programmer-supplied message
-
-        Returns
-        -------
-        None.
-
-        """
-        super().__init__(message, 1)
-
-
-class QisJobRuntimeException(QisJobException):
-    """
-    QisJob encountered an unrecoverable runtime error.
-    """
-
-    def __init__(self, message: str):
-        """
-
-
-        Parameters
-        ----------
-        message : str
-            programmer-supplied message
-
-        Returns
-        -------
-        None.
-
-        """
-        super().__init__(message, 100)
 
 
 if __name__ == "__main__":

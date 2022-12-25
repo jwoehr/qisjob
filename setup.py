@@ -41,5 +41,5 @@ setup(
     ],
     scripts=["scripts/qisjob"],
     zip_safe=False,
-    modules=["qisjob/qisjob"],
+    modules=["qisjob/qisjob", "qisjob/qisjobex", "qisjob/qisjobaer"],
 )
