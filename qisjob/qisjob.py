@@ -760,7 +760,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         """
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -1004,13 +1004,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     self.provider = IBMProvider(token=self.token, url=self.url)
                 else:
                     self.provider = IBMProvider()
-                print("Success using new IBMProvider")
             except IBMInputValueError as err:
                 raise QisJobRuntimeException(
                     f"Error loading account via IBMProvider: {err}"
                 ) from err
 
-        except:
+        except NameError:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
