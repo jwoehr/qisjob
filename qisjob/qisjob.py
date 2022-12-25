@@ -1006,7 +1006,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     f"Error loading account via IBMProvider: {err}"
                 ) from err
 
-        except:
+        except NameError:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
