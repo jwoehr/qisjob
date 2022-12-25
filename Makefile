@@ -13,7 +13,7 @@
 # that they have been altered from the originals.
 
 DOCDIR = $(shell pwd)/share/doc
-PYSRCS = qisjob/qisjob.py scripts/qisjob
+PYSRCS = qisjob/qisjob.py qisjob/qisjobex.py qisjob/qisjobaer.py scripts/qisjob
 
 .PHONY:	install uninstall clean uninstall_oldname doc testsrc test
 

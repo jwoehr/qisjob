@@ -21,6 +21,7 @@ limitations under the License.
 @author: jwoehr
 """
 
+
 class QisJobException(Exception):
     """Base class for QisJob exceptions"""
 

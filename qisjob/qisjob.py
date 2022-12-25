@@ -757,7 +757,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, disable-msg=too-many-return-statements
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         """
 
         Run the program specified by ctor args/kwargs, usally instanced
