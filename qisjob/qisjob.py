@@ -80,6 +80,7 @@ except ImportError:
 
 try:
     from qiskit_ibm_provider import IBMProvider, IBMInputValueError
+    from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 except ImportError:
     warnings.warn("Qiskit IBMProvider not installed.")
 
@@ -1580,7 +1581,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             self.process_result(result_exp, circ, ofh)
 
-        except IBMQJobFailureError as err:
+        except (IBMQJobFailureError, IBMJobFailureError) as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
@@ -1752,7 +1753,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             for circ in circs:
                 self.process_result(result_exp, circ, ofh)
 
-        except IBMQJobFailureError as err:
+        except (IBMQJobFailureError, IBMJobFailureError) as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
@@ -1920,7 +1921,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             return self.formulate_result(result_exp, circ, None)
 
-        except IBMQJobFailureError as err:
+        except (IBMQJobFailureError, IBMJobFailureError) as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
