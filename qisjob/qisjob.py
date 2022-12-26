@@ -79,7 +79,11 @@ except ImportError:
     warnings.warn("Qiskit IBMQ provider not installed.")
 
 try:
-    from qiskit_ibm_provider import IBMProvider, IBMInputValueError, IBMProviderError #, least_busy
+    from qiskit_ibm_provider import (
+        IBMProvider,
+        IBMInputValueError,
+        IBMProviderError,
+    )  # , least_busy
     from qiskit_ibm_provider.job import IBMJob
     from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 except ImportError:
@@ -140,6 +144,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         one_job=False,
         qasm=False,
         use_aer=False,
+        aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
         use_statevector_gpu=False,
@@ -361,6 +366,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
+
+        aersimulator : array of string
+            The default is `None`.
+            
+            _Corresponding `qisjob` script argument_: `--aersimulator`
+            
+            Array of QisJob-styled string arguments name=value for using the
+            modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
 
         use_qasm_simulator : bool
             The default is `False`.
@@ -2130,6 +2143,13 @@ if __name__ == "__main__":
                        Use -a --unitary-simulator to get Aer unitary simulator.""",
     )
     GROUP.add_argument(
+        "--aersimulator",
+        action="append",
+        help="""Use Qiskit AerSimulator.
+                       Can be invoked multiple times.
+                       Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
+    )
+    GROUP.add_argument(
         "-b", "--backend", action="store", help="Use specified IBMQ backend"
     )
     GROUPB.add_argument(
@@ -2430,6 +2450,7 @@ if __name__ == "__main__":
         warnings.filterwarnings("ignore")
 
     AER = ARGS.aer
+    AERSIMULATOR = ARGS.aersimulator
     API_PROVIDER = ARGS.api_provider.upper()
     HUB = ARGS.hub
     GROUP = ARGS.group
@@ -2499,6 +2520,7 @@ if __name__ == "__main__":
         one_job=ONE_JOB,
         qasm=QASM,
         use_aer=AER,
+        aersimulator=AERSIMULATOR,
         use_qasm_simulator=QASM_SIMULATOR,
         use_unitary_simulator=UNITARY_SIMULATOR,
         use_statevector_gpu=STATEVECTOR_GPU,

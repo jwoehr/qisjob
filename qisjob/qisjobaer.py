@@ -33,7 +33,8 @@ class QisJobAer:
     """
 
     def __init__(
-        self, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None
+        self, configuration=None, properties=None,
+        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
     ):
         if noise_model and noise_model_backend:
             raise QisJobArgumentException(

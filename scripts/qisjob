@@ -67,6 +67,13 @@ GROUP.add_argument(
                    Use -a --qasm-simulator to get Aer qasm simulator.
                    Use -a --unitary-simulator to get Aer unitary simulator.""",
 )
+GROUP.add_argument(
+    "--aersimulator",
+    action="append",
+    help="""Use Qiskit AerSimulator.
+                   Can be invoked multiple times.
+                   Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
+)
 GROUP.add_argument("-b", "--backend", action="store", help="Use specified IBMQ backend")
 GROUPB.add_argument(
     "--qasm_simulator",
@@ -355,6 +362,7 @@ if ARGS.warnings:
     warnings.filterwarnings("ignore")
 
 AER = ARGS.aer
+AERSIMULATOR = ARGS.aersimulator
 API_PROVIDER = ARGS.api_provider.upper()
 HUB = ARGS.hub
 GROUP = ARGS.group
@@ -424,6 +432,7 @@ QJ = QisJob(
     one_job=ONE_JOB,
     qasm=QASM,
     use_aer=AER,
+    aersimulator=AERSIMULATOR,
     use_qasm_simulator=QASM_SIMULATOR,
     use_unitary_simulator=UNITARY_SIMULATOR,
     use_statevector_gpu=STATEVECTOR_GPU,

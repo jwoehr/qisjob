@@ -140,7 +140,11 @@ except ImportError:
     warnings.warn(&#34;Qiskit IBMQ provider not installed.&#34;)
 
 try:
-    from qiskit_ibm_provider import IBMProvider, IBMInputValueError, IBMProviderError #, least_busy
+    from qiskit_ibm_provider import (
+        IBMProvider,
+        IBMInputValueError,
+        IBMProviderError,
+    )  # , least_busy
     from qiskit_ibm_provider.job import IBMJob
     from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 except ImportError:
@@ -201,6 +205,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         one_job=False,
         qasm=False,
         use_aer=False,
+        aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
         use_statevector_gpu=False,
@@ -422,6 +427,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
+
+        aersimulator : array of string
+            The default is `None`.
+            
+            _Corresponding `qisjob` script argument_: `--aersimulator`
+            
+            Array of QisJob-styled string arguments name=value for using the
+            modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
 
         use_qasm_simulator : bool
             The default is `False`.
@@ -2191,6 +2204,13 @@ if __name__ == &#34;__main__&#34;:
                        Use -a --unitary-simulator to get Aer unitary simulator.&#34;&#34;&#34;,
     )
     GROUP.add_argument(
+        &#34;--aersimulator&#34;,
+        action=&#34;append&#34;,
+        help=&#34;&#34;&#34;Use Qiskit AerSimulator.
+                       Can be invoked multiple times.
+                       Each invocation should be an argument pair, e.g., &#39;--aersimulator backend=ibmq_lima&#39;&#34;&#34;&#34;,
+    )
+    GROUP.add_argument(
         &#34;-b&#34;, &#34;--backend&#34;, action=&#34;store&#34;, help=&#34;Use specified IBMQ backend&#34;
     )
     GROUPB.add_argument(
@@ -2491,6 +2511,7 @@ if __name__ == &#34;__main__&#34;:
         warnings.filterwarnings(&#34;ignore&#34;)
 
     AER = ARGS.aer
+    AERSIMULATOR = ARGS.aersimulator
     API_PROVIDER = ARGS.api_provider.upper()
     HUB = ARGS.hub
     GROUP = ARGS.group
@@ -2560,6 +2581,7 @@ if __name__ == &#34;__main__&#34;:
         one_job=ONE_JOB,
         qasm=QASM,
         use_aer=AER,
+        aersimulator=AERSIMULATOR,
         use_qasm_simulator=QASM_SIMULATOR,
         use_unitary_simulator=UNITARY_SIMULATOR,
         use_statevector_gpu=STATEVECTOR_GPU,
@@ -2619,7 +2641,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="qisjob.qisjob.QisJob"><code class="flex name class">
 <span>class <span class="ident">QisJob</span></span>
-<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, outfile_path=None, one_job=False, qasm=False, use_aer=False, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r', noisy_sim=False)</span>
+<span>(</span><span>filepaths=None, qasm_src=None, provider_name='IBMQ', hub='ibm-q', group='open', project='main', providers=False, backend_name=None, token=None, url=None, nuqasm2=None, num_qubits=5, shots=1024, outfile_path=None, one_job=False, qasm=False, use_aer=False, aersimulator=None, use_qasm_simulator=False, use_unitary_simulator=False, use_statevector_gpu=False, use_unitary_gpu=False, use_density_matrix_gpu=False, use_sim=False, qvm=False, qvm_as=False, qc_name=None, xpile=False, showsched=False, circuit_layout=False, optimization_level=1, print_job=False, memory=False, show_result=False, jobs_status=None, job_id=None, job_result=None, show_backends=False, show_configuration=False, show_properties=False, show_statuses=False, date_time=None, print_histogram=False, print_state_city=0, figure_basename='figout', show_q_version=False, verbose=0, show_qisjob_version=False, use_job_monitor=False, job_monitor_filepath=None, job_monitor_line='\r', noisy_sim=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Embody preparation, execution, display, and management of Qiskit job or jobs.</p>
@@ -2779,6 +2801,13 @@ In conjunction with this kwarg:</p>
 </code></pre>
 <p>It is an error to set both <code>qasm_simulator</code> and <code>unitary_simulator</code>
 <code>True</code>.</p>
+</dd>
+<dt><strong><code>aersimulator</code></strong> :&ensp;<code>array</code> of <code>string</code></dt>
+<dd>
+<p>The default is <code>None</code>.</p>
+<p><em>Corresponding <code><a title="qisjob" href="index.html">qisjob</a></code> script argument</em>: <code>--aersimulator</code></p>
+<p>Array of QisJob-styled string arguments name=value for using the
+modern qiskit_aer.AerSimulator. If <code>None</code>, AerSimulator is not used.</p>
 </dd>
 <dt><strong><code>use_qasm_simulator</code></strong> :&ensp;<code>bool</code></dt>
 <dd>
@@ -3088,6 +3117,7 @@ screen. For program usage, a different string can be set.</p>
         one_job=False,
         qasm=False,
         use_aer=False,
+        aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
         use_statevector_gpu=False,
@@ -3309,6 +3339,14 @@ screen. For program usage, a different string can be set.</p>
 
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
+
+        aersimulator : array of string
+            The default is `None`.
+            
+            _Corresponding `qisjob` script argument_: `--aersimulator`
+            
+            Array of QisJob-styled string arguments name=value for using the
+            modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
 
         use_qasm_simulator : bool
             The default is `False`.

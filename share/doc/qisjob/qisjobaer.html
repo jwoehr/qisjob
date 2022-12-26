@@ -76,7 +76,8 @@ class QisJobAer:
     &#34;&#34;&#34;
 
     def __init__(
-        self, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None
+        self, configuration=None, properties=None,
+        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
     ):
         if noise_model and noise_model_backend:
             raise QisJobArgumentException(
@@ -97,7 +98,7 @@ class QisJobAer:
 <dl>
 <dt id="qisjob.qisjobaer.QisJobAer"><code class="flex name class">
 <span>class <span class="ident">QisJobAer</span></span>
-<span>(</span><span>noise_model_backend: qiskit.providers.backend.BackendV2 = None, noise_model: qiskit_aer.noise.noise_model.NoiseModel = None)</span>
+<span>(</span><span>configuration=None, properties=None, method=None, noise_model_backend: qiskit.providers.backend.BackendV2 = None, noise_model: qiskit_aer.noise.noise_model.NoiseModel = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class to manage the Qiskit AerSimulator for QisJob</p></div>
@@ -111,7 +112,8 @@ class QisJobAer:
     &#34;&#34;&#34;
 
     def __init__(
-        self, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None
+        self, configuration=None, properties=None,
+        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
     ):
         if noise_model and noise_model_backend:
             raise QisJobArgumentException(
