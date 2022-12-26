@@ -32,13 +32,20 @@ class QisJobAer:
     Class to manage the Qiskit AerSimulator for QisJob
     """
 
-    def __init__(
-        self, configuration=None, properties=None,
-        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
-    ):
-        if noise_model and noise_model_backend:
+    def __init__(self, **kwargs):
+        self.configuration = None
+        self.properties = None
+        self.provider = None
+        self.method = None
+        self.backend = None
+        self.from_backend_named = None
+        self.process_kwargs(**kwargs)
+        self.aer_simulator = AerSimulator()
+
+    def process_kwargs(self, kwargs):
+        if "noise_model" in kwargs and "noise_model_backend" in kwargs:
             raise QisJobArgumentException(
                 "noise_model and noise_model_backend are mutually exclusive"
             )
-
-        self.aer_simulator = AerSimulator()
+        if "method" in kwargs:
+            self.method = kwargs["method"]

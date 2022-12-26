@@ -75,16 +75,23 @@ class QisJobAer:
     Class to manage the Qiskit AerSimulator for QisJob
     &#34;&#34;&#34;
 
-    def __init__(
-        self, configuration=None, properties=None,
-        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
-    ):
-        if noise_model and noise_model_backend:
+    def __init__(self, **kwargs):
+        self.configuration = None
+        self.properties = None
+        self.provider = None
+        self.method = None
+        self.backend = None
+        self.from_backend_named = None
+        self.process_kwargs(**kwargs)
+        self.aer_simulator = AerSimulator()
+
+    def process_kwargs(self, kwargs):
+        if &#34;noise_model&#34; in kwargs and &#34;noise_model_backend&#34; in kwargs:
             raise QisJobArgumentException(
                 &#34;noise_model and noise_model_backend are mutually exclusive&#34;
             )
-
-        self.aer_simulator = AerSimulator()</code></pre>
+        if &#34;method&#34; in kwargs:
+            self.method = kwargs[&#34;method&#34;]</code></pre>
 </details>
 </section>
 <section>
@@ -98,7 +105,7 @@ class QisJobAer:
 <dl>
 <dt id="qisjob.qisjobaer.QisJobAer"><code class="flex name class">
 <span>class <span class="ident">QisJobAer</span></span>
-<span>(</span><span>configuration=None, properties=None, method=None, noise_model_backend: qiskit.providers.backend.BackendV2 = None, noise_model: qiskit_aer.noise.noise_model.NoiseModel = None)</span>
+<span>(</span><span>**kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class to manage the Qiskit AerSimulator for QisJob</p></div>
@@ -111,17 +118,45 @@ class QisJobAer:
     Class to manage the Qiskit AerSimulator for QisJob
     &#34;&#34;&#34;
 
-    def __init__(
-        self, configuration=None, properties=None,
-        method=None, noise_model_backend: BackendV2 = None, noise_model: NoiseModel = None,
-    ):
-        if noise_model and noise_model_backend:
+    def __init__(self, **kwargs):
+        self.configuration = None
+        self.properties = None
+        self.provider = None
+        self.method = None
+        self.backend = None
+        self.from_backend_named = None
+        self.process_kwargs(**kwargs)
+        self.aer_simulator = AerSimulator()
+
+    def process_kwargs(self, kwargs):
+        if &#34;noise_model&#34; in kwargs and &#34;noise_model_backend&#34; in kwargs:
             raise QisJobArgumentException(
                 &#34;noise_model and noise_model_backend are mutually exclusive&#34;
             )
-
-        self.aer_simulator = AerSimulator()</code></pre>
+        if &#34;method&#34; in kwargs:
+            self.method = kwargs[&#34;method&#34;]</code></pre>
 </details>
+<h3>Methods</h3>
+<dl>
+<dt id="qisjob.qisjobaer.QisJobAer.process_kwargs"><code class="name flex">
+<span>def <span class="ident">process_kwargs</span></span>(<span>self, kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_kwargs(self, kwargs):
+    if &#34;noise_model&#34; in kwargs and &#34;noise_model_backend&#34; in kwargs:
+        raise QisJobArgumentException(
+            &#34;noise_model and noise_model_backend are mutually exclusive&#34;
+        )
+    if &#34;method&#34; in kwargs:
+        self.method = kwargs[&#34;method&#34;]</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -141,6 +176,9 @@ class QisJobAer:
 <ul>
 <li>
 <h4><code><a title="qisjob.qisjobaer.QisJobAer" href="#qisjob.qisjobaer.QisJobAer">QisJobAer</a></code></h4>
+<ul class="">
+<li><code><a title="qisjob.qisjobaer.QisJobAer.process_kwargs" href="#qisjob.qisjobaer.QisJobAer.process_kwargs">process_kwargs</a></code></li>
+</ul>
 </li>
 </ul>
 </li>
