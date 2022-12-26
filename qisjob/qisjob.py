@@ -79,7 +79,8 @@ except ImportError:
     warnings.warn("Qiskit IBMQ provider not installed.")
 
 try:
-    from qiskit_ibm_provider import IBMProvider, IBMInputValueError
+    from qiskit_ibm_provider import IBMProvider, IBMInputValueError, IBMProviderError #, least_busy
+    from qiskit_ibm_provider.job import IBMJob
     from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 except ImportError:
     warnings.warn("Qiskit IBMProvider not installed.")
