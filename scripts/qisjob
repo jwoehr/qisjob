@@ -468,6 +468,6 @@ except QisJobException as ex:
     EXITVAL = ex.retval
 except QiskitError as qex:
     print("Miscellaneous QiskitError encountered:")
-    print(qex)
+    print(qex, file=sys.stderr)
     EXITVAL = 200
 sys.exit(EXITVAL)
