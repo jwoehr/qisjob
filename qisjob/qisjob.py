@@ -179,6 +179,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         job_monitor_filepath=None,
         job_monitor_line="\r",
         noisy_sim=False,
+        use_qasm3=False,
     ):
         """
 
@@ -369,9 +370,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         aersimulator : array of string
             The default is `None`.
-            
+
             _Corresponding `qisjob` script argument_: `--aersimulator`
-            
+
             Array of QisJob-styled string arguments name=value for using the
             modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
 
@@ -697,6 +698,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Performs an Aer sim noise model using the designated backend
             (see --backend) as the model backend.
 
+        use_qasm3: bool
+
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--use_qasm3`
+
+            Uses the experimental OpenQASM3 parser. This interesting
+            new feature still needs some work (as well as the OpenQASM3
+            specification still being in flux), so it should not be
+            used in production.
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -757,6 +768,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
         self.noisy_sim = noisy_sim
+        self.use_qasm3 = use_qasm3
 
     def __str__(self) -> str:
         out = StringIO()
@@ -2442,6 +2454,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Don't print warnings on missing optional modules",
     )
+    PARSER.add_argument(
+        "--use_qasm3",
+        action="store_true",
+        default=False,
+        help="""Use experimental qiskit-terra OpenQASM 3 implementation""",
+    )
 
     ARGS = PARSER.parse_args()
 
@@ -2501,6 +2519,7 @@ if __name__ == "__main__":
     UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
+    USE_QASM3 = ARGS.use_qasm3
     VERBOSE = ARGS.verbose
 
     QJ = QisJob(
@@ -2555,6 +2574,7 @@ if __name__ == "__main__":
         job_monitor_filepath=JOB_MONITOR_FILEPATH,
         job_monitor_line=JOB_MONITOR_LINE,
         noisy_sim=NOISY_SIM,
+        use_qasm3=USE_QASM3,
     )
 
     EXITVAL = 0
