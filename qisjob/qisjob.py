@@ -59,6 +59,7 @@ from qiskit import (
     schedule,
     QiskitError,
     __qiskit_version__,
+    qasm3,
 )
 from qiskit.compiler import transpile
 from qiskit.providers import BackendV2, JobV1
@@ -1346,7 +1347,12 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         """
         # Write qasm if requested
         if self.qasm and ofh:
-            ofh.write(circ.qasm() + "\n")
+            if self.use_qasm3:
+                strio = StringIO()
+                qasm3.dump(circ, strio)
+                ofh.write(strio.getvalue())
+            else:  # qasm2
+                ofh.write(circ.qasm() + "\n")
 
         # Raw data if requested
         if self.memory:
