@@ -102,18 +102,25 @@ Do one of the following in the source directory (preferably in a Python virtual 
 -  `pip3 uninstall qis_job`
 -  `make uninstall_oldname`
 
+## Uninstall
+
+Do one of the following in the source directory
+* `make uninstall`
+* `pip3 uninstall qisjob`
+
 ## Usage
 
 The `qisjob` script has helpful help.
 
 ```
 $ qisjob -h
-usage: qisjob [-h] [-i | -s | -a | -b BACKEND] [--qasm_simulator | --unitary_simulator] [--statevector_gpu | --unitary_gpu | --density_matrix_gpu]
-              [--version] [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP] [--project PROJECT] [--providers] [--noisy_sim] [--qvm] [--qvm_as]
-              [--backends] [-1] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID] [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p]
-              [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched] [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL]
-              [--histogram] [--plot_state_city PLOT_STATE_CITY] [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN]
-              [--url URL] [--use_job_monitor] [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w]
+usage: qisjob [-h] [-i | -s | -a | --aersimulator AERSIMULATOR | -b BACKEND] [--qasm_simulator | --unitary_simulator]
+              [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version] [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP]
+              [--project PROJECT] [--providers] [--noisy_sim] [--qvm] [--qvm_as] [--backends] [-1] [-d DATETIME] [-g] [-j] [--jobs JOBS] [--job_id JOB_ID]
+              [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched]
+              [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY]
+              [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
+              [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w] [--use_qasm3]
               [filepath ...]
 
 Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with
@@ -133,6 +140,9 @@ options:
   -s, --sim             Use IBMQ qasm simulator
   -a, --aer             Use QISKit Aer simulator. Default is Aer statevector simulator. Use -a --qasm-simulator to get Aer qasm simulator. Use -a --unitary-
                         simulator to get Aer unitary simulator.
+  --aersimulator AERSIMULATOR
+                        Use Qiskit AerSimulator. Can be invoked multiple times. Each invocation should be an argument pair, e.g., '--aersimulator
+                        backend=ibmq_lima'
   -b BACKEND, --backend BACKEND
                         Use specified IBMQ backend
   --qasm_simulator      With -a use qasm simulator instead of statevector simulator
@@ -197,6 +207,7 @@ options:
   --job_monitor_filepath JOB_MONITOR_FILEPATH
                         Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
+  --use_qasm3           Use experimental qiskit-terra OpenQASM 3 implementation
 ```
 
 ## Notes
@@ -209,4 +220,4 @@ options:
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2022-10-16
+Jack Woehr 2023-03-02
