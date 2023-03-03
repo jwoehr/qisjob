@@ -1,22 +1,24 @@
 # qisjob
 
-**QISKit Job Control**
-* [The `qisjob` module](#The-qisjob-module)
-* [The `qisjob` command](#The-qisjob-command)
-* [The `QisJob` class](#The-QisJob-class)
-  * [`QisJob` Documentation](#QisJob-Documentation)
-* [Prerequisites](#Prerequisites)
-* [Install](#Install)
-* [Usage](#Usage)
-* [Notes](#Notes)
+## Qiskit Job Control
+
+* [The `qisjob` module](#the-qisjob-module)
+* [The `qisjob` command](#the-qisjob-command)
+* [The `QisJob` class](#the-qisjob-class)
+* [`QisJob` Documentation](#qisjob-documentation)
+* [Prerequisites](#prerequisites)
+* [Install](#install)
+* [Usage](#usage)
+* [Notes](#notes)
 
 ## The `qisjob` module
 
 The module is `qisjob`. It was formerly named `qis_job`. I'm not sure why, but I have now changed it to `qisjob`.
 
 If you previously installed the module as `qis_job` you can uninstall that older version either by
--  `pip3 uninstall qis_job`
--  `make uninstall_oldname`
+
+* `pip3 uninstall qis_job`
+* `make uninstall_oldname`
 
 ## The `qisjob` command
 
@@ -27,10 +29,10 @@ absence of file arguments.
 
 The command also provides some utility functions such as:
 
--   enumerating backend platforms
--   configuration both current and historical of backend platforms
--   status of backend platforms
--   status and results of jobs both current and historical
+* enumerating backend platforms
+* configuration both current and historical of backend platforms
+* status of backend platforms
+* status and results of jobs both current and historical
 
 and other useful operations for Qiskit experimentation.
 
@@ -40,12 +42,12 @@ See [LICENSE](https://github.com/jwoehr/qisjob/blob/main/LICENSE.txt).**
 `qisjob` can run Qiskit experiments expressed as either:
 
 * [OPENQASM Open Quantum Assembly Language](https://github.com/openqasm/openqasm)
-    * Use a well-formed OPENQASM file.
-    * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qasm_examples) of the project.
+  * Use a well-formed OPENQASM file.
+  * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qasm_examples) of the project.
 * Qiskit Terra `QuantumCircuit` Python code snippet.
-    * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
-    * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qisjob.py`
-        * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
+  * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
+  * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qisjob.py`
+    * If you have multiple files of this sort, all must have the same name for their `QuantumCircuit` object.
     * An example circuit (very long execution!) is found in the `qc_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qc_examples) of the project.
 
 You can load and run multiple files, but you cannot mix Qasm and `QuantumCircuit` files in the same execution of the `qisjob`.
@@ -74,21 +76,21 @@ You can also read the [QisJob Documentation Online](http://www.softwoehr.com/sof
 * [Qiskit/qiskit-aer](https://github.com/Qiskit/qiskit-aer)
 * A provider such as [Qiskit/qiskit-ibmq-provider](https://github.com/Qiskit/qiskit-ibmq-provider)
 * Currently supported backend providers are:
-   * IBMQ (required)
-      * For the local Aer simulator you only need qiskit-aer installed.
+  * IBMQ (required)
+    * For the local Aer simulator you only need qiskit-aer installed.
       * For genuine QPU or cloud simulator you will need an [IBM Q Experience API token](https://quantum-computing.ibm.com/account).
-   * Forest (optional; a warning message may appear if absent)
-      * You need [quantastic/qiskit-forest](https://github.com/quantastica/qiskit-forest)
-         * `pip install quantastica-qiskit-forest`
-      * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
-   * MQT (optional; a warning message may appear if absent)
-      * You need [cda-tum/ddsim](https://github.com/cda-tum/ddsim)
-      * This was formerly the JKU simulator
-   * QI (optional; a warning message may appear if absent)
-      * Install QuTech-Delft/quantuminspire from either
-         * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
-            * `pip install quantuminspire`.
-        * You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
+  * Forest (optional; a warning message may appear if absent)
+    * You need [quantastic/qiskit-forest](https://github.com/quantastica/qiskit-forest)
+      * `pip install quantastica-qiskit-forest`
+    * For Rigetti QPU you will need [access](https://qcs.rigetti.com/request-access)
+  * MQT (optional; a warning message may appear if absent)
+    * You need [cda-tum/ddsim](https://github.com/cda-tum/ddsim)
+    * This was formerly the JKU simulator
+  * QI (optional; a warning message may appear if absent)
+    * Install QuTech-Delft/quantuminspire from either
+      * [Github QuTech-Delft/quantuminspire](https://github.com/QuTech-Delft/quantuminspire)
+        * `pip install quantuminspire`.
+      * You will also need a [Quantum Inspire token](https://www.quantum-inspire.com/account).
 
 ## Install
 
@@ -99,12 +101,14 @@ Do one of the following in the source directory (preferably in a Python virtual 
 * `pip3 install .`
 
 **Note** that the module name has recently (2021-02-16) changed from `qis_job` to `qisjob`. If you previously installed the module as `qis_job` you can uninstall that older version either by
--  `pip3 uninstall qis_job`
--  `make uninstall_oldname`
+
+* `pip3 uninstall qis_job`
+* `make uninstall_oldname`
 
 ## Uninstall
 
 Do one of the following in the source directory
+
 * `make uninstall`
 * `pip3 uninstall qisjob`
 
@@ -112,7 +116,7 @@ Do one of the following in the source directory
 
 The `qisjob` script has helpful help.
 
-```
+```text
 $ qisjob -h
 usage: qisjob [-h] [-i | -s | -a | --aersimulator AERSIMULATOR | -b BACKEND] [--qasm_simulator | --unitary_simulator]
               [--statevector_gpu | --unitary_gpu | --density_matrix_gpu] [--version] [--api_provider API_PROVIDER] [--hub HUB] [--group GROUP]
