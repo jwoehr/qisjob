@@ -1350,7 +1350,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.use_qasm3:
                 strio = StringIO()
                 qasm3.dump(circ, strio)
-                ofh.write(strio.getvalue())
+                ofh.write(strio.getvalue() + "\n")
             else:  # qasm2
                 ofh.write(circ.qasm() + "\n")
 
