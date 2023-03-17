@@ -1482,7 +1482,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
-            if self.nuqasm2:
+            if self.use_qasm3:
+                try:
+                    import qiskit_qasm3_import
+
+                    circ = qiskit_qasm3_import.parse(the_source)
+                except ImportError:
+                    warnings.warn(
+                        "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                    )
+                    circ = QuantumCircuit.from_qasm_str(the_source)
+
+            elif self.nuqasm2:
                 try:
                     circ = Ast2Circ.from_qasm_str(
                         the_source_list, include_path=self.nuqasm2, no_unknown=True
@@ -1665,7 +1676,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
                 circ = my_loc[self.qc_name]
             else:
-                if self.nuqasm2:
+                if self.use_qasm3:
+                    try:
+                        import qiskit_qasm3_import
+
+                        circ = qiskit_qasm3_import.parse(the_source)
+                    except ImportError:
+                        warnings.warn(
+                            "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                        )
+                        circ = QuantumCircuit.from_qasm_str(the_source)
+
+                elif self.nuqasm2:
                     try:
                         circ = Ast2Circ.from_qasm_str(
                             the_source_list, include_path=self.nuqasm2, no_unknown=True
@@ -1833,7 +1855,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         circ = None
 
-        if self.nuqasm2:
+        if self.use_qasm3:
+            try:
+                import qiskit_qasm3_import
+
+                circ = qiskit_qasm3_import.parse(the_source)
+            except ImportError:
+                warnings.warn(
+                    "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                )
+                circ = QuantumCircuit.from_qasm_str(the_source)
+
+        elif self.nuqasm2:
             try:
                 circ = Ast2Circ.from_qasm_str(
                     the_source, include_path=self.nuqasm2, no_unknown=True
