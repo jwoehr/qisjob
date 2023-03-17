@@ -1491,7 +1491,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     warnings.warn(
                         "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                     )
-                    circ = QuantumCircuit.from_qasm_str(the_source)
+                finally:
+                    if not "qiskit_qasm3_import" in sys.modules:
+                        circ = QuantumCircuit.from_qasm_str(the_source)
 
             elif self.nuqasm2:
                 try:
@@ -1685,7 +1687,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         warnings.warn(
                             "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                         )
-                        circ = QuantumCircuit.from_qasm_str(the_source)
+                    finally:
+                        if not "qiskit_qasm3_import" in sys.modules:
+                            circ = QuantumCircuit.from_qasm_str(the_source)
 
                 elif self.nuqasm2:
                     try:
@@ -1864,7 +1868,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 warnings.warn(
                     "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                 )
-                circ = QuantumCircuit.from_qasm_str(the_source)
+            finally:
+                if not "qiskit_qasm3_import" in sys.modules:
+                    circ = QuantumCircuit.from_qasm_str(the_source)
 
         elif self.nuqasm2:
             try:
