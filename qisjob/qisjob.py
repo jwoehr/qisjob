@@ -182,6 +182,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         noisy_sim=False,
         qasm3_in=False,
         qasm3_out=False,
+        use_old_provider=False,
     ):
         """
 
@@ -721,6 +722,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
              specification still being in flux), so it should not be
              used in production.
 
+        use_old_provider: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--use_old_provider`
+
+             If `True`, use the deprecated IBMQ Provider in preference to
+             the modern IBMProvider.
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -783,6 +791,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
+        self.use_old_provider = use_old_provider
 
     def __str__(self) -> str:
         out = StringIO()
@@ -1041,18 +1050,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def ibmq_account_fu(self):
         """Load IBMQ account appropriately and instance self with provider"""
-        try:
-            try:
-                if self.token:
-                    self.provider = IBMProvider(token=self.token, url=self.url)
-                else:
-                    self.provider = IBMProvider()
-            except IBMInputValueError as err:
-                raise QisJobRuntimeException(
-                    f"Error loading account via IBMProvider: {err}"
-                ) from err
-
-        except NameError:
+        if self.use_old_provider:
             try:
                 if self.token:
                     IBMQ.enable_account(self.token, url=self.url)
@@ -1065,6 +1063,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.provider = IBMQ.get_provider(
                 hub=self.hub, group=self.group, project=self.project
             )
+        else:
+            try:
+                if self.token:
+                    self.provider = IBMProvider(token=self.token, url=self.url)
+                else:
+                    self.provider = IBMProvider()
+            except IBMInputValueError as err:
+                raise QisJobRuntimeException(
+                    f"Error loading account via IBMProvider: {err}"
+                ) from err
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
@@ -1496,18 +1504,20 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             circ = my_loc[self.qc_name]
         else:
             if self.qasm3_in:
-                try:
-                    import qiskit_qasm3_import
-
-                    circ = qiskit_qasm3_import.parse(the_source)
-                except ImportError:
-                    warnings.warn(
-                        "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
-                    )
-                finally:
-                    if not "qiskit_qasm3_import" in sys.modules:
-                        circ = QuantumCircuit.from_qasm_str(the_source)
-
+                # =============================================================================
+                #                 try:
+                #                     import qiskit_qasm3_import
+                #
+                #                     circ = qiskit_qasm3_import.parse(the_source)
+                #                 except ImportError:
+                #                     warnings.warn(
+                #                         "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                #                     )
+                #                 finally:
+                #                     if not "qiskit_qasm3_import" in sys.modules:
+                #                         circ = QuantumCircuit.from_qasm_str(the_source)
+                # =============================================================================
+                circ = qasm3.loads(the_source)
             elif self.nuqasm2:
                 try:
                     circ = Ast2Circ.from_qasm_str(
@@ -1692,18 +1702,21 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 circ = my_loc[self.qc_name]
             else:
                 if self.qasm3_in:
-                    try:
-                        import qiskit_qasm3_import
-
-                        circ = qiskit_qasm3_import.parse(the_source)
-                    except ImportError:
-                        warnings.warn(
-                            "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
-                        )
-                    finally:
-                        if not "qiskit_qasm3_import" in sys.modules:
-                            circ = QuantumCircuit.from_qasm_str(the_source)
-
+                    # =============================================================================
+                    #                     try:
+                    #                         import qiskit_qasm3_import
+                    #
+                    #                         circ = qiskit_qasm3_import.parse(the_source)
+                    #                     except ImportError:
+                    #                         warnings.warn(
+                    #                             "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                    #                         )
+                    #                     finally:
+                    #                         if not "qiskit_qasm3_import" in sys.modules:
+                    #                             circ = QuantumCircuit.from_qasm_str(the_source)
+                    #
+                    # =============================================================================
+                    circ = qasm3.loads(the_source)
                 elif self.nuqasm2:
                     try:
                         circ = Ast2Circ.from_qasm_str(
@@ -1873,18 +1886,20 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         circ = None
 
         if self.qasm3_in:
-            try:
-                import qiskit_qasm3_import
-
-                circ = qiskit_qasm3_import.parse(the_source)
-            except ImportError:
-                warnings.warn(
-                    "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
-                )
-            finally:
-                if not "qiskit_qasm3_import" in sys.modules:
-                    circ = QuantumCircuit.from_qasm_str(the_source)
-
+            # =============================================================================
+            #             try:
+            #                 import qiskit_qasm3_import
+            #
+            #                 circ = qiskit_qasm3_import.parse(the_source)
+            #             except ImportError:
+            #                 warnings.warn(
+            #                     "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+            #                 )
+            #             finally:
+            #                 if not "qiskit_qasm3_import" in sys.modules:
+            #                     circ = QuantumCircuit.from_qasm_str(the_source)
+            # =============================================================================
+            circ = qasm3.loads(the_source)
         elif self.nuqasm2:
             try:
                 circ = Ast2Circ.from_qasm_str(
@@ -2524,6 +2539,12 @@ if __name__ == "__main__":
         default=False,
         help="""Print qasm file as OpenQASM 3 to stdout before running job""",
     )
+    PARSER.add_argument(
+        "--use_old_provider",
+        action="store_true",
+        default=False,
+        help="""Use the deprecated IBMQ Provider in preference to IBMProvider""",
+    )
 
     ARGS = PARSER.parse_args()
 
@@ -2584,7 +2605,8 @@ if __name__ == "__main__":
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     QASM3_IN = ARGS.qasm3_in
-    QASM3_OUT = ARGS.qasm3_in
+    QASM3_OUT = ARGS.qasm3_out
+    USE_OLD_PROVIDER = ARGS.use_old_provider
     VERBOSE = ARGS.verbose
 
     QJ = QisJob(
@@ -2641,6 +2663,7 @@ if __name__ == "__main__":
         noisy_sim=NOISY_SIM,
         qasm3_in=QASM3_IN,
         qasm3_out=QASM3_OUT,
+        use_old_provider=USE_OLD_PROVIDER,
     )
 
     EXITVAL = 0

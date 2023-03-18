@@ -365,6 +365,12 @@ PARSER.add_argument(
     default=False,
     help="""Print qasm file as OpenQASM 3 to stdout before running job""",
 )
+PARSER.add_argument(
+    "--use_old_provider",
+    action="store_true",
+    default=False,
+    help="""Use the deprecated IBMQ Provider in preference to IBMProvider""",
+)
 ARGS = PARSER.parse_args()
 
 if ARGS.warnings:
@@ -426,6 +432,7 @@ URL = ARGS.url
 USE_JM = ARGS.use_job_monitor
 QASM3_IN = ARGS.qasm3_in
 QASM3_OUT = ARGS.qasm3_out
+USE_OLD_PROVIDER = ARGS.use_old_provider
 VERBOSE = ARGS.verbose
 
 QJ = QisJob(
@@ -482,6 +489,7 @@ QJ = QisJob(
     noisy_sim=NOISY_SIM,
     qasm3_in=QASM3_IN,
     qasm3_out=QASM3_OUT,
+    use_old_provider=USE_OLD_PROVIDER,
 )
 
 EXITVAL = 0
