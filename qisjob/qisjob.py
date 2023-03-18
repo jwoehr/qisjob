@@ -180,7 +180,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         job_monitor_filepath=None,
         job_monitor_line="\r",
         noisy_sim=False,
-        use_qasm3=False,
+        qasm3_in=False,
+        qasm3_out=False,
     ):
         """
 
@@ -699,16 +700,27 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Performs an Aer sim noise model using the designated backend
             (see --backend) as the model backend.
 
-        use_qasm3: bool
-
+        qasm3_in: bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: `--use_qasm3`
+            _Corresponding `qisjob` script argument_: `--qasm3_in`
 
-            Uses the experimental OpenQASM3 parser. This interesting
+            Interprets input as OpenQASM3 source. This interesting
             new feature still needs some work (as well as the OpenQASM3
             specification still being in flux), so it should not be
             used in production.
+
+        qasm3_out: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--qasm3_out`
+
+             If `True`, print each qasm file to stdout as OpenQASM 3 source
+             before running job. This interesting
+             new feature still needs some work (as well as the OpenQASM3
+             specification still being in flux), so it should not be
+             used in production.
+
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -769,7 +781,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
         self.noisy_sim = noisy_sim
-        self.use_qasm3 = use_qasm3
+        self.qasm3_in = qasm3_in
+        self.qasm3_out = qasm3_out
 
     def __str__(self) -> str:
         out = StringIO()
@@ -1164,7 +1177,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     raise QisJobRuntimeException(
                         f"QiskitError no device found for criteria (large enough?) {err}"
                     ) from err
-                self.verbosity(f"The best backend is {self.backend.name()}", 2)
+                self.verbosity(f"The best backend is {self.backend.name}", 2)
                 self.verbosity(f"Backend is {str(self.backend)}", 1)
 
     @staticmethod
@@ -1346,8 +1359,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         """
         # Write qasm if requested
-        if self.qasm and ofh:
-            if self.use_qasm3:
+        if (self.qasm or self.qasm3_out) and ofh:
+            if self.qasm3_out:
                 strio = StringIO()
                 qasm3.dump(circ, strio)
                 ofh.write(strio.getvalue() + "\n")
@@ -1482,14 +1495,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             # self._pp.pprint(my_loc)
             circ = my_loc[self.qc_name]
         else:
-            if self.use_qasm3:
+            if self.qasm3_in:
                 try:
                     import qiskit_qasm3_import
 
                     circ = qiskit_qasm3_import.parse(the_source)
                 except ImportError:
                     warnings.warn(
-                        "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                        "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                     )
                 finally:
                     if not "qiskit_qasm3_import" in sys.modules:
@@ -1678,14 +1691,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 exec(the_source, my_glob, my_loc)  # pylint: disable-msg=exec-used
                 circ = my_loc[self.qc_name]
             else:
-                if self.use_qasm3:
+                if self.qasm3_in:
                     try:
                         import qiskit_qasm3_import
 
                         circ = qiskit_qasm3_import.parse(the_source)
                     except ImportError:
                         warnings.warn(
-                            "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                            "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                         )
                     finally:
                         if not "qiskit_qasm3_import" in sys.modules:
@@ -1859,14 +1872,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         circ = None
 
-        if self.use_qasm3:
+        if self.qasm3_in:
             try:
                 import qiskit_qasm3_import
 
                 circ = qiskit_qasm3_import.parse(the_source)
             except ImportError:
                 warnings.warn(
-                    "use_qasm3 invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
+                    "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
                 )
             finally:
                 if not "qiskit_qasm3_import" in sys.modules:
@@ -2500,10 +2513,16 @@ if __name__ == "__main__":
         help="Don't print warnings on missing optional modules",
     )
     PARSER.add_argument(
-        "--use_qasm3",
+        "--qasm3_in",
         action="store_true",
         default=False,
-        help="""Use experimental qiskit-terra OpenQASM 3 implementation""",
+        help="""Interpret input as OpenQASM 3""",
+    )
+    PARSER.add_argument(
+        "--qasm3_out",
+        action="store_true",
+        default=False,
+        help="""Print qasm file as OpenQASM 3 to stdout before running job""",
     )
 
     ARGS = PARSER.parse_args()
@@ -2564,7 +2583,8 @@ if __name__ == "__main__":
     UNITARY_SIMULATOR = ARGS.unitary_simulator
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
-    USE_QASM3 = ARGS.use_qasm3
+    QASM3_IN = ARGS.qasm3_in
+    QASM3_OUT = ARGS.qasm3_in
     VERBOSE = ARGS.verbose
 
     QJ = QisJob(
@@ -2619,7 +2639,8 @@ if __name__ == "__main__":
         job_monitor_filepath=JOB_MONITOR_FILEPATH,
         job_monitor_line=JOB_MONITOR_LINE,
         noisy_sim=NOISY_SIM,
-        use_qasm3=USE_QASM3,
+        qasm3_in=QASM3_IN,
+        qasm3_out=QASM3_OUT,
     )
 
     EXITVAL = 0

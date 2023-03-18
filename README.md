@@ -24,8 +24,8 @@ If you previously installed the module as `qis_job` you can uninstall that older
 
 The `qisjob` command loads and executes [Qiskit](https://qiskit.org) experiments on simulators or on genuine quantum
 computing hardware such as that found at [IBM Q Experience](https://quantum-computing.ibm.com). Input is from one or
-more OpenQASM 2 source files or Qiskit `QuantumCircuit` Python code or from source provided via standard input in the
-absence of file arguments.
+more OpenQASM 2 (by default) or OpenQASM 3 (with the `--qasm3_in` option) source files or Qiskit `QuantumCircuit`
+Python code (with the `--qc` option) or from source provided via standard input in the absence of file arguments.
 
 The command also provides some utility functions such as:
 
@@ -44,6 +44,8 @@ See [LICENSE](https://github.com/jwoehr/qisjob/blob/main/LICENSE.txt).**
 * [OPENQASM Open Quantum Assembly Language](https://github.com/openqasm/openqasm)
   * Use a well-formed OPENQASM file.
   * Examples are found in the `qasm_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/master/share/qasm_examples) of the project.
+  * Examples of OpenQASM 3 are found in the `qasm3_examples` [subdirectory](https://github.com/jwoehr/qisjob/tree/qasm3/share/qasm3_examples)
+  of the project, as well as in the   [OpenQASM project examples directory](https://github.com/openqasm/openqasm/tree/main/examples).
 * Qiskit Terra `QuantumCircuit` Python code snippet.
   * To use a code snippet, only import that which is absolutely needed in the snippet and provide no execution code.
   * Pass the name of your `QuantumCircuit` to the `--qc` argument of `qisjob.py`
@@ -124,7 +126,7 @@ usage: qisjob [-h] [-i | -s | -a | --aersimulator AERSIMULATOR | -b BACKEND] [--
               [--job_result JOB_RESULT] [-m] [-n NUQASM2] [-o OUTFILE] [-p] [-q QUBITS] [--qiskit_version] [-r] [-t SHOTS] [-v] [-x] [--showsched]
               [--circuit_layout] [--optimization_level OPTIMIZATION_LEVEL] [--histogram] [--plot_state_city PLOT_STATE_CITY]
               [--figure_basename FIGURE_BASENAME] [--qasm] [--qc QC] [--status] [--token TOKEN] [--url URL] [--use_job_monitor]
-              [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w] [--use_qasm3]
+              [--job_monitor_line JOB_MONITOR_LINE] [--job_monitor_filepath JOB_MONITOR_FILEPATH] [-w] [--qasm3_in] [--qasm3_out]
               [filepath ...]
 
 Qisjob loads from one or more OpenQASM source files or from a file containing a Qiskit QuantumCircuit definition in Python and runs as experiments with
@@ -211,7 +213,8 @@ options:
   --job_monitor_filepath JOB_MONITOR_FILEPATH
                         Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
   -w, --warnings        Don't print warnings on missing optional modules
-  --use_qasm3           Use experimental qiskit-terra OpenQASM 3 implementation
+  --qasm3_in            Interpret input as OpenQASM 3
+  --qasm3_out           Print qasm file as OpenQASM 3 to stdout before running job
 ```
 
 ## Notes

@@ -354,10 +354,16 @@ PARSER.add_argument(
     help="Don't print warnings on missing optional modules",
 )
 PARSER.add_argument(
-    "--use_qasm3",
+    "--qasm3_in",
     action="store_true",
     default=False,
-    help="""Use experimental qiskit-terra OpenQASM 3 implementation""",
+    help="""Interpret input as OpenQASM 3""",
+)
+PARSER.add_argument(
+    "--qasm3_out",
+    action="store_true",
+    default=False,
+    help="""Print qasm file as OpenQASM 3 to stdout before running job""",
 )
 ARGS = PARSER.parse_args()
 
@@ -418,7 +424,8 @@ UNITARY_GPU = ARGS.unitary_gpu
 UNITARY_SIMULATOR = ARGS.unitary_simulator
 URL = ARGS.url
 USE_JM = ARGS.use_job_monitor
-USE_QASM3 = ARGS.use_qasm3
+QASM3_IN = ARGS.qasm3_in
+QASM3_OUT = ARGS.qasm3_out
 VERBOSE = ARGS.verbose
 
 QJ = QisJob(
@@ -473,7 +480,8 @@ QJ = QisJob(
     job_monitor_filepath=JOB_MONITOR_FILEPATH,
     job_monitor_line=JOB_MONITOR_LINE,
     noisy_sim=NOISY_SIM,
-    use_qasm3=USE_QASM3,
+    qasm3_in=QASM3_IN,
+    qasm3_out=QASM3_OUT,
 )
 
 EXITVAL = 0
