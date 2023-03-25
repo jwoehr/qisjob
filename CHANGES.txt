@@ -10,12 +10,12 @@ limitations under the License.
 
 CHANGES by revision to QisJob
 
-v4.1.2-dev
-- Use IBMProvider
+v4.1.2
+- Use IBMProvider if installed
+- Add OPENQasm 3 support
 - Added `entangle.qasm` example
 - Update alternate providers (e.g., JKU -> MQT)
 - General code cleanups
-
 
 v4.1.1
 This is an intermediate release as the Qiskit BaseBackend, BaseJob, and

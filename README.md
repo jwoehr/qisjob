@@ -220,7 +220,7 @@ options:
 ## Notes
 
 * It is recommended you download or clone the most recent [release](https://github.com/jwoehr/qisjob/releases).
-  * Version v4.1.1 is the current version.
+  * Version v4.1.2 is the current version.
 * This document always reflects the latest checkins and may be ahead of the release versions.
   * See the README.md in the release version itself for contemporary information.
 * Please use the [issue tracker](https://github.com/jwoehr/qisjob/issues) to report any issues or feature requests.
