@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name="qisjob",
-    version="4.1.2",
+    version="4.1.3-dev",
     description="Run Qiskit jobs from command line",
     url="https://github.com/jwoehr/qisjob",
     author="Jack Woehr",

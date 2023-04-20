@@ -57,11 +57,11 @@ from qiskit import (
     QuantumCircuit,
     execute,
     schedule,
-    QiskitError,
     __qiskit_version__,
     qasm3,
 )
 from qiskit.compiler import transpile
+from qiskit.exceptions import QiskitError
 from qiskit.providers import BackendV2, JobV1
 from qiskit.providers.ibmq import least_busy
 from qiskit.providers.ibmq.job import IBMQJob
@@ -782,7 +782,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.local_simulator_type = "statevector_simulator"
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
-        self.my_version = "v4.1.2"
+        self.my_version = "v4.1.3-dev"
         self.qasm_result = None
         self.result_exp_dict = None
         self.use_job_monitor = use_job_monitor

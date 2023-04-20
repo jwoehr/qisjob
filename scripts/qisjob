@@ -27,7 +27,7 @@ limitations under the License.
 
 import argparse
 import sys
-from qiskit import QiskitError
+from qiskit.exceptions import QiskitError
 from qisjob import QisJob, QisJobException  # pylint: disable-msg=import-self
 
 EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
