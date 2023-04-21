@@ -63,8 +63,6 @@ from qiskit import (
 from qiskit.compiler import transpile
 from qiskit.exceptions import QiskitError
 from qiskit.providers import BackendV2, JobV1
-from qiskit.providers.ibmq import least_busy
-from qiskit.providers.ibmq.job import IBMQJob
 from qiskit.result import Result
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout, plot_state_city, plot_histogram
@@ -74,8 +72,10 @@ from matplotlib.figure import Figure
 
 try:
     from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
-    from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
     from qiskit.providers.exceptions import QiskitBackendNotFoundError
+    from qiskit.providers.ibmq.job import IBMQJob
+    from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
+
 except ImportError:
     warnings.warn("Qiskit IBMQ provider not installed.")
 
@@ -84,11 +84,13 @@ try:
         IBMProvider,
         IBMInputValueError,
         IBMProviderError,
-    )  # , least_busy
+        least_busy,
+    )
     from qiskit_ibm_provider.job import IBMJob
     from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 except ImportError:
     warnings.warn("Qiskit IBMProvider not installed.")
+    from qiskit.providers.ibmq import least_busy
 
 try:
     from nuqasm2 import Ast2Circ, Qasm_Exception, Ast2CircException
@@ -1125,7 +1127,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.method = "density_matrix_gpu"
 
         if self.use_aer:
-
             if self.method:
                 self.verbosity(
                     f"self.local_simulator_type is '{self.local_simulator_type}' with method '{self.method}'",  # pylint: disable-msg=line-too-long
@@ -1865,7 +1866,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def qasm_exp(
         self,
-    ) -> list:  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
+    ) -> (
+        list
+    ):  # pylint: disable-msg=too-many-locals, too-many-branches, too-many-statements, line-too-long
         """
         Given qasm source, run the job and return list of string csv and other selected output.
 
@@ -1886,19 +1889,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         circ = None
 
         if self.qasm3_in:
-            # =============================================================================
-            #             try:
-            #                 import qiskit_qasm3_import
-            #
-            #                 circ = qiskit_qasm3_import.parse(the_source)
-            #             except ImportError:
-            #                 warnings.warn(
-            #                     "qasm3_in invoked but qiskit_qasm3_import not installed ... Using Qiskit Qasm2 support instead."
-            #                 )
-            #             finally:
-            #                 if not "qiskit_qasm3_import" in sys.modules:
-            #                     circ = QuantumCircuit.from_qasm_str(the_source)
-            # =============================================================================
             circ = qasm3.loads(the_source)
         elif self.nuqasm2:
             try:
@@ -2187,7 +2177,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
 
 if __name__ == "__main__":
-
     EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
     from a file containing a Qiskit QuantumCircuit definition in Python and runs as
     experiments with reporting in CSV form. Can graph results as histogram or
