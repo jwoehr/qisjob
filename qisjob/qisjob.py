@@ -2194,7 +2194,7 @@ if __name__ == "__main__":
     state-city plot. Also can give info on backend properties, qiskit version,
     show circuit transpilation, etc. Can run as multiple jobs or all as one job.
     Exits 0 on success, 1 on argument error, 100 on runtime error, 200 on QiskitError.
-    Copyright 2019 Jack Woehr jwoehr@softwoehr.com PO Box 51, Golden, CO 80402-0051.
+    Copyright 2019, 2023 Jack Woehr jwoehr@softwoehr.com PO Box 82, Beulah, Colorado 81023.
 
     Apache License, Version 2.0 -- See LICENSE which you should have received with this code.
 
