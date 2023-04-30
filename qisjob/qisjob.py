@@ -795,6 +795,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.qasm3_out = qasm3_out
         self.use_old_provider = use_old_provider
 
+        # TODO -- until we are exclusively using IBMProvider
+        if not "IBMProvider" in dir():
+            self.use_old_provider = True
+
     def __str__(self) -> str:
         out = StringIO()
         pprint.pprint(self.__dict__, out)
