@@ -68,29 +68,16 @@ from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout, plot_state_city, plot_histogram
 from qiskit import Aer
 from qiskit_aer.noise import NoiseModel
+from qiskit.providers.exceptions import QiskitBackendNotFoundError
 from matplotlib.figure import Figure
-
-try:
-    from qiskit.providers.ibmq.exceptions import IBMQAccountCredentialsNotFound
-    from qiskit.providers.exceptions import QiskitBackendNotFoundError
-    from qiskit.providers.ibmq.job import IBMQJob
-    from qiskit.providers.ibmq.job.exceptions import IBMQJobFailureError
-
-except ImportError:
-    warnings.warn("Qiskit IBMQ provider not installed.")
-
-try:
-    from qiskit_ibm_provider import (
-        IBMProvider,
-        IBMInputValueError,
-        IBMProviderError,
-        least_busy,
-    )
-    from qiskit_ibm_provider.job import IBMJob
-    from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
-except ImportError:
-    warnings.warn("Qiskit IBMProvider not installed.")
-    from qiskit.providers.ibmq import least_busy
+from qiskit_ibm_provider import (
+    IBMProvider,
+    IBMInputValueError,
+    IBMProviderError,
+    least_busy,
+)
+from qiskit_ibm_provider.job import IBMJob
+from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 
 try:
     from nuqasm2 import Ast2Circ, Qasm_Exception, Ast2CircException
@@ -184,7 +171,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         noisy_sim=False,
         qasm3_in=False,
         qasm3_out=False,
-        use_old_provider=False,
     ):
         """
 
@@ -724,13 +710,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
              specification still being in flux), so it should not be
              used in production.
 
-        use_old_provider: bool
-            The default is `False`.
-
-            _Corresponding `qisjob` script argument_: `--use_old_provider`
-
-             If `True`, use the deprecated IBMQ Provider in preference to
-             the modern IBMProvider.
         """
         self.qasm_src = qasm_src
         self.provider_name = provider_name.upper()
@@ -793,11 +772,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
-        self.use_old_provider = use_old_provider
-
-        # TODO -- until we are exclusively using IBMProvider
-        if not "IBMProvider" in dir():
-            self.use_old_provider = True
 
     def __str__(self) -> str:
         out = StringIO()
@@ -977,7 +951,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 for a_job in be_jobs:
                     if self.provider_name != "QI":
                         if self.provider_name == "IBMQ":
-                            a_job = self.ibmqjob_to_dict(a_job)
+                            a_job = self.ibm_job_to_dict(a_job)
                         else:
                             a_job = a_job.to_dict()
                     self._pp.pprint(a_job)
@@ -987,7 +961,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 a_job = self.backend.retrieve_job(self.job_id)
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(a_job)
+                        a_job = self.ibm_job_to_dict(a_job)
                     else:
                         a_job = a_job.to_dict()
                 return
@@ -1055,30 +1029,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         return datetime.datetime(*the_args)
 
     def ibmq_account_fu(self):
-        """Load IBMQ account appropriately and instance self with provider"""
-        if self.use_old_provider:
-            try:
-                if self.token:
-                    IBMQ.enable_account(self.token, url=self.url)
-                else:
-                    self.provider = IBMQ.load_account()
-            except IBMQAccountCredentialsNotFound as err:
-                raise QisJobRuntimeException(
-                    f"Error loading IBMQ Account: {err}"
-                ) from err
-            self.provider = IBMQ.get_provider(
-                hub=self.hub, group=self.group, project=self.project
-            )
-        else:
-            try:
-                if self.token:
-                    self.provider = IBMProvider(token=self.token, url=self.url)
-                else:
-                    self.provider = IBMProvider()
-            except IBMInputValueError as err:
-                raise QisJobRuntimeException(
-                    f"Error loading account via IBMProvider: {err}"
-                ) from err
+        """Load IBM account appropriately and instance self with provider"""
+        try:
+            if self.token:
+                self.provider = IBMProvider(token=self.token, url=self.url)
+            else:
+                self.provider = IBMProvider()
+        except IBMInputValueError as err:
+            raise QisJobRuntimeException(
+                f"Error loading account via IBMProvider: {err}"
+            ) from err
 
     def qi_account_fu(self):
         """Load Quantum Inspire account appropriately and instance self
@@ -1586,7 +1546,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1625,7 +1585,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1654,7 +1614,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             self.process_result(result_exp, circ, ofh)
 
-        except (IBMQJobFailureError, IBMJobFailureError) as err:
+        except IBMJobFailureError as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
@@ -1788,7 +1748,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1827,7 +1787,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1842,7 +1802,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             for circ in circs:
                 self.process_result(result_exp, circ, ofh)
 
-        except (IBMQJobFailureError, IBMJobFailureError) as err:
+        except IBMJobFailureError as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
@@ -1953,7 +1913,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -1992,7 +1952,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.print_job:
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
-                        a_job = self.ibmqjob_to_dict(job_exp)
+                        a_job = self.ibm_job_to_dict(job_exp)
                     else:
                         a_job = job_exp.to_dict()
                 else:
@@ -2014,33 +1974,33 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             return self.formulate_result(result_exp, circ, None)
 
-        except (IBMQJobFailureError, IBMJobFailureError) as err:
+        except IBMJobFailureError as err:
             raise QisJobRuntimeException(
                 f"Job failure {err} {job_exp.error_message()}"
             ) from err
 
     @staticmethod
-    def ibmqjob_to_dict(job: IBMQJob) -> dict:
+    def ibm_job_to_dict(job: IBMJob) -> dict:
         """
         Create a dict containing job factors for which there are methods.
         Acts as a `to_dict()`.
 
         Parameters
         ----------
-        job : IBMQJob
-            An instance of `qiskit.providers.ibmq.job.IBMQJob`
+        job : IBMJob
+            An instance of `qiskit.providers.ibmq.job.IBMJob`
 
         Returns
         -------
         dict
-            Return a dict containing IBMQ Provider Job info as if
-            `qiskit.providers.ibmq.job.IBMQJob` had a `to_dict()` method.
+            Return a dict containing IBM Provider Job info as if
+            `qiskit_ibm_provider.job.IBMJob` had a `to_dict()` method.
 
             Actually, currently there is such a method, but it is deprecated
             and will be removed in the next release.
 
             The members should correspond to the methods documented in the
-            [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit.providers.ibmq.job.IBMQJob.html#qiskit.providers.ibmq.job.IBMQJob) # pylint: disable=line-too-long
+            [Qiskit IBM Quantum Provider documentation](https://qiskit.org/documentation/stubs/qiskit_ibm_provider.job.IBMJob.html) # pylint: disable=line-too-long
 
             Not all members are present on all platforms, so we try/except
             each one.
@@ -2532,12 +2492,6 @@ if __name__ == "__main__":
         default=False,
         help="""Print qasm file as OpenQASM 3 to stdout before running job""",
     )
-    PARSER.add_argument(
-        "--use_old_provider",
-        action="store_true",
-        default=False,
-        help="""Use the deprecated IBMQ Provider in preference to IBMProvider""",
-    )
 
     ARGS = PARSER.parse_args()
 
@@ -2599,7 +2553,7 @@ if __name__ == "__main__":
     USE_JM = ARGS.use_job_monitor
     QASM3_IN = ARGS.qasm3_in
     QASM3_OUT = ARGS.qasm3_out
-    USE_OLD_PROVIDER = ARGS.use_old_provider
+
     VERBOSE = ARGS.verbose
 
     QJ = QisJob(
@@ -2656,7 +2610,6 @@ if __name__ == "__main__":
         noisy_sim=NOISY_SIM,
         qasm3_in=QASM3_IN,
         qasm3_out=QASM3_OUT,
-        use_old_provider=USE_OLD_PROVIDER,
     )
 
     EXITVAL = 0
