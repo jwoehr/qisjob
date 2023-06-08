@@ -224,4 +224,8 @@ options:
 * If Python complains about the certs, you could try setting an env variable, like this:
   * `export SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())")`
 
-Jack Woehr 2023-05-28
+## Software Bill of Materials
+
+The [Software Bill of Materials (SBOM)](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/exporting-a-software-bill-of-materials-for-your-repository) is `SBOM_qisjob_jwoehr_*.json`
+
+Jack Woehr 2023-06-07
