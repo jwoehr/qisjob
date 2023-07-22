@@ -776,7 +776,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
     def __str__(self) -> str:
         out = StringIO()
         pprint.pprint(self.__dict__, out)
-        return "{}\n{}".format(super().__str__(), out.getvalue())
+        return f"{super().__str__()}\n{out.getvalue()}"
 
     def qisjob_version(self) -> str:
         """
