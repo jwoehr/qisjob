@@ -1056,8 +1056,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 from quantastica.qiskit_forest import ForestBackend
             except ImportError:
                 warnings.warn("Quantastica Qiskit_Forest not installed.")
-
-
             self.forest_account_fu()
         elif self.provider_name == "MQT":
             try:
