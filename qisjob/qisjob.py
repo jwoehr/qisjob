@@ -79,27 +79,8 @@ from qiskit_ibm_provider import (
 from qiskit_ibm_provider.job import IBMJob
 from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 
-try:
-    from nuqasm2 import Ast2Circ, Qasm_Exception, Ast2CircException
-except ImportError:
-    warnings.warn("NuQasm2 not installed.")
 
-try:
-    from quantuminspire.api import QuantumInspireAPI
-    from quantuminspire.qiskit import QI
-    from quantuminspire.credentials import enable_account as qi_enable_account
-except ImportError:
-    warnings.warn("QuantumInspire not installed.")
 
-try:
-    from quantastica.qiskit_forest import ForestBackend
-except ImportError:
-    warnings.warn("Quantastica Qiskit_Forest not installed.")
-
-try:
-    from mqt import ddsim
-except ImportError:
-    warnings.warn("MQT DDSIMProvider not installed.")
 
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
 
@@ -1063,10 +1044,24 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         if self.provider_name == "IBMQ":
             self.ibmq_account_fu()
         elif self.provider_name == "QI":
+            try:
+                from quantuminspire.api import QuantumInspireAPI
+                from quantuminspire.qiskit import QI
+                from quantuminspire.credentials import enable_account as qi_enable_account
+            except ImportError:
+                warnings.warn("QuantumInspire not installed.")
             self.qi_account_fu()
         elif self.provider_name == "Forest":
+            try:
+                from quantastica.qiskit_forest import ForestBackend
+            except ImportError:
+                warnings.warn("Quantastica Qiskit_Forest not installed.")
             self.forest_account_fu()
         elif self.provider_name == "MQT":
+            try:
+                from mqt import ddsim
+            except ImportError:
+                warnings.warn("MQT DDSIMProvider not installed.")
             self.mqt_account_fu()
 
     def choose_backend(
@@ -1125,6 +1120,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 )
 
             elif self.provider_name == "QI":
+
                 for b_e in self.provider.backends():
                     if (
                         b_e.__dict__["_QuantumInspireBackend__backend"][
@@ -1484,6 +1480,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 # =============================================================================
                 circ = qasm3.loads(the_source)
             elif self.nuqasm2:
+                try:
+                    from nuqasm2 import Ast2Circ, Qasm_Exception, Ast2CircException
+                except ImportError:
+                    warnings.warn("NuQasm2 not installed.")
                 try:
                     circ = Ast2Circ.from_qasm_str(
                         the_source_list, include_path=self.nuqasm2, no_unknown=True

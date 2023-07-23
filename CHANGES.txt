@@ -14,6 +14,7 @@ v4.1.3-dev
 - Remove support for deprecated provider
   - For IBM Quantum only support `qiskit-ibm-provider`
 - Import `QiskitError` from `qiskit.exception` instead of from `qiskit`
+- Suppress warnings now working/ Imports location changed to only when needed
 
 v4.1.2
 - Use IBMProvider if installed
