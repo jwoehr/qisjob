@@ -80,8 +80,6 @@ from qiskit_ibm_provider.job import IBMJob
 from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 
 
-
-
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
 
 
@@ -754,7 +752,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
-        self.display= display
+        self.display = display
 
     def __str__(self) -> str:
         out = StringIO()
@@ -1049,7 +1047,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             try:
                 from quantuminspire.api import QuantumInspireAPI
                 from quantuminspire.qiskit import QI
-                from quantuminspire.credentials import enable_account as qi_enable_account
+                from quantuminspire.credentials import (
+                    enable_account as qi_enable_account,
+                )
             except ImportError:
                 warnings.warn("QuantumInspire not installed.")
             self.qi_account_fu()
@@ -1122,7 +1122,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 )
 
             elif self.provider_name == "QI":
-
                 for b_e in self.provider.backends():
                     if (
                         b_e.__dict__["_QuantumInspireBackend__backend"][
@@ -1441,7 +1440,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             ofh = sys.stdout
         else:
             ofh = open(self.outfile_path, "w")
-        
+
         if self.backend is None:
             raise QisJobRuntimeException("No backend available, quitting.")
 
@@ -1506,11 +1505,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 circ = QuantumCircuit.from_qasm_str(the_source)
 
             self.verbosity(circ.draw(), 2)
-        
+
         if self.display:
-                
-                circ = QuantumCircuit.from_qasm_str(the_source)
-                print(circ.draw())
+            circ = QuantumCircuit.from_qasm_str(the_source)
+            print(circ.draw())
 
         if self.xpile:
             new_circ = transpile(
@@ -2524,7 +2522,7 @@ if __name__ == "__main__":
     CIRCUIT_LAYOUT = ARGS.circuit_layout
     CONFIGURATION = ARGS.configuration
     DATETIME = ARGS.datetime
-    DISPLAY =ARGS.display
+    DISPLAY = ARGS.display
     FIGURE_BASENAME = ARGS.figure_basename
     FILEPATH = ARGS.filepath
     HISTOGRAM = ARGS.histogram
