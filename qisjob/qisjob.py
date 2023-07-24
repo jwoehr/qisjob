@@ -98,6 +98,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def __init__(  # pylint: disable-msg=too-many-arguments, too-many-locals, too-many-statements, line-too-long
         self,
+        display=False,
         filepaths=None,
         qasm_src=None,
         provider_name="IBMQ",
@@ -753,6 +754,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
+        self.display= display
 
     def __str__(self) -> str:
         out = StringIO()
@@ -1439,7 +1441,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             ofh = sys.stdout
         else:
             ofh = open(self.outfile_path, "w")
-
+        
         if self.backend is None:
             raise QisJobRuntimeException("No backend available, quitting.")
 
@@ -1504,6 +1506,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 circ = QuantumCircuit.from_qasm_str(the_source)
 
             self.verbosity(circ.draw(), 2)
+        
+        if self.display:
+                
+                circ = QuantumCircuit.from_qasm_str(the_source)
+                print(circ.draw())
 
         if self.xpile:
             new_circ = transpile(
@@ -2221,6 +2228,12 @@ if __name__ == "__main__":
                         use gpu density matrix simulator""",
     )
     PARSER.add_argument(
+        "--display",
+        action="store_true",
+        help="""Uses circuit.draw to 
+                        visualize the untranspiled circuit""",
+    )
+    PARSER.add_argument(
         "--version", action="store_true", help="""Announce QisJob version"""
     )
     PARSER.add_argument(
@@ -2511,6 +2524,7 @@ if __name__ == "__main__":
     CIRCUIT_LAYOUT = ARGS.circuit_layout
     CONFIGURATION = ARGS.configuration
     DATETIME = ARGS.datetime
+    DISPLAY =ARGS.display
     FIGURE_BASENAME = ARGS.figure_basename
     FILEPATH = ARGS.filepath
     HISTOGRAM = ARGS.histogram
@@ -2604,6 +2618,7 @@ if __name__ == "__main__":
         show_q_version=QISKIT_VERSION,
         verbose=VERBOSE,
         show_qisjob_version=QISJOB_VERSION,
+        show_circuit=DISPLAY,
         use_job_monitor=USE_JM,
         job_monitor_filepath=JOB_MONITOR_FILEPATH,
         job_monitor_line=JOB_MONITOR_LINE,
