@@ -1507,8 +1507,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
         if self.display:
-            circ = QuantumCircuit.from_qasm_str(the_source)
-            print(circ.draw())
+                print(circ.draw())
 
         if self.xpile:
             new_circ = transpile(
@@ -1709,6 +1708,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
             self.verbosity(circ.draw(), 2)
 
+            if self.display:
+                print(circ.draw())
+
             if self.xpile:
                 new_circ = transpile(
                     circ,
@@ -1880,6 +1882,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         self.verbosity(circ.draw(), 2)
 
+        if self.display:
+             print(circ.draw())
+        
         if self.xpile:
             new_circ = transpile(
                 circ, backend=self.backend, optimization_level=self.optimization_level
