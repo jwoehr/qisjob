@@ -106,6 +106,12 @@ GROUPC.add_argument(
                     use gpu density matrix simulator""",
 )
 PARSER.add_argument(
+        "--display",
+        action="store_true",
+        help="""Uses circuit.draw to visualize the untranspiled circuit""",
+    )
+
+PARSER.add_argument(
     "--version", action="store_true", help="""Announce QisJob version"""
 )
 PARSER.add_argument(
@@ -386,6 +392,7 @@ CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
 DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
+DISPLAY =ARGS.display
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -483,6 +490,7 @@ QJ = QisJob(
     noisy_sim=NOISY_SIM,
     qasm3_in=QASM3_IN,
     qasm3_out=QASM3_OUT,
+    display=DISPLAY
 )
 
 EXITVAL = 0
