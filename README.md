@@ -203,7 +203,7 @@ options:
                         Comma-separated list of hex values for character(s) to emit at the head of each line of job monitor output, default is '0x0d'
   --job_monitor_filepath JOB_MONITOR_FILEPATH
                         Filepath for Job Monitor output if Job Monitor requested by --use_job_monitor, default is sys.stdout
-  -w, --warnings        Don't print warnings on missing optional
+  -w, --warnings        Don't print warnings on missing optional modules
   --qasm3_in            Interpret input as OpenQASM 3
   --qasm3_out           Print qasm file as OpenQASM 3 to stdout before running job
 
