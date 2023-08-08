@@ -82,6 +82,7 @@ GROUP.add_argument(
 GROUPB.add_argument(
     "--qasm_simulator",
     action="store_true",
+    default=False,
     help="""With -a use qasm_simulator
                     instead of aer simulator""",
 )
@@ -116,24 +117,28 @@ GROUPB.add_argument(
 GROUPC.add_argument(
     "--statevector_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu statevector simulator""",
 )
 GROUPC.add_argument(
     "--unitary_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu unitary simulator""",
 )
 GROUPC.add_argument(
     "--density_matrix_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu density matrix simulator""",
 )
 PARSER.add_argument(
     "--display",
     action="store_true",
+    default=False,
     help="""Uses circuit.draw to 
                     visualize the untranspiled circuit""",
 )

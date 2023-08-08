@@ -29,91 +29,91 @@ from qiskit import Aer, transpile
 
 
 class QisJobAer:
-    """
-    Class to manage the Qiskit AerSimulator for QisJob
-    """
+    # """
+    # Class to manage the Qiskit AerSimulator for QisJob
+    # """
 
-    simulator_kwargs = [
-        "backend_named",
-        "configuration",
-        "method",
-        "noise_model",
-        "noise_model_backend",
-        "properties",
-    ]
+    # simulator_kwargs = [
+    #     "backend_named",
+    #     "configuration",
+    #     "method",
+    #     "noise_model",
+    #     "noise_model_backend",
+    #     "properties",
+    # ]
 
-    def __init__(self, **kwargs):
-        """
-        Instance this Aer Simulator manager
+    # def __init__(self, **kwargs):
+    #     """
+    #     Instance this Aer Simulator manager
 
-        Parameters
-        ----------
-        **kwargs :
-            Arguments passed in from QisJob to be processed into valid
-            arguments for instancing an Aer Simulator.
+    #     Parameters
+    #     ----------
+    #     **kwargs :
+    #         Arguments passed in from QisJob to be processed into valid
+    #         arguments for instancing an Aer Simulator.
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        self.configuration = None
-        self.properties = None
-        self.provider = None
-        self.method = None
-        self.backend = None
-        self.backend_named = None
-        self.process_kwargs(**kwargs)
-        self.aer_simulator = self.instance_aer_simulator()
+    #     """
+    #     self.configuration = None
+    #     self.properties = None
+    #     self.provider = None
+    #     self.method = None
+    #     self.backend = None
+    #     self.backend_named = None
+    #     self.process_kwargs(**kwargs)
+    #     self.aer_simulator = self.instance_aer_simulator()
 
-    def process_kwargs(self, kwargs):
-        """
-        Process string kwargs from QisJob to formulate valid arguments to
-        instance an AerSimulator.
+    # def process_kwargs(self, kwargs):
+    #     """
+    #     Process string kwargs from QisJob to formulate valid arguments to
+    #     instance an AerSimulator.
 
-        Parameters
-        ----------
-        kwargs : dict
-            kwargs as passed in from QisJob to be translated to valid args/kwargs
-            to instance an AerSimulator.
+    #     Parameters
+    #     ----------
+    #     kwargs : dict
+    #         kwargs as passed in from QisJob to be translated to valid args/kwargs
+    #         to instance an AerSimulator.
 
-        Raises
-        ------
-        QisJobArgumentException
-            If any kwargs aren't recognized.
+    #     Raises
+    #     ------
+    #     QisJobArgumentException
+    #         If any kwargs aren't recognized.
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        for kwarg in kwargs:
-            if not kwarg in self.simulator_kwargs:
-                raise QisJobArgumentException(
-                    f"Unknown kwarg {kwarg} for Aer Simulator"
-                )
-        if "noise_model" in kwargs and "noise_model_backend" in kwargs:
-            raise QisJobArgumentException(
-                "noise_model and noise_model_backend are mutually exclusive"
-            )
-        if "method" in kwargs:
-            self.method = kwargs["method"]
+    #     """
+    #     for kwarg in kwargs:
+    #         if not kwarg in self.simulator_kwargs:
+    #             raise QisJobArgumentException(
+    #                 f"Unknown kwarg {kwarg} for Aer Simulator"
+    #             )
+    #     if "noise_model" in kwargs and "noise_model_backend" in kwargs:
+    #         raise QisJobArgumentException(
+    #             "noise_model and noise_model_backend are mutually exclusive"
+    #         )
+    #     if "method" in kwargs:
+    #         self.method = kwargs["method"]
 
-    def instance_aer_simulator(self) -> AerSimulator:
-        """
-        Take processed kwargs and use them to instance an AerSimulator
+    # def instance_aer_simulator(self) -> AerSimulator:
+    #     """
+    #     Take processed kwargs and use them to instance an AerSimulator
 
-        Returns
-        -------
-        AerSimulator
-            The AerSimulator to process the QisJob
+    #     Returns
+    #     -------
+    #     AerSimulator
+    #         The AerSimulator to process the QisJob
 
-        """
-        the_args = []
-        return AerSimulator(**the_args)
+    #     """
+    #     the_args = []
+    #     return AerSimulator(**the_args)
     
 
-
+    @staticmethod
     def run_aer(simulator,circ):        
         # Transpile for simulator
         circ = transpile(circ, simulator)
@@ -122,38 +122,38 @@ class QisJobAer:
         print(simulator)
         return job
     
-
+    @staticmethod
     def simulator(
-        self
+        qj
     ):  # pylint: disable-msg=too-many-branches, too-many-statements
-        """Instance self with backend selected by user if account will
+        """Instance qj with backend selected by user if account will
         activate and allow."""
 
         from qiskit_aer import AerSimulator
-        self.backend = AerSimulator()
+        qj.backend = AerSimulator()
         from qiskit import Aer, transpile
         simulator = 'aer_simulator'
-
+        print(f"QJ.use_pulse_simulator is {qj.use_pulse_simulator}")
         # Choose simulator. We defaulted in __init__() to AerSimulator()
-        if self.use_qasm_simulator:
+        if qj.use_qasm_simulator:
             simulator = 'qasm_simulator'
-        elif self.use_unitary_simulator:
+        elif qj.use_unitary_simulator:
             simulator = 'unitary_simulator'
-        elif self.use_statevector_simulator:
+        elif qj.use_statevector_simulator:
             simulator = 'statevector_simulator'
-        elif self.use_pulse_simulator:
+        elif qj.use_pulse_simulator:
             simulator = 'pulse_simulator'
-        elif self.use_aer_simulator_density_matrix:
+        elif qj.use_aer_simulator_density_matrix:
             simulator = 'aer_simulator_density_matrix'
         
         # Choose method kwarg for gpu etc if present
-        elif self.use_statevector_gpu:
-            self.method = "statevector_gpu"
-        elif self.use_unitary_gpu:
-            self.method = "unitary_gpu"
-        elif self.use_density_matrix_gpu:
-            self.method = "density_matrix_gpu"
-        return (simulator,self.method)
+        elif qj.use_statevector_gpu:
+            qj.method = "statevector_gpu"
+        elif qj.use_unitary_gpu:
+            qj.method = "unitary_gpu"
+        elif qj.use_density_matrix_gpu:
+            qj.method = "density_matrix_gpu"
+        return (simulator,qj.method)
     
 
 
