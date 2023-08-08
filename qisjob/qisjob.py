@@ -58,9 +58,10 @@ from qiskit import (
     execute,
     schedule,
     __qiskit_version__,
-    qasm3,
+    qasm3, 
+    transpile
 )
-from qiskit.compiler import transpile
+
 from qiskit.exceptions import QiskitError
 from qiskit.providers import BackendV2, JobV1
 from qiskit.result import Result
@@ -81,7 +82,7 @@ from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 
 
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
-
+from .qisjobaer import QisJobAer
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
     """
@@ -117,6 +118,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
+        use_aer_simulator_density_matrix=False,
+        use_pulse_simulator=False,
+        use_statevector_simulator=False,
         use_statevector_gpu=False,
         use_unitary_gpu=False,
         use_density_matrix_gpu=False,
@@ -712,6 +716,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_aer = use_aer
         self.use_qasm_simulator = use_qasm_simulator
         self.use_unitary_simulator = use_unitary_simulator
+        self.use_aer_simulator_density_matrix=use_aer_simulator_density_matrix,
+        self.use_pulse_simulator=use_pulse_simulator,
+        self.use_statevector_simulator=use_statevector_simulator,
         self.use_statevector_gpu = use_statevector_gpu
         self.use_unitary_gpu = use_unitary_gpu
         self.use_density_matrix_gpu = use_density_matrix_gpu
@@ -740,7 +747,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.show_q_version = show_q_version
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = "statevector_simulator"
+        self.local_simulator_type = 'aer_simulator'
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
         self.my_version = "v4.1.3-dev"
@@ -773,7 +780,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
+    ):  
+        # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         """
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -826,6 +834,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         See the `qisjob` script for an example of this pattern.
 
         """
+
         if self.verbose == 4:
             self._pp.pprint(self.__dict__)
             return
@@ -967,6 +976,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         for f_path in self.filepaths:
                             self.one_exp(f_path)
 
+    
     def verbosity(self, printable: Any, count: int):
         """
         Print some printable item to stdout if count exceeds verbose level.
@@ -1073,21 +1083,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         activate and allow."""
         self.backend = None
 
-        # Choose simulator. We defaulted in __init__() to statevector_simulator
-        if self.use_qasm_simulator:
-            self.local_simulator_type = "qasm_simulator"
-        elif self.use_unitary_simulator:
-            self.local_simulator_type = "unitary_simulator"
-
-        # Choose method kwarg for gpu etc if present
-        if self.use_statevector_gpu:
-            self.method = "statevector_gpu"
-        elif self.use_unitary_gpu:
-            self.method = "unitary_gpu"
-        elif self.use_density_matrix_gpu:
-            self.method = "density_matrix_gpu"
-
         if self.use_aer:
+            from .qisjobaer import QisJobAer
+            self.local_simulator_type,self.method=QisJobAer.simulator(self)
             if self.method:
                 self.verbosity(
                     f"self.local_simulator_type is '{self.local_simulator_type}' with method '{self.method}'",  # pylint: disable-msg=line-too-long
@@ -1342,9 +1340,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self._pp.pprint(result_exp.data(circ))
 
         # Print statevector ... this doesn't handle Forest qvm yet
-        if self.use_aer and self.local_simulator_type == "statevector_simulator":
+        if self.use_aer and self.local_simulator_type == 'statevector_simulator':
             self._pp.pprint(result_exp.get_statevector(circ))
-
+        if self.use_aer and self.local_simulator_type == 'unitary_simulator':
+            unitary=result_exp.get_unitary(circ)
+            import numpy as np
+            print("Circuit unitary:\n", np.asarray(unitary).round(5))
+        if self.use_aer and self.local_simulator_type == 'aer_simulator_density_matrix':
+            rho_AB = DensityMatrix.from_instruction(circ)
+            rho_AB.draw('latex', prefix='\\rho_{AB} = ')
+            
         output = None
 
         # Print counts if any measurment was taken
@@ -1457,7 +1462,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             ifh.close()
         the_source = "\n".join(the_source_list)
         self.verbosity("source:\n" + the_source, 1)
-
+        
         if self.qc_name:
             my_glob = {}
             my_loc = {}
@@ -1507,7 +1512,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.verbosity(circ.draw(), 2)
 
         if self.display:
-            print(circ.draw())
+            print(circ.draw())   
 
         if self.xpile:
             new_circ = transpile(
@@ -1524,7 +1529,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(schedule(new_circ, self.backend))
 
         try:
-            if self.noisy_sim:
+            if self.use_aer:
+                from .qisjobaer import QisJobAer
+                job_exp=QisJobAer.run_aer(self.backend,circ)
+            elif self.noisy_sim:
                 job_exp = self.basic_noise_sim(circ, self.backend)
 
             elif self.method:
@@ -1538,6 +1546,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     shots=self.shots,
                     memory=self.memory,
                 )
+                '''elif self.use_aer:
+                from .qisjobaer import QisJobAer
+                simulator=QisJobAer.simulator(self,circ)
+                result_exp=QisJobAer.run_aer(simulator,circ)'''    
+            
             else:
                 job_exp = execute(
                     circ,
@@ -2186,7 +2199,7 @@ if __name__ == "__main__":
         "--aer",
         action="store_true",
         help="""Use QISKit Aer simulator.
-                       Default is Aer statevector simulator.
+                       Default is Aer simulator.
                        Use -a --qasm-simulator to get Aer qasm simulator.
                        Use -a --unitary-simulator to get Aer unitary simulator.""",
     )
@@ -2203,15 +2216,33 @@ if __name__ == "__main__":
     GROUPB.add_argument(
         "--qasm_simulator",
         action="store_true",
-        help="""With -a use qasm simulator
-                        instead of statevector simulator""",
+        help="""With -a use qasm_simulator
+                        instead of aer simulator""",
     )
     GROUPB.add_argument(
         "--unitary_simulator",
         action="store_true",
-        help="""With -a use unitary simulator
-                        instead of statevector simulator""",
+        help="""With -a use unitary_simulator
+                        instead of aer simulator""",
     )
+    GROUPB.add_argument(
+        "--statevector_simulator",
+        action="store_true",
+        help="""With -a use aer_simulator_statevector
+                        instead of aer simulator""",
+    )
+    GROUPB.add_argument(
+        "--pulse_simulator",
+        action="store_true",
+        help="""With -a use pulse_simulator
+                        instead of aer simulator""",
+    )
+    GROUPB.add_argument(
+        "--densitymatrix_simulator",
+        action="store_true",
+        help="""With -a use aer_simulator_density_matrix
+                        instead of aer simulator""",
+    )    
     GROUPC.add_argument(
         "--statevector_gpu",
         action="store_true",
@@ -2566,6 +2597,9 @@ if __name__ == "__main__":
     TRANSPILE = ARGS.transpile
     SHOWSCHED = ARGS.showsched
     UNITARY_SIMULATOR = ARGS.unitary_simulator
+    DENSITY_MATRIX=ARGS.densitymatrix_simulator
+    PULSE_SIMULATOR=ARGS.pulse_simulator
+    STATEVECTOR_SIMULATOR=ARGS.statevector_simulator
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     QASM3_IN = ARGS.qasm3_in
@@ -2593,6 +2627,9 @@ if __name__ == "__main__":
         aersimulator=AERSIMULATOR,
         use_qasm_simulator=QASM_SIMULATOR,
         use_unitary_simulator=UNITARY_SIMULATOR,
+        use_aer_simulator_density_matrix=DENSITY_MATRIX,
+        use_pulse_simulator=PULSE_SIMULATOR,
+        use_statevector_simulator=STATEVECTOR_SIMULATOR,
         use_statevector_gpu=STATEVECTOR_GPU,
         use_unitary_gpu=UNITARY_GPU,
         use_density_matrix_gpu=DENSITY_MATRIX_GPU,

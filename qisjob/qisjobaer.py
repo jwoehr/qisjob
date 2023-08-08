@@ -25,6 +25,7 @@ from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel
 from qiskit.providers import BackendV2
 from .qisjobex import QisJobArgumentException
+from qiskit import Aer, transpile
 
 
 class QisJobAer:
@@ -110,3 +111,51 @@ class QisJobAer:
         """
         the_args = []
         return AerSimulator(**the_args)
+    
+
+
+    def run_aer(simulator,circ):        
+        # Transpile for simulator
+        circ = transpile(circ, simulator)
+        # Run and get counts
+        job = simulator.run(circ)
+        print(simulator)
+        return job
+    
+
+    def simulator(
+        self
+    ):  # pylint: disable-msg=too-many-branches, too-many-statements
+        """Instance self with backend selected by user if account will
+        activate and allow."""
+
+        from qiskit_aer import AerSimulator
+        self.backend = AerSimulator()
+        from qiskit import Aer, transpile
+        simulator = 'aer_simulator'
+
+        # Choose simulator. We defaulted in __init__() to AerSimulator()
+        if self.use_qasm_simulator:
+            simulator = 'qasm_simulator'
+        elif self.use_unitary_simulator:
+            simulator = 'unitary_simulator'
+        elif self.use_statevector_simulator:
+            simulator = 'statevector_simulator'
+        elif self.use_pulse_simulator:
+            simulator = 'pulse_simulator'
+        elif self.use_aer_simulator_density_matrix:
+            simulator = 'aer_simulator_density_matrix'
+        
+        # Choose method kwarg for gpu etc if present
+        elif self.use_statevector_gpu:
+            self.method = "statevector_gpu"
+        elif self.use_unitary_gpu:
+            self.method = "unitary_gpu"
+        elif self.use_density_matrix_gpu:
+            self.method = "density_matrix_gpu"
+        return (simulator,self.method)
+    
+
+
+    
+    
