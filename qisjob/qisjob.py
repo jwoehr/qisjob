@@ -115,7 +115,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         one_job=False,
         qasm=False,
         use_aer=False,
-        aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
         use_aer_simulator_density_matrix=False,
@@ -343,14 +342,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
 
-        aersimulator : array of string
-            The default is `None`.
-
-            _Corresponding `qisjob` script argument_: `--aersimulator`
-
-            Array of QisJob-styled string arguments name=value for using the
-            modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
-
         use_unitary_simulator: bool
             The default is `False`.
 
@@ -390,9 +381,30 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_unitary_simulator : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: `--unitary_simulator`
+
+            In conjunction with `use_aer`, use Aer's unitary simulator.
+
+        use_statevector_simulator : bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--statevector_simulator`
+
+            In conjunction with `use_aer`, use Aer's statevector simulator.
+        
+        use_unitary_simulator : bool
+            The default is `False`.
+
             _Corresponding `qisjob` script argument_: `--unitary-simulator`
 
             In conjunction with `use_aer`, use Aer's unitary simulator.
+        
+        use_densitymatrix_simulator : bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--densitymatrix_simulator`
+
+            In conjunction with `use_aer`, use Aer's aer_simulator_density_matrix.
 
         use_statevector_gpu : bool
             The default is `False`.
@@ -482,6 +494,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             If `True`, in conjuction with `xpile`, show schedule for the
             test- transpiled circuit to stdout before jobbing the
             original circuit.
+        
+        display: bool
+            The default is 'Flase'.
+            
+            _Corresponding `qisjob` script argument_: `--display`
+
+            If `True`, shows the quantum circuit
 
         circuit_layout
             The default is `False`.
@@ -694,13 +713,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             output and update the user interactively without scrolling the
             screen. For program usage, a different string can be set.
 
-        noisy_sim: bool
+        fake_noise: bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: `--noisy_sim`
+            _Corresponding `qisjob` script argument_: `--fake_noise`
 
             Performs an Aer sim noise model using the designated backend
-            (see --backend) as the model backend.
+            as the model backend.
 
         qasm3_in: bool
             The default is `False`.
@@ -2179,13 +2198,6 @@ if __name__ == "__main__":
                        Default is Aer simulator.
                        Use -a --qasm-simulator to get Aer qasm simulator.
                        Use -a --unitary-simulator to get Aer unitary simulator.""",
-    )
-    GROUP.add_argument(
-        "--aersimulator",
-        action="append",
-        help="""Use Qiskit AerSimulator.
-                       Can be invoked multiple times.
-                       Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
     )
     GROUP.add_argument(
         "-b", "--backend", action="store", help="Use specified IBMQ backend"

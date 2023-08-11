@@ -20,6 +20,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 @author: jwoehr
 """
+
+
 from qiskit.providers.exceptions import QiskitBackendNotFoundError
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
 from qiskit import QuantumCircuit
@@ -46,22 +48,17 @@ class QisJobAer:
 
         Parameters
         ----------
-        model_backend : BackendV2
-            The BackendV2 instance whose noise model is to be used
-        circuit : QuantumCircuit
-            The QuantumCircuit instance to execute
+        quantum circuit and the self object from qisjob.py
 
         Returns
         -------
-        JobV1
+        Job
             The job which is executing the circuit
 
         """
         from qiskit import IBMQ
         from qiskit.providers.aer.noise import NoiseModel
         from qiskit_aer.noise import NoiseModel
-        from qiskit import QuantumCircuit, transpile
-        from qiskit_aer import AerSimulator
         try:
             if 'ibm' in qj.fake_noise:
                 provider = IBMQ.load_account()
@@ -130,10 +127,10 @@ class QisJobAer:
 
     @staticmethod
     def run_aer(self,circ):#self is an object sent by qisjob.py, self name makes it easy move code from qisjob.py        
-        
-        if self.fake_noise:
-            #from .qisjobaer import QisJobAer
-            job= QisJobAer.basic_noise_sim(circ, self)#calling the noise function for noise runs
+        "Run the simulations for Aer and return the Job"
+
+        if self.fake_noise:#calling the noise function for fake noise
+            job= QisJobAer.basic_noise_sim(circ, self)
         
         elif self.method:
                 self.verbosity(f"Using gpu method {self.method}", 2)
@@ -151,6 +148,7 @@ class QisJobAer:
                 from .qisjobaer import QisJobAer
                 simulator=QisJobAer.simulator(self,circ)
                 result_exp=QisJobAer.run_aer(simulator,circ)'''    
+
         else:            
             simulator=self.backend
             # Transpile for simulator
