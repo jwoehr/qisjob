@@ -905,19 +905,18 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(stat)
 
         elif self.jobs_status or self.job_id or self.job_result:
-            if not self.backend_name:
-                raise QisJobArgumentException(
-                    "kwargs jobs or job_id or job_result also require kwarg backend"
-                )
-
+            # if not self.backend_name:
+            #     raise QisJobArgumentException(
+            #         "kwargs jobs or job_id or job_result also require kwarg backend"
+            #     )
             self.account_fu()
 
-            try:
-                self.backend = self.provider.get_backend(self.backend_name)
-            except QiskitBackendNotFoundError as err:
-                raise QisJobRuntimeException(
-                    f"Backend {self.backend_name} not found: {err}"
-                ) from err
+            # try:
+            #     self.backend = self.provider.get_backend(self.backend_name)
+            # except QiskitBackendNotFoundError as err:
+            #     raise QisJobRuntimeException(
+            #         f"Backend {self.backend_name} not found: {err}"
+            #     ) from err
 
             f_string = "Job {} {}"
 
@@ -939,7 +938,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 return
 
             if self.job_id:
-                a_job = self.backend.retrieve_job(self.job_id)
+                a_job = self.provider.backend.retrieve_job(self.job_id)
                 if self.provider_name != "QI":
                     if self.provider_name == "IBMQ":
                         a_job = self.ibm_job_to_dict(a_job)
@@ -948,7 +947,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 return
 
             if self.job_result:
-                a_job = self.backend.retrieve_job(self.job_result)
+                a_job = self.provider.backend.retrieve_job(self.job_result)
                 print(f_string.format(str(a_job.job_id()), str(a_job.status())))
                 self._pp.pprint(a_job.result().to_dict())
                 return
