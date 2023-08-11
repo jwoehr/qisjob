@@ -16,6 +16,8 @@ v4.1.3-dev
 - Import `QiskitError` from `qiskit.exception` instead of from `qiskit`
 - Suppress warnings now working/ Imports location changed to only when needed
 - Added --display to display the quantum circuit
+- Use approved `qiskit.__version__`
+- Fix job result retrieval per new IBMProvider
 
 v4.1.2
 - Use IBMProvider if installed
@@ -140,7 +142,7 @@ v2.4:
 
 v2.3:
 - refactor result handling
-- plotting state city
+- pl<otting state city
 - plotting histogram
 - choose specific Aer simulator
 - --status to show status

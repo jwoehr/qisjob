@@ -835,7 +835,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             return
 
         if self.show_q_version:
-            self._pp.pprint(__qiskit_version__)
+            from qiskit import __version__
+            self._pp.pprint(__version__)
+            # TODO
+            # other version strings as __qiskit_version__ is deprecated
             return
 
         if self.provider_name == "IBMQ" and (
