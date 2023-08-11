@@ -125,6 +125,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_unitary_gpu=False,
         use_density_matrix_gpu=False,
         use_sim=False,
+        fake_noise=None,
         qvm=False,
         qvm_as=False,
         qc_name=None,
@@ -152,7 +153,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_job_monitor=False,
         job_monitor_filepath=None,
         job_monitor_line="\r",
-        noisy_sim=False,
         qasm3_in=False,
         qasm3_out=False,
     ):
@@ -351,6 +351,35 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             Array of QisJob-styled string arguments name=value for using the
             modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
 
+        use_unitary_simulator: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--unitary_simulator`
+
+            In conjunction with `use_aer`, use Aer's unitary simulator.
+        
+        statevector_simulator: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--statevector_simulator`
+
+            In conjunction with `use_aer`, use Aer's statevector simulator.
+
+        
+        pulse_simulator: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--pulse_simulator`
+
+            In conjunction with `use_aer`, use Aer's pulse simulator.
+
+        aer_simulator_density_matrix: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--densitymatrix_simulator`
+
+            In conjunction with `use_aer`, use Aer's Density Matrix simulator.
+        
         use_qasm_simulator : bool
             The default is `False`.
 
@@ -723,6 +752,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_unitary_gpu = use_unitary_gpu
         self.use_density_matrix_gpu = use_density_matrix_gpu
         self.use_sim = use_sim
+        self.fake_noise=fake_noise
         self.qvm = qvm
         self.qvm_as = qvm_as
         self.qc_name = qc_name
@@ -756,7 +786,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_job_monitor = use_job_monitor
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
-        self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
         self.display = display
@@ -1531,25 +1560,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         try:
             if self.use_aer:
                 from .qisjobaer import QisJobAer
-                job_exp=QisJobAer.run_aer(self.backend,circ)
-            elif self.noisy_sim:
-                job_exp = self.basic_noise_sim(circ, self.backend)
-
-            elif self.method:
-                self.verbosity(f"Using gpu method {self.method}", 2)
-                backend_options = {"method": self.method}
-                job_exp = execute(
-                    circ,
-                    backend=self.backend,
-                    backend_options=backend_options,
-                    optimization_level=self.optimization_level,
-                    shots=self.shots,
-                    memory=self.memory,
-                )
-                '''elif self.use_aer:
-                from .qisjobaer import QisJobAer
-                simulator=QisJobAer.simulator(self,circ)
-                result_exp=QisJobAer.run_aer(simulator,circ)'''    
+                job_exp=QisJobAer.run_aer(self,circ)
             
             else:
                 job_exp = execute(
@@ -1742,9 +1753,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             circs.append(circ)
 
         try:
-            if self.noisy_sim:
-                job_exp = self.basic_noise_sim(circ, self.backend)
-
+            if self.use_aer:
+                from .qisjobaer import QisJobAer
+                job_exp=QisJobAer.run_aer(self,circ)
+            
             elif self.use_statevector_gpu:
                 self.verbosity("Using gpu", 2)
                 backend_options = {"method": "statevector_gpu"}
@@ -2128,41 +2140,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             pass
         return my_dict
 
-    @staticmethod
-    def basic_noise_sim(circuit: QuantumCircuit, model_backend: BackendV2) -> JobV1:
-        """
-        Execute a simulator job with a basic noise model from a known backend.
-
-        Parameters
-        ----------
-        model_backend : BackendV2
-            The BackendV2 instance whose noise model is to be used
-        circuit : QuantumCircuit
-            The QuantumCircuit instance to execute
-
-        Returns
-        -------
-        JobV1
-            The job which is executing the circuit
-
-        """
-
-        noise_model = NoiseModel.from_backend(model_backend)
-        coupling_map = model_backend.configuration().coupling_map
-        basis_gates = noise_model.basis_gates
-
-        # Perform noisy simulation
-        sim_backend = Aer.get_backend("qasm_simulator")
-        job = execute(
-            circuit,
-            sim_backend,
-            coupling_map=coupling_map,
-            noise_model=noise_model,
-            basis_gates=basis_gates,
-        )
-        return job
-
-
 if __name__ == "__main__":
     EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
     from a file containing a Qiskit QuantumCircuit definition in Python and runs as
@@ -2262,6 +2239,15 @@ if __name__ == "__main__":
                         use gpu density matrix simulator""",
     )
     PARSER.add_argument(
+        "--fakenoise",
+        action="store",
+        help="""Uses IBM/fake backend to simulate
+                        noise in the circuit
+                        with -a use
+                        --fakenoise ibmq_lima/
+                        --fakenoise FakeVigo"""
+    )
+    PARSER.add_argument(
         "--display",
         action="store_true",
         help="""Uses circuit.draw to 
@@ -2300,13 +2286,6 @@ if __name__ == "__main__":
         "--providers",
         action="store_true",
         help="List hub/group/project providers for IBMQ",
-    )
-    PARSER.add_argument(
-        "--noisy_sim",
-        action="store_true",
-        help="""Perform circuit(s) as Aer simulation using the
-                        designated backend (see --backend) as the
-                        model backend.""",
     )
     PARSER.add_argument(
         "--qvm",
@@ -2547,7 +2526,6 @@ if __name__ == "__main__":
         warnings.filterwarnings("ignore")
 
     AER = ARGS.aer
-    AERSIMULATOR = ARGS.aersimulator
     API_PROVIDER = ARGS.api_provider.upper()
     HUB = ARGS.hub
     GROUP = ARGS.group
@@ -2559,6 +2537,7 @@ if __name__ == "__main__":
     CONFIGURATION = ARGS.configuration
     DATETIME = ARGS.datetime
     DISPLAY = ARGS.display
+    FAKE_NOISE=ARGS.fakenoise
     FIGURE_BASENAME = ARGS.figure_basename
     FILEPATH = ARGS.filepath
     HISTOGRAM = ARGS.histogram
@@ -2571,7 +2550,6 @@ if __name__ == "__main__":
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
     MEMORY = ARGS.memory
-    NOISY_SIM = ARGS.noisy_sim
     NUQASM2 = ARGS.nuqasm2
     ONE_JOB = ARGS.one_job
     OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -2624,7 +2602,6 @@ if __name__ == "__main__":
         one_job=ONE_JOB,
         qasm=QASM,
         use_aer=AER,
-        aersimulator=AERSIMULATOR,
         use_qasm_simulator=QASM_SIMULATOR,
         use_unitary_simulator=UNITARY_SIMULATOR,
         use_aer_simulator_density_matrix=DENSITY_MATRIX,
@@ -2634,6 +2611,7 @@ if __name__ == "__main__":
         use_unitary_gpu=UNITARY_GPU,
         use_density_matrix_gpu=DENSITY_MATRIX_GPU,
         use_sim=SIM,
+        fake_noise=FAKE_NOISE,
         qvm=QVM,
         qvm_as=QVM_AS,
         qc_name=QC_NAME,
@@ -2662,7 +2640,6 @@ if __name__ == "__main__":
         use_job_monitor=USE_JM,
         job_monitor_filepath=JOB_MONITOR_FILEPATH,
         job_monitor_line=JOB_MONITOR_LINE,
-        noisy_sim=NOISY_SIM,
         qasm3_in=QASM3_IN,
         qasm3_out=QASM3_OUT,
     )

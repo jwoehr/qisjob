@@ -20,120 +20,92 @@ See the License for the specific language governing permissions and
 limitations under the License.
 @author: jwoehr
 """
-
-from qiskit_aer import AerSimulator
-from qiskit_aer.noise import NoiseModel
-from qiskit.providers import BackendV2
-from .qisjobex import QisJobArgumentException
-from qiskit import Aer, transpile
-
-
+from qiskit.providers.exceptions import QiskitBackendNotFoundError
+from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
+from qiskit import QuantumCircuit
 class QisJobAer:
     # """
     # Class to manage the Qiskit AerSimulator for QisJob
     # """
 
-    # simulator_kwargs = [
-    #     "backend_named",
-    #     "configuration",
-    #     "method",
-    #     "noise_model",
-    #     "noise_model_backend",
-    #     "properties",
-    # ]
-
-    # def __init__(self, **kwargs):
-    #     """
-    #     Instance this Aer Simulator manager
-
-    #     Parameters
-    #     ----------
-    #     **kwargs :
-    #         Arguments passed in from QisJob to be processed into valid
-    #         arguments for instancing an Aer Simulator.
-
-    #     Returns
-    #     -------
-    #     None.
-
-    #     """
-    #     self.configuration = None
-    #     self.properties = None
-    #     self.provider = None
-    #     self.method = None
-    #     self.backend = None
-    #     self.backend_named = None
-    #     self.process_kwargs(**kwargs)
-    #     self.aer_simulator = self.instance_aer_simulator()
-
-    # def process_kwargs(self, kwargs):
-    #     """
-    #     Process string kwargs from QisJob to formulate valid arguments to
-    #     instance an AerSimulator.
-
-    #     Parameters
-    #     ----------
-    #     kwargs : dict
-    #         kwargs as passed in from QisJob to be translated to valid args/kwargs
-    #         to instance an AerSimulator.
-
-    #     Raises
-    #     ------
-    #     QisJobArgumentException
-    #         If any kwargs aren't recognized.
-
-    #     Returns
-    #     -------
-    #     None.
-
-    #     """
-    #     for kwarg in kwargs:
-    #         if not kwarg in self.simulator_kwargs:
-    #             raise QisJobArgumentException(
-    #                 f"Unknown kwarg {kwarg} for Aer Simulator"
-    #             )
-    #     if "noise_model" in kwargs and "noise_model_backend" in kwargs:
-    #         raise QisJobArgumentException(
-    #             "noise_model and noise_model_backend are mutually exclusive"
-    #         )
-    #     if "method" in kwargs:
-    #         self.method = kwargs["method"]
-
-    # def instance_aer_simulator(self) -> AerSimulator:
+    # def simulator(self) -> Simulator:
     #     """
     #     Take processed kwargs and use them to instance an AerSimulator
 
     #     Returns
     #     -------
-    #     AerSimulator
-    #         The AerSimulator to process the QisJob
+    #     Simulator
+    #         The Simulator to process the QisJob
 
     #     """
-    #     the_args = []
-    #     return AerSimulator(**the_args)
-    
 
-    @staticmethod
-    def run_aer(simulator,circ):        
-        # Transpile for simulator
-        circ = transpile(circ, simulator)
-        # Run and get counts
-        job = simulator.run(circ)
-        print(simulator)
+    #@staticmethod
+    def basic_noise_sim(circ, qj):
+        """
+        Execute a simulator job with a basic noise model from a known backend.
+
+        Parameters
+        ----------
+        model_backend : BackendV2
+            The BackendV2 instance whose noise model is to be used
+        circuit : QuantumCircuit
+            The QuantumCircuit instance to execute
+
+        Returns
+        -------
+        JobV1
+            The job which is executing the circuit
+
+        """
+        from qiskit import IBMQ
+        from qiskit.providers.aer.noise import NoiseModel
+        from qiskit_aer.noise import NoiseModel
+        from qiskit import QuantumCircuit, transpile
+        from qiskit_aer import AerSimulator
+        try:
+            if 'ibm' in qj.fake_noise:
+                provider = IBMQ.load_account()
+                provider = IBMQ.get_provider(hub='ibm-q', group='open', project='main')
+                model_backend=provider.get_backend(qj.fake_noise)
+            
+            if 'fake' in qj.fake_noise.lower():
+                import importlib
+                fnoise=qj.fake_noise[4:].lower()
+                module=importlib.import_module("qiskit.providers.fake_provider.backends."+fnoise+".fake_"+fnoise)
+                model_backend= getattr(module, qj.fake_noise)
+                model_backend=model_backend()
+            noise_model = NoiseModel.from_backend(model_backend)
+            coupling_map = model_backend.configuration().coupling_map
+            basis_gates = noise_model.basis_gates
+
+        except QiskitBackendNotFoundError as err:
+                raise QisJobRuntimeException(
+                    f"Backend {qj.backend_name} not found: {err}"
+                ) 
+        
+        # Perform noisy simulation
+        print('simulating noise via '+ qj.fake_noise)
+        sim_backend = qj.backend
+        from qiskit import execute
+        job = execute(
+            circ,
+            sim_backend,
+            coupling_map=coupling_map,
+            noise_model=noise_model,
+            basis_gates=basis_gates,
+        )
+        
         return job
+
+    
     
     @staticmethod
     def simulator(
         qj
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements
-        """Instance qj with backend selected by user if account will
-        activate and allow."""
+    ):  
+        "returns the simulator and its method asked as string"
 
-        from qiskit_aer import AerSimulator
-        qj.backend = AerSimulator()
-        from qiskit import Aer, transpile
         simulator = 'aer_simulator'
-        print(f"QJ.use_pulse_simulator is {qj.use_pulse_simulator}")
         # Choose simulator. We defaulted in __init__() to AerSimulator()
         if qj.use_qasm_simulator:
             simulator = 'qasm_simulator'
@@ -154,6 +126,40 @@ class QisJobAer:
         elif qj.use_density_matrix_gpu:
             qj.method = "density_matrix_gpu"
         return (simulator,qj.method)
+
+
+    @staticmethod
+    def run_aer(self,circ):#self is an object sent by qisjob.py, self name makes it easy move code from qisjob.py        
+        
+        if self.fake_noise:
+            #from .qisjobaer import QisJobAer
+            job= QisJobAer.basic_noise_sim(circ, self)#calling the noise function for noise runs
+        
+        elif self.method:
+                self.verbosity(f"Using gpu method {self.method}", 2)
+                backend_options = {"method": self.method}
+                from qiskit import execute
+                job = execute(
+                    circ,
+                    backend=self.backend,
+                    backend_options=backend_options,
+                    optimization_level=self.optimization_level,
+                    shots=self.shots,
+                    memory=self.memory,
+                )
+                '''elif self.use_aer:
+                from .qisjobaer import QisJobAer
+                simulator=QisJobAer.simulator(self,circ)
+                result_exp=QisJobAer.run_aer(simulator,circ)'''    
+        else:            
+            simulator=self.backend
+            # Transpile for simulator
+            from qiskit import transpile
+            circ = transpile(circ, simulator)
+            # Run and get counts
+            job = simulator.run(circ)
+        return job
+    
     
 
 

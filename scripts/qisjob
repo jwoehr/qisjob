@@ -70,13 +70,6 @@ GROUP.add_argument(
                     Use -a --unitary-simulator to get Aer unitary simulator.""",
 )
 GROUP.add_argument(
-    "--aersimulator",
-    action="append",
-    help="""Use Qiskit AerSimulator.
-                    Can be invoked multiple times.
-                    Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
-)
-GROUP.add_argument(
     "-b", "--backend", action="store", help="Use specified IBMQ backend"
 )
 GROUPB.add_argument(
@@ -136,6 +129,15 @@ GROUPC.add_argument(
                     use gpu density matrix simulator""",
 )
 PARSER.add_argument(
+    "--fakenoise",
+    action="store",
+    help="""Uses IBM/fake backend to simulate
+                    noise in the circuit
+                    with -a use
+                        --fakenoise ibmq_lima/
+                        --fakenoise FakeVigo""",
+)
+PARSER.add_argument(
     "--display",
     action="store_true",
     default=False,
@@ -175,13 +177,6 @@ PARSER.add_argument(
     "--providers",
     action="store_true",
     help="List hub/group/project providers for IBMQ",
-)
-PARSER.add_argument(
-    "--noisy_sim",
-    action="store_true",
-    help="""Perform circuit(s) as Aer simulation using the
-                    designated backend (see --backend) as the
-                    model backend.""",
 )
 PARSER.add_argument(
     "--qvm",
@@ -417,7 +412,6 @@ PARSER.add_argument(
 ARGS = PARSER.parse_args()
 
 AER = ARGS.aer
-AERSIMULATOR = ARGS.aersimulator
 API_PROVIDER = ARGS.api_provider.upper()
 HUB = ARGS.hub
 GROUP = ARGS.group
@@ -429,6 +423,7 @@ CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
 DISPLAY = ARGS.display
+FAKE_NOISE=ARGS.fakenoise
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -441,7 +436,6 @@ JOB_MONITOR_LINE = "".join(
 JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
 MEMORY = ARGS.memory
-NOISY_SIM = ARGS.noisy_sim
 NUQASM2 = ARGS.nuqasm2
 ONE_JOB = ARGS.one_job
 OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -494,7 +488,7 @@ QJ = QisJob(
     one_job=ONE_JOB,
     qasm=QASM,
     use_aer=AER,
-    aersimulator=AERSIMULATOR,
+    fake_noise=FAKE_NOISE,
     use_qasm_simulator=QASM_SIMULATOR,
     use_unitary_simulator=UNITARY_SIMULATOR,
     use_aer_simulator_density_matrix=DENSITY_MATRIX,
@@ -531,7 +525,6 @@ QJ = QisJob(
     use_job_monitor=USE_JM,
     job_monitor_filepath=JOB_MONITOR_FILEPATH,
     job_monitor_line=JOB_MONITOR_LINE,
-    noisy_sim=NOISY_SIM,
     qasm3_in=QASM3_IN,
     qasm3_out=QASM3_OUT,
 )
