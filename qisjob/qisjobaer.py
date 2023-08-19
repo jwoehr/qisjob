@@ -41,7 +41,7 @@ class QisJobAer:
 
     #     """
 
-    #@staticmethod
+    @staticmethod
     def basic_noise_sim(circ, qj):
         """
         Execute a simulator job with a basic noise model from a known backend.

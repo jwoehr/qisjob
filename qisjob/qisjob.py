@@ -154,6 +154,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         job_monitor_line="\r",
         qasm3_in=False,
         qasm3_out=False,
+        test_results=None,
+        circcuit=None,
     ):
         """
 
@@ -808,6 +810,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
         self.display = display
+        self.test_results=[]
+        self.circuit= []
 
     def __str__(self) -> str:
         out = StringIO()
@@ -1023,7 +1027,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     else:
                         for f_path in self.filepaths:
                             self.one_exp(f_path)
-
+        
     
     def verbosity(self, printable: Any, count: int):
         """
@@ -1627,6 +1631,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         job_monitor(job_exp)
 
             result_exp = job_exp.result()
+            self.test_results+=[result_exp]#for unit test
+            self.circuit+=[circ]#for unit test
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
@@ -1668,6 +1674,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
         if ofh is not sys.stdout:
             ofh.close()
+        
 
     def multi_exps(
         self,
@@ -1833,6 +1840,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         job_monitor(job_exp)
 
             result_exp = job_exp.result()
+            self.test_results+=[result_exp]#for unit test
+            self.circuit+=[circ]#for unit test
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
@@ -2654,6 +2663,8 @@ if __name__ == "__main__":
         job_monitor_line=JOB_MONITOR_LINE,
         qasm3_in=QASM3_IN,
         qasm3_out=QASM3_OUT,
+        test_results=None,
+        circuit=None,
     )
 
     EXITVAL = 0
