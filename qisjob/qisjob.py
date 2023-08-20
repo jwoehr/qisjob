@@ -1399,8 +1399,9 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             import numpy as np
             print("Circuit unitary:\n", np.asarray(unitary).round(5))
         if self.use_aer and self.local_simulator_type == 'aer_simulator_density_matrix':
+            from qiskit.quantum_info import DensityMatrix
             rho_AB = DensityMatrix.from_instruction(circ)
-            rho_AB.draw('latex', prefix='\\rho_{AB} = ')
+            print(rho_AB)
             
         output = None
 
