@@ -32,17 +32,6 @@ class QisJobAer:
     # Class to manage the Qiskit AerSimulator for QisJob
     # """
 
-    # def simulator(self) -> Simulator:
-    #     """
-    #     Take processed kwargs and use them to instance an AerSimulator
-
-    #     Returns
-    #     -------
-    #     Simulator
-    #         The Simulator to process the QisJob
-
-    #     """
-
     @staticmethod
     def basic_noise_sim(circ, qj):
         """
@@ -150,10 +139,6 @@ class QisJobAer:
                 shots=self.shots,
                 memory=self.memory,
             )
-            """elif self.use_aer:
-                from .qisjobaer import QisJobAer
-                simulator=QisJobAer.simulator(self,circ)
-                result_exp=QisJobAer.run_aer(simulator,circ)"""
 
         else:
             simulator = self.backend

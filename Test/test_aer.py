@@ -1,16 +1,13 @@
 # test file to test methods of aer simulator
-# use
-# python -m unittest Test/test_aer.py
-# in qisjob directoory to run
+# use 'python -m unittest Test/test_aer.py' in qisjob directory to run
 
 
 import unittest
-import os
 from qisjob import QisJob
 
 qj = QisJob()
-qj.filepaths = ["share/qasm_examples/entangle.qasm"]
-counts1 = {
+qj.filepaths = ["share/qasm_examples/entangle.qasm"]  # Using Entangle.qasm for testing
+counts1 = {  # Counts dictionary of entangle.qasm's ideal result for testing
     "01111": 128,
     "01101": 128,
     "01100": 128,
@@ -35,6 +32,7 @@ class TestAERMethods(unittest.TestCase):
         qj.filepaths = ["share/qasm_examples/entangle.qasm"]
         qj.use_aer = True
         qj.do_it()
+        # calling within error function to check if the recived output is within the error range of ideal output
         self.assertTrue(
             within_error(
                 counts1,
@@ -48,6 +46,7 @@ class TestAERMethods(unittest.TestCase):
         print(test_number, "Testing QASM SIMULATOR ")
         qj.filepaths = ["share/qasm_examples/entangle.qasm"]
         qj.use_aer = True
+        # invoking Qasm Simulator
         qj.use_qasm_simulator = True
         qj.do_it()
         self.assertTrue(
@@ -63,8 +62,10 @@ class TestAERMethods(unittest.TestCase):
         print(test_number, "Testing STATE VECOTR SIMULATOR ")
         qj.filepaths = ["share/qasm_examples/entanglecircuit.qasm"]
         qj.use_aer = True
+        # invoking statevector simulator
         qj.use_statevector_simulator = True
         qj.do_it()
+        # just making sure we get a job run as test
         self.assertTrue(qj.test_results[2])
         test_number += 1
 
@@ -73,8 +74,10 @@ class TestAERMethods(unittest.TestCase):
         print(test_number, "Testing UNITARY SIMULATOR ")
         qj.filepaths = ["share/qasm_examples/entanglecircuit.qasm"]
         qj.use_aer = True
+        # Invoking unitary simulator
         qj.use_unitary_simulator = True
         qj.do_it()
+        # just making sure we get a job run as test
         self.assertTrue(qj.test_results[3])
         test_number += 1
 
@@ -83,8 +86,10 @@ class TestAERMethods(unittest.TestCase):
         print(test_number, "Testing DENSITY MATRIX SIMULATOR ")
         qj.filepaths = ["share/qasm_examples/onebitcircuit.qasm"]
         qj.use_aer = True
+        # invoking Density Matrix Simulator
         qj.use_aer_simulator_density_matrix = True
         qj.do_it()
+        # just making sure we get a job run as test
         self.assertTrue(qj.use_aer and qj.local_simulator_type)
         test_number += 1
 
@@ -93,8 +98,10 @@ class TestAERMethods(unittest.TestCase):
         print(test_number, "Testing NOISY AER SIMULATOR ")
         qj.filepaths = ["share/qasm_examples/entangle.qasm"]
         qj.use_aer = True
+        # Using a fake backend for testing
         qj.fake_noise = "FakeVigo"
         qj.do_it()
+        # calling within error function to check if the recived output is within the error range of ideal output
         self.assertTrue(
             within_error(
                 counts1,
