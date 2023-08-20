@@ -33,17 +33,17 @@ class QisJobAer:
     # """
 
     @staticmethod
-    def basic_noise_sim(circ, qj):
+    def basic_noise_sim(circ: QuantumCircuit, qj: object) -> object:
         """
         Execute a simulator job with a basic noise model from a known backend.
 
         Parameters
         ----------
-        quantum circuit and the self object from qisjob.py
+        quantum circuit and the qj object from qisjob.py
 
         Returns
         -------
-        Job
+        Job object
             The job which is executing the circuit
 
         """
@@ -92,8 +92,20 @@ class QisJobAer:
         return job
 
     @staticmethod
-    def simulator(qj):
-        "returns the simulator and its method asked as string"
+    def simulator(qj: object) -> str:
+        """
+
+        Parameters
+        ----------
+        qj : QisJob object
+            QisJob instance.
+
+        Returns
+        -------
+        simulator : str
+            The string representing the simulator chosen
+
+        """
 
         simulator = "aer_simulator"
         # Choose simulator. We defaulted in __init__() to AerSimulator()
@@ -118,30 +130,43 @@ class QisJobAer:
         return (simulator, qj.method)
 
     @staticmethod
-    def run_aer(
-        self, circ
-    ):  # self is an object sent by qisjob.py, self name makes it easy move code from qisjob.py
-        "Run the simulations for Aer and return the Job"
+    def run_aer(qj, circ):
+        """
+        Run the simulations for Aer and return the Job
 
-        if self.fake_noise:  # calling the noise function for fake noise
-            job = QisJobAer.basic_noise_sim(circ, self)
+        Parameters
+        ----------
+        qj : QisJob
+            instance of QisJob
+        circ : QuantumCircuit
+            QuantumCircuit to run
 
-        elif self.method:
-            self.verbosity(f"Using gpu method {self.method}", 2)
-            backend_options = {"method": self.method}
+        Returns
+        -------
+        job : Job
+            The Job run by Aer
+
+        """
+
+        if qj.fake_noise:  # calling the noise function for fake noise
+            job = QisJobAer.basic_noise_sim(circ, qj)
+
+        elif qj.method:
+            qj.verbosity(f"Using gpu method {qj.method}", 2)
+            backend_options = {"method": qj.method}
             from qiskit import execute
 
             job = execute(
                 circ,
-                backend=self.backend,
+                backend=qj.backend,
                 backend_options=backend_options,
-                optimization_level=self.optimization_level,
-                shots=self.shots,
-                memory=self.memory,
+                optimization_level=qj.optimization_level,
+                shots=qj.shots,
+                memory=qj.memory,
             )
 
         else:
-            simulator = self.backend
+            simulator = qj.backend
             # Transpile for simulator
             from qiskit import transpile
 
