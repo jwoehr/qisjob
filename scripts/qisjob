@@ -52,14 +52,12 @@ GROUPB = PARSER.add_mutually_exclusive_group()
 GROUPC = PARSER.add_mutually_exclusive_group()
 
 GROUP.add_argument(
-        "-i",
-        "--ibmq",
-        action="store_true",
-        help="Use best genuine IBMQ processor (default)",
-    )
-GROUP.add_argument(
-    "-s", "--sim", action="store_true", help="Use IBMQ qasm simulator"
+    "-i",
+    "--ibmq",
+    action="store_true",
+    help="Use best genuine IBMQ processor (default)",
 )
+GROUP.add_argument("-s", "--sim", action="store_true", help="Use IBMQ qasm simulator")
 GROUP.add_argument(
     "-a",
     "--aer",
@@ -69,9 +67,7 @@ GROUP.add_argument(
                     Use -a --qasm-simulator to get Aer qasm simulator.
                     Use -a --unitary-simulator to get Aer unitary simulator.""",
 )
-GROUP.add_argument(
-    "-b", "--backend", action="store", help="Use specified IBMQ backend"
-)
+GROUP.add_argument("-b", "--backend", action="store", help="Use specified IBMQ backend")
 GROUPB.add_argument(
     "--qasm_simulator",
     action="store_true",
@@ -106,7 +102,7 @@ GROUPB.add_argument(
     default=False,
     help="""With -a use aer_simulator_density_matrix
                     instead of aer simulator""",
-)    
+)
 GROUPC.add_argument(
     "--statevector_gpu",
     action="store_true",
@@ -423,7 +419,7 @@ CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
 DISPLAY = ARGS.display
-FAKE_NOISE=ARGS.fakenoise
+FAKE_NOISE = ARGS.fakenoise
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -461,9 +457,9 @@ TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
 SHOWSCHED = ARGS.showsched
 UNITARY_SIMULATOR = ARGS.unitary_simulator
-DENSITY_MATRIX=ARGS.densitymatrix_simulator
-PULSE_SIMULATOR=ARGS.pulse_simulator
-STATEVECTOR_SIMULATOR=ARGS.statevector_simulator
+DENSITY_MATRIX = ARGS.densitymatrix_simulator
+PULSE_SIMULATOR = ARGS.pulse_simulator
+STATEVECTOR_SIMULATOR = ARGS.statevector_simulator
 URL = ARGS.url
 USE_JM = ARGS.use_job_monitor
 QASM3_IN = ARGS.qasm3_in
