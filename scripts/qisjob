@@ -63,54 +63,83 @@ GROUP.add_argument(
     "--aer",
     action="store_true",
     help="""Use QISKit Aer simulator.
-                   Default is Aer statevector simulator.
-                   Use -a --qasm-simulator to get Aer qasm simulator.
-                   Use -a --unitary-simulator to get Aer unitary simulator.""",
-)
-GROUP.add_argument(
-    "--aersimulator",
-    action="append",
-    help="""Use Qiskit AerSimulator.
-                   Can be invoked multiple times.
-                   Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
+                    Default is Aer simulator.
+                    Use -a --qasm-simulator to get Aer qasm simulator.
+                    Use -a --unitary-simulator to get Aer unitary simulator.""",
 )
 GROUP.add_argument("-b", "--backend", action="store", help="Use specified IBMQ backend")
 GROUPB.add_argument(
     "--qasm_simulator",
     action="store_true",
-    help="""With -a use qasm simulator
-                    instead of statevector simulator""",
+    default=False,
+    help="""With -a use qasm_simulator
+                    instead of aer simulator""",
 )
 GROUPB.add_argument(
     "--unitary_simulator",
     action="store_true",
-    help="""With -a use unitary simulator
-                    instead of statevector simulator""",
+    default=False,
+    help="""With -a use unitary_simulator
+                    instead of aer simulator""",
+)
+GROUPB.add_argument(
+    "--statevector_simulator",
+    action="store_true",
+    default=False,
+    help="""With -a use aer_simulator_statevector
+                    instead of aer simulator""",
+)
+GROUPB.add_argument(
+    "--pulse_simulator",
+    action="store_true",
+    default=False,
+    help="""With -a use pulse_simulator
+                    instead of aer simulator""",
+)
+GROUPB.add_argument(
+    "--densitymatrix_simulator",
+    action="store_true",
+    default=False,
+    help="""With -a use aer_simulator_density_matrix
+                    instead of aer simulator""",
 )
 GROUPC.add_argument(
     "--statevector_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu statevector simulator""",
 )
 GROUPC.add_argument(
     "--unitary_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu unitary simulator""",
 )
 GROUPC.add_argument(
     "--density_matrix_gpu",
     action="store_true",
+    default=False,
     help="""With -a and --qasm_simulator
                     use gpu density matrix simulator""",
 )
 PARSER.add_argument(
+    "--fakenoise",
+    action="store",
+    help="""Uses IBM/fake backend to simulate
+                    noise in the circuit
+                    with -a use
+                        --fakenoise ibmq_lima/
+                        --fakenoise FakeVigo""",
+)
+PARSER.add_argument(
     "--display",
     action="store_true",
-    help="""Uses circuit.draw to visualize the untranspiled circuit""",
+    default=False,
+    help="""Uses circuit.draw to 
+                    visualize the untranspiled circuit""",
 )
-
 PARSER.add_argument(
     "--version", action="store_true", help="""Announce QisJob version"""
 )
@@ -123,10 +152,16 @@ PARSER.add_argument(
     default="IBMQ",
 )
 PARSER.add_argument(
-    "--hub", action="store", default="ibm-q", help="Provider hub, default is 'ibm-q'"
+    "--hub",
+    action="store",
+    default="ibm-q",
+    help="Provider hub, default is 'ibm-q'",
 )
 PARSER.add_argument(
-    "--group", action="store", default="open", help="Provider group, default is 'open'"
+    "--group",
+    action="store",
+    default="open",
+    help="Provider group, default is 'open'",
 )
 PARSER.add_argument(
     "--project",
@@ -137,14 +172,7 @@ PARSER.add_argument(
 PARSER.add_argument(
     "--providers",
     action="store_true",
-    help="List hub/group/project providers for IBMQ ",
-)
-PARSER.add_argument(
-    "--noisy_sim",
-    action="store_true",
-    help="""Perform circuit(s) as Aer simulation using the
-                    designated backend (see --backend) as the
-                    model backend.""",
+    help="List hub/group/project providers for IBMQ",
 )
 PARSER.add_argument(
     "--qvm",
@@ -205,7 +233,7 @@ PARSER.add_argument(
     "--job_result",
     type=str,
     action="store",
-    help="""Print result of job number JOB_RESULT for
+    help=""""Print result of job number JOB_RESULT for
                     -b backend and exit 0""",
 )
 PARSER.add_argument(
@@ -218,7 +246,7 @@ PARSER.add_argument(
     "-n",
     "--nuqasm2",
     action="store",
-    help="""Use nuqasm2 to translate OPENQASM2 source,
+    help=""""Use nuqasm2 to translate OPENQASM2 source,
                     providing include path for any include directives""",
 )
 PARSER.add_argument(
@@ -256,7 +284,7 @@ PARSER.add_argument(
 )
 PARSER.add_argument(
     "-v",
-    "--verbose",
+    "--verbose",ublu
     action="count",
     default=0,
     help="""Increase runtime verbosity each -v up to 3. If
@@ -314,10 +342,14 @@ PARSER.add_argument(
                     will be appended""",
 )
 PARSER.add_argument(
-    "--qasm", action="store_true", help="Print qasm file to stdout before running job"
+    "--qasm",
+    action="store_true",
+    help="Print qasm file to stdout before running job",
 )
 PARSER.add_argument(
-    "--qc", action="store", help="Indicate variable name of Python-coded QuantumCircuit"
+    "--qc",
+    action="store",
+    help="Indicate variable name of Python-coded QuantumCircuit",
 )
 PARSER.add_argument(
     "--status",
@@ -344,7 +376,9 @@ PARSER.add_argument(
                     monitor output, default is '0x0d'""",
 )
 PARSER.add_argument(
-    "filepath", nargs="*", help="Filepath(s) to 0 or more .qasm files, default is stdin"
+    "filepath",
+    nargs="*",
+    help="Filepath(s) to 0 or more .qasm files, default is stdin",
 )
 PARSER.add_argument(
     "--job_monitor_filepath",
@@ -371,16 +405,9 @@ PARSER.add_argument(
     default=False,
     help="""Print qasm file as OpenQASM 3 to stdout before running job""",
 )
-
 ARGS = PARSER.parse_args()
 
-if ARGS.warnings:
-    import warnings
-
-    warnings.filterwarnings("ignore")
-
 AER = ARGS.aer
-AERSIMULATOR = ARGS.aersimulator
 API_PROVIDER = ARGS.api_provider.upper()
 HUB = ARGS.hub
 GROUP = ARGS.group
@@ -391,8 +418,9 @@ BACKENDS = ARGS.backends
 CIRCUIT_LAYOUT = ARGS.circuit_layout
 CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
-DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
 DISPLAY = ARGS.display
+FAKE_NOISE = ARGS.fakenoise
+DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -405,7 +433,6 @@ JOB_MONITOR_LINE = "".join(
 JOB_RESULT = ARGS.job_result
 JOBS = ARGS.jobs
 MEMORY = ARGS.memory
-NOISY_SIM = ARGS.noisy_sim
 NUQASM2 = ARGS.nuqasm2
 ONE_JOB = ARGS.one_job
 OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -422,18 +449,23 @@ QVM = ARGS.qvm
 QVM_AS = ARGS.qvm_as
 RESULT = ARGS.result
 SHOTS = ARGS.shots
-SHOWSCHED = ARGS.showsched
 SIM = ARGS.sim
 STATEVECTOR_GPU = ARGS.statevector_gpu
+UNITARY_GPU = ARGS.unitary_gpu
+DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
 STATUS = ARGS.status
 TOKEN = ARGS.token
 TRANSPILE = ARGS.transpile
-UNITARY_GPU = ARGS.unitary_gpu
+SHOWSCHED = ARGS.showsched
 UNITARY_SIMULATOR = ARGS.unitary_simulator
+DENSITY_MATRIX = ARGS.densitymatrix_simulator
+PULSE_SIMULATOR = ARGS.pulse_simulator
+STATEVECTOR_SIMULATOR = ARGS.statevector_simulator
 URL = ARGS.url
 USE_JM = ARGS.use_job_monitor
 QASM3_IN = ARGS.qasm3_in
 QASM3_OUT = ARGS.qasm3_out
+
 VERBOSE = ARGS.verbose
 
 QJ = QisJob(
@@ -442,8 +474,8 @@ QJ = QisJob(
     hub=HUB,
     group=GROUP,
     project=PROJECT,
-    backend_name=BACKEND_NAME,
     providers=PROVIDERS,
+    backend_name=BACKEND_NAME,
     token=TOKEN,
     url=URL,
     nuqasm2=NUQASM2,
@@ -453,9 +485,12 @@ QJ = QisJob(
     one_job=ONE_JOB,
     qasm=QASM,
     use_aer=AER,
-    aersimulator=AERSIMULATOR,
+    fake_noise=FAKE_NOISE,
     use_qasm_simulator=QASM_SIMULATOR,
     use_unitary_simulator=UNITARY_SIMULATOR,
+    use_aer_simulator_density_matrix=DENSITY_MATRIX,
+    use_pulse_simulator=PULSE_SIMULATOR,
+    use_statevector_simulator=STATEVECTOR_SIMULATOR,
     use_statevector_gpu=STATEVECTOR_GPU,
     use_unitary_gpu=UNITARY_GPU,
     use_density_matrix_gpu=DENSITY_MATRIX_GPU,
@@ -487,7 +522,6 @@ QJ = QisJob(
     use_job_monitor=USE_JM,
     job_monitor_filepath=JOB_MONITOR_FILEPATH,
     job_monitor_line=JOB_MONITOR_LINE,
-    noisy_sim=NOISY_SIM,
     qasm3_in=QASM3_IN,
     qasm3_out=QASM3_OUT,
     display=DISPLAY,

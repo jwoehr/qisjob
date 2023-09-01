@@ -59,8 +59,9 @@ from qiskit import (
     schedule,
     __qiskit_version__,
     qasm3,
+    transpile,
 )
-from qiskit.compiler import transpile
+
 from qiskit.exceptions import QiskitError
 from qiskit.providers import BackendV2, JobV1
 from qiskit.result import Result
@@ -81,6 +82,7 @@ from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
 
 
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
+from .qisjobaer import QisJobAer
 
 
 class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-public-methods
@@ -114,13 +116,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         one_job=False,
         qasm=False,
         use_aer=False,
-        aersimulator=None,
         use_qasm_simulator=False,
         use_unitary_simulator=False,
+        use_aer_simulator_density_matrix=False,
+        use_pulse_simulator=False,
+        use_statevector_simulator=False,
         use_statevector_gpu=False,
         use_unitary_gpu=False,
         use_density_matrix_gpu=False,
         use_sim=False,
+        fake_noise=None,
         qvm=False,
         qvm_as=False,
         qc_name=None,
@@ -148,9 +153,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_job_monitor=False,
         job_monitor_filepath=None,
         job_monitor_line="\r",
-        noisy_sim=False,
         qasm3_in=False,
         qasm3_out=False,
+        test_results=None,
+        circcuit=None,
     ):
         """
 
@@ -339,13 +345,34 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             It is an error to set both `qasm_simulator` and `unitary_simulator`
             `True`.
 
-        aersimulator : array of string
-            The default is `None`.
+        use_unitary_simulator: bool
+            The default is `False`.
 
-            _Corresponding `qisjob` script argument_: `--aersimulator`
+            _Corresponding `qisjob` script argument_: `--unitary_simulator`
 
-            Array of QisJob-styled string arguments name=value for using the
-            modern qiskit_aer.AerSimulator. If `None`, AerSimulator is not used.
+            In conjunction with `use_aer`, use Aer's unitary simulator.
+
+        statevector_simulator: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--statevector_simulator`
+
+            In conjunction with `use_aer`, use Aer's statevector simulator.
+
+
+        pulse_simulator: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--pulse_simulator`
+
+            In conjunction with `use_aer`, use Aer's pulse simulator.
+
+        aer_simulator_density_matrix: bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--densitymatrix_simulator`
+
+            In conjunction with `use_aer`, use Aer's Density Matrix simulator.
 
         use_qasm_simulator : bool
             The default is `False`.
@@ -357,9 +384,30 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         use_unitary_simulator : bool
             The default is `False`.
 
+            _Corresponding `qisjob` script argument_: `--unitary_simulator`
+
+            In conjunction with `use_aer`, use Aer's unitary simulator.
+
+        use_statevector_simulator : bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--statevector_simulator`
+
+            In conjunction with `use_aer`, use Aer's statevector simulator.
+
+        use_unitary_simulator : bool
+            The default is `False`.
+
             _Corresponding `qisjob` script argument_: `--unitary-simulator`
 
             In conjunction with `use_aer`, use Aer's unitary simulator.
+
+        use_densitymatrix_simulator : bool
+            The default is `False`.
+
+            _Corresponding `qisjob` script argument_: `--densitymatrix_simulator`
+
+            In conjunction with `use_aer`, use Aer's aer_simulator_density_matrix.
 
         use_statevector_gpu : bool
             The default is `False`.
@@ -449,6 +497,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             If `True`, in conjuction with `xpile`, show schedule for the
             test- transpiled circuit to stdout before jobbing the
             original circuit.
+
+        display: bool
+            The default is 'Flase'.
+
+            _Corresponding `qisjob` script argument_: `--display`
+
+            If `True`, shows the quantum circuit
 
         circuit_layout
             The default is `False`.
@@ -661,13 +716,13 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             output and update the user interactively without scrolling the
             screen. For program usage, a different string can be set.
 
-        noisy_sim: bool
+        fake_noise: bool
             The default is `False`.
 
-            _Corresponding `qisjob` script argument_: `--noisy_sim`
+            _Corresponding `qisjob` script argument_: `--fake_noise`
 
             Performs an Aer sim noise model using the designated backend
-            (see --backend) as the model backend.
+            as the model backend.
 
         qasm3_in: bool
             The default is `False`.
@@ -712,10 +767,14 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_aer = use_aer
         self.use_qasm_simulator = use_qasm_simulator
         self.use_unitary_simulator = use_unitary_simulator
+        self.use_aer_simulator_density_matrix = use_aer_simulator_density_matrix
+        self.use_pulse_simulator = use_pulse_simulator
+        self.use_statevector_simulator = use_statevector_simulator
         self.use_statevector_gpu = use_statevector_gpu
         self.use_unitary_gpu = use_unitary_gpu
         self.use_density_matrix_gpu = use_density_matrix_gpu
         self.use_sim = use_sim
+        self.fake_noise = fake_noise
         self.qvm = qvm
         self.qvm_as = qvm_as
         self.qc_name = qc_name
@@ -740,7 +799,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.show_q_version = show_q_version
         self.verbose = verbose
         self._pp = pprint.PrettyPrinter(indent=4, stream=sys.stdout)
-        self.local_simulator_type = "statevector_simulator"
+        self.local_simulator_type = "aer_simulator"
         self.show_qisjob_version = show_qisjob_version
         self.method = None  # methods for simulators e.g., gpu
         self.my_version = "v4.1.3-dev"
@@ -749,10 +808,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         self.use_job_monitor = use_job_monitor
         self.job_monitor_filepath = job_monitor_filepath
         self.job_monitor_line = job_monitor_line
-        self.noisy_sim = noisy_sim
         self.qasm3_in = qasm3_in
         self.qasm3_out = qasm3_out
         self.display = display
+        self.test_results = []
+        self.circuit = []
 
     def __str__(self) -> str:
         out = StringIO()
@@ -773,7 +833,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
 
     def do_it(
         self,
-    ):  # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
+    ):
+        # pylint: disable-msg=too-many-branches, too-many-statements, too-many-return-statements
         """
 
         Run the program specified by ctor args/kwargs, usally instanced
@@ -826,6 +887,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         See the `qisjob` script for an example of this pattern.
 
         """
+
         if self.verbose == 4:
             self._pp.pprint(self.__dict__)
             return
@@ -1073,21 +1135,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         activate and allow."""
         self.backend = None
 
-        # Choose simulator. We defaulted in __init__() to statevector_simulator
-        if self.use_qasm_simulator:
-            self.local_simulator_type = "qasm_simulator"
-        elif self.use_unitary_simulator:
-            self.local_simulator_type = "unitary_simulator"
-
-        # Choose method kwarg for gpu etc if present
-        if self.use_statevector_gpu:
-            self.method = "statevector_gpu"
-        elif self.use_unitary_gpu:
-            self.method = "unitary_gpu"
-        elif self.use_density_matrix_gpu:
-            self.method = "density_matrix_gpu"
-
         if self.use_aer:
+            from .qisjobaer import QisJobAer
+
+            self.local_simulator_type, self.method = QisJobAer.simulator(self)
             if self.method:
                 self.verbosity(
                     f"self.local_simulator_type is '{self.local_simulator_type}' with method '{self.method}'",  # pylint: disable-msg=line-too-long
@@ -1344,6 +1395,16 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
         # Print statevector ... this doesn't handle Forest qvm yet
         if self.use_aer and self.local_simulator_type == "statevector_simulator":
             self._pp.pprint(result_exp.get_statevector(circ))
+        if self.use_aer and self.local_simulator_type == "unitary_simulator":
+            unitary = result_exp.get_unitary(circ)
+            import numpy as np
+
+            print("Circuit unitary:\n", np.asarray(unitary).round(5))
+        if self.use_aer and self.local_simulator_type == "aer_simulator_density_matrix":
+            from qiskit.quantum_info import DensityMatrix
+
+            rho_AB = DensityMatrix.from_instruction(circ)
+            print(rho_AB)
 
         output = None
 
@@ -1524,20 +1585,11 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 self._pp.pprint(schedule(new_circ, self.backend))
 
         try:
-            if self.noisy_sim:
-                job_exp = self.basic_noise_sim(circ, self.backend)
+            if self.use_aer:
+                from .qisjobaer import QisJobAer
 
-            elif self.method:
-                self.verbosity(f"Using gpu method {self.method}", 2)
-                backend_options = {"method": self.method}
-                job_exp = execute(
-                    circ,
-                    backend=self.backend,
-                    backend_options=backend_options,
-                    optimization_level=self.optimization_level,
-                    shots=self.shots,
-                    memory=self.memory,
-                )
+                job_exp = QisJobAer.run_aer(self, circ)
+
             else:
                 job_exp = execute(
                     circ,
@@ -1584,6 +1636,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         job_monitor(job_exp)
 
             result_exp = job_exp.result()
+            self.test_results += [result_exp]  # for unit test
+            self.circuit += [circ]  # for unit test
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
@@ -1729,8 +1783,10 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             circs.append(circ)
 
         try:
-            if self.noisy_sim:
-                job_exp = self.basic_noise_sim(circ, self.backend)
+            if self.use_aer:
+                from .qisjobaer import QisJobAer
+
+                job_exp = QisJobAer.run_aer(self, circ)
 
             elif self.use_statevector_gpu:
                 self.verbosity("Using gpu", 2)
@@ -1789,6 +1845,8 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                         job_monitor(job_exp)
 
             result_exp = job_exp.result()
+            self.test_results += [result_exp]  # for unit test
+            self.circuit += [circ]  # for unit test
             self.result_exp_dict = result_exp.to_dict()
 
             if self.print_job:
@@ -2115,40 +2173,6 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             pass
         return my_dict
 
-    @staticmethod
-    def basic_noise_sim(circuit: QuantumCircuit, model_backend: BackendV2) -> JobV1:
-        """
-        Execute a simulator job with a basic noise model from a known backend.
-
-        Parameters
-        ----------
-        model_backend : BackendV2
-            The BackendV2 instance whose noise model is to be used
-        circuit : QuantumCircuit
-            The QuantumCircuit instance to execute
-
-        Returns
-        -------
-        JobV1
-            The job which is executing the circuit
-
-        """
-
-        noise_model = NoiseModel.from_backend(model_backend)
-        coupling_map = model_backend.configuration().coupling_map
-        basis_gates = noise_model.basis_gates
-
-        # Perform noisy simulation
-        sim_backend = Aer.get_backend("qasm_simulator")
-        job = execute(
-            circuit,
-            sim_backend,
-            coupling_map=coupling_map,
-            noise_model=noise_model,
-            basis_gates=basis_gates,
-        )
-        return job
-
 
 if __name__ == "__main__":
     EXPLANATION = """Qisjob loads from one or more OpenQASM source files or
@@ -2186,16 +2210,9 @@ if __name__ == "__main__":
         "--aer",
         action="store_true",
         help="""Use QISKit Aer simulator.
-                       Default is Aer statevector simulator.
+                       Default is Aer simulator.
                        Use -a --qasm-simulator to get Aer qasm simulator.
                        Use -a --unitary-simulator to get Aer unitary simulator.""",
-    )
-    GROUP.add_argument(
-        "--aersimulator",
-        action="append",
-        help="""Use Qiskit AerSimulator.
-                       Can be invoked multiple times.
-                       Each invocation should be an argument pair, e.g., '--aersimulator backend=ibmq_lima'""",
     )
     GROUP.add_argument(
         "-b", "--backend", action="store", help="Use specified IBMQ backend"
@@ -2203,14 +2220,32 @@ if __name__ == "__main__":
     GROUPB.add_argument(
         "--qasm_simulator",
         action="store_true",
-        help="""With -a use qasm simulator
-                        instead of statevector simulator""",
+        help="""With -a use qasm_simulator
+                        instead of aer simulator""",
     )
     GROUPB.add_argument(
         "--unitary_simulator",
         action="store_true",
-        help="""With -a use unitary simulator
-                        instead of statevector simulator""",
+        help="""With -a use unitary_simulator
+                        instead of aer simulator""",
+    )
+    GROUPB.add_argument(
+        "--statevector_simulator",
+        action="store_true",
+        help="""With -a use aer_simulator_statevector
+                        instead of aer simulator""",
+    )
+    GROUPB.add_argument(
+        "--pulse_simulator",
+        action="store_true",
+        help="""With -a use pulse_simulator
+                        instead of aer simulator""",
+    )
+    GROUPB.add_argument(
+        "--densitymatrix_simulator",
+        action="store_true",
+        help="""With -a use aer_simulator_density_matrix
+                        instead of aer simulator""",
     )
     GROUPC.add_argument(
         "--statevector_gpu",
@@ -2229,6 +2264,15 @@ if __name__ == "__main__":
         action="store_true",
         help="""With -a and --qasm_simulator
                         use gpu density matrix simulator""",
+    )
+    PARSER.add_argument(
+        "--fakenoise",
+        action="store",
+        help="""Uses IBM/fake backend to simulate
+                        noise in the circuit
+                        with -a use
+                        --fakenoise ibmq_lima/
+                        --fakenoise FakeVigo""",
     )
     PARSER.add_argument(
         "--display",
@@ -2269,13 +2313,6 @@ if __name__ == "__main__":
         "--providers",
         action="store_true",
         help="List hub/group/project providers for IBMQ",
-    )
-    PARSER.add_argument(
-        "--noisy_sim",
-        action="store_true",
-        help="""Perform circuit(s) as Aer simulation using the
-                        designated backend (see --backend) as the
-                        model backend.""",
     )
     PARSER.add_argument(
         "--qvm",
@@ -2516,7 +2553,6 @@ if __name__ == "__main__":
         warnings.filterwarnings("ignore")
 
     AER = ARGS.aer
-    AERSIMULATOR = ARGS.aersimulator
     API_PROVIDER = ARGS.api_provider.upper()
     HUB = ARGS.hub
     GROUP = ARGS.group
@@ -2528,6 +2564,7 @@ if __name__ == "__main__":
     CONFIGURATION = ARGS.configuration
     DATETIME = ARGS.datetime
     DISPLAY = ARGS.display
+    FAKE_NOISE = ARGS.fakenoise
     FIGURE_BASENAME = ARGS.figure_basename
     FILEPATH = ARGS.filepath
     HISTOGRAM = ARGS.histogram
@@ -2540,7 +2577,6 @@ if __name__ == "__main__":
     JOB_RESULT = ARGS.job_result
     JOBS = ARGS.jobs
     MEMORY = ARGS.memory
-    NOISY_SIM = ARGS.noisy_sim
     NUQASM2 = ARGS.nuqasm2
     ONE_JOB = ARGS.one_job
     OPTIMIZATION_LEVEL = ARGS.optimization_level
@@ -2566,6 +2602,9 @@ if __name__ == "__main__":
     TRANSPILE = ARGS.transpile
     SHOWSCHED = ARGS.showsched
     UNITARY_SIMULATOR = ARGS.unitary_simulator
+    DENSITY_MATRIX = ARGS.densitymatrix_simulator
+    PULSE_SIMULATOR = ARGS.pulse_simulator
+    STATEVECTOR_SIMULATOR = ARGS.statevector_simulator
     URL = ARGS.url
     USE_JM = ARGS.use_job_monitor
     QASM3_IN = ARGS.qasm3_in
@@ -2590,13 +2629,16 @@ if __name__ == "__main__":
         one_job=ONE_JOB,
         qasm=QASM,
         use_aer=AER,
-        aersimulator=AERSIMULATOR,
         use_qasm_simulator=QASM_SIMULATOR,
         use_unitary_simulator=UNITARY_SIMULATOR,
+        use_aer_simulator_density_matrix=DENSITY_MATRIX,
+        use_pulse_simulator=PULSE_SIMULATOR,
+        use_statevector_simulator=STATEVECTOR_SIMULATOR,
         use_statevector_gpu=STATEVECTOR_GPU,
         use_unitary_gpu=UNITARY_GPU,
         use_density_matrix_gpu=DENSITY_MATRIX_GPU,
         use_sim=SIM,
+        fake_noise=FAKE_NOISE,
         qvm=QVM,
         qvm_as=QVM_AS,
         qc_name=QC_NAME,
@@ -2625,9 +2667,10 @@ if __name__ == "__main__":
         use_job_monitor=USE_JM,
         job_monitor_filepath=JOB_MONITOR_FILEPATH,
         job_monitor_line=JOB_MONITOR_LINE,
-        noisy_sim=NOISY_SIM,
         qasm3_in=QASM3_IN,
         qasm3_out=QASM3_OUT,
+        test_results=None,
+        circuit=None,
     )
 
     EXITVAL = 0

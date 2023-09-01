@@ -16,6 +16,9 @@ v4.1.3-dev
 - Import `QiskitError` from `qiskit.exception` instead of from `qiskit`
 - Suppress warnings now working/ Imports location changed to only when needed
 - Added --display to display the quantum circuit
+- Updated and moved Qiskit Aer to qisjobaer.py 
+- Moved Noise simulator to qisjobaer.py
+- Ceated a test_aer.py file for testing of aer.
 
 v4.1.2
 - Use IBMProvider if installed
