@@ -284,7 +284,7 @@ PARSER.add_argument(
 )
 PARSER.add_argument(
     "-v",
-    "--verbose",
+    "--verbose",ublu
     action="count",
     default=0,
     help="""Increase runtime verbosity each -v up to 3. If
@@ -420,6 +420,7 @@ CONFIGURATION = ARGS.configuration
 DATETIME = ARGS.datetime
 DISPLAY = ARGS.display
 FAKE_NOISE = ARGS.fakenoise
+DENSITY_MATRIX_GPU = ARGS.density_matrix_gpu
 FIGURE_BASENAME = ARGS.figure_basename
 FILEPATH = ARGS.filepath
 HISTOGRAM = ARGS.histogram
@@ -523,6 +524,7 @@ QJ = QisJob(
     job_monitor_line=JOB_MONITOR_LINE,
     qasm3_in=QASM3_IN,
     qasm3_out=QASM3_OUT,
+    display=DISPLAY,
 )
 
 EXITVAL = 0
