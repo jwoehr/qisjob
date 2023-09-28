@@ -284,7 +284,7 @@ PARSER.add_argument(
 )
 PARSER.add_argument(
     "-v",
-    "--verbose",ublu
+    "--verbose",
     action="count",
     default=0,
     help="""Increase runtime verbosity each -v up to 3. If
