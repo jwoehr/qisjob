@@ -53,9 +53,7 @@ from typing import Any
 import warnings
 
 from qiskit import (
-    IBMQ,
     QuantumCircuit,
-    execute,
     schedule,
     __qiskit_version__,
     qasm3,
@@ -63,23 +61,22 @@ from qiskit import (
 )
 
 from qiskit.exceptions import QiskitError
-from qiskit.providers import BackendV2, JobV1
+from qiskit.providers import BackendV2
 from qiskit.result import Result
 from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_circuit_layout, plot_state_city, plot_histogram
 from qiskit import Aer
-from qiskit_aer.noise import NoiseModel
 from qiskit.providers.exceptions import QiskitBackendNotFoundError
 from matplotlib.figure import Figure
 from qiskit_ibm_provider import (
     IBMProvider,
     IBMInputValueError,
-    IBMProviderError,
     least_busy,
 )
 from qiskit_ibm_provider.job import IBMJob
 from qiskit_ibm_provider.job.exceptions import IBMJobFailureError
-
+# time to switch over to QiskitRuntimeService
+from qiskit_ibm_runtime import QiskitRuntimeService
 
 from .qisjobex import QisJobException, QisJobArgumentException, QisJobRuntimeException
 from .qisjobaer import QisJobAer
@@ -911,7 +908,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             self.account_fu()
 
             try:
-                self._pp.pprint(IBMQ.providers())
+                self._pp.pprint(self.provider.providers())
             except QiskitError as err:
                 raise QisJobRuntimeException(
                     f"Error fetching IBMQ providers: {err}"
@@ -1591,6 +1588,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                 job_exp = QisJobAer.run_aer(self, circ)
 
             else:
+                # TODO : Change to transpile() and backend.run()
                 job_exp = execute(
                     circ,
                     backend=self.backend,
@@ -1791,6 +1789,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             elif self.use_statevector_gpu:
                 self.verbosity("Using gpu", 2)
                 backend_options = {"method": "statevector_gpu"}
+                # TODO : Change to transpile() and backend.run()
                 job_exp = execute(
                     circs,
                     backend=self.backend,
@@ -1800,6 +1799,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     memory=self.memory,
                 )
             else:
+                # TODO : Change to transpile() and backend.run()
                 job_exp = execute(
                     circs,
                     backend=self.backend,
@@ -1961,6 +1961,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
             if self.method:
                 self.verbosity(f"Using gpu method {self.method}", 2)
                 backend_options = {"method": self.method}
+                # TODO : Change to transpile() and backend.run()
                 job_exp = execute(
                     circ,
                     backend=self.backend,
@@ -1970,6 +1971,7 @@ class QisJob:  # pylint: disable-msg=too-many-instance-attributes, too-many-publ
                     memory=self.memory,
                 )
             else:
+                # TODO : Change to transpile() and backend.run()
                 job_exp = execute(
                     circ,
                     backend=self.backend,
