@@ -1,5 +1,11 @@
 # qisjob
 
+# NOTE: This project is now archived
+
+Qisjob is rooted in early Qiskit. It does not work with Qiskit 1.0 and beyond, and its architecture does lend itself to enhancement in order to support modern Qiskit.
+
+_Jack Woehr 2024-12-14_
+
 ## Qiskit Job Control
 
 * [The `qisjob` module](#the-qisjob-module)
